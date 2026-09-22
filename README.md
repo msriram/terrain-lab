@@ -54,7 +54,13 @@ Controls:
 - Use **Color spread** for palette contrast and **Stability** to reduce flicker.
 - Toggle contour lines and the simulated water level.
 - Press **Reset terrain** to restore the sample landscape.
-- Press **F** or use **Projector view** for a clean fullscreen output.
+- Keep this controller window on the laptop. Use **Open projector window** (or
+  press **F**) to create a separate clean projection window, drag that window
+  to the projector display, then press **F** there for browser fullscreen.
+- The Kinect normally sees a wider area than the projector. During
+  **Calibrate**, select the four inside corners of the sandbox in the laptop
+  preview; Terrain Lab crops and stretches that camera region to fill the
+  projector window.
 
 No package manager, build step, account, or network access is required after
 the repository is downloaded.
@@ -80,7 +86,7 @@ brew install libfreenect
 - Twenty authored color themes
 - Contour lines
 - Water-level visualization
-- Separate, fullscreen-friendly projector view
+- Separate laptop controller/live-preview and fullscreen projector windows
 - Adjustable depth position, range, contrast, smoothing, and automatic fitting
 - Saved four-corner sandbox ROI calibration with alignment-grid preview
 - Responsive UI for ordinary laptop screens
