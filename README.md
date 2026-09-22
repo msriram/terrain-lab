@@ -1,5 +1,9 @@
 # Terrain Lab
 
+[**Open the live Terrain Lab →**](https://msriram.github.io/terrain-lab/)
+
+![Terrain Lab rendering live Kinect depth as colored topographic contours](assets/terrain-lab-kinect.png)
+
 A Mac-first Kinect-powered augmented-reality sandbox inspired by
 [Magic-Sand](https://github.com/thomwolf/Magic-Sand) and
 [DuneBox](https://github.com/Manaiakalani/DuneBox). A small native depth bridge
