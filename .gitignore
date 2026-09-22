@@ -1,0 +1,6 @@
+.DS_Store
+build/
+scripts/__pycache__/
+*.pyc
+upstream-magic-sand/
+touchdesigner/*.1.toe

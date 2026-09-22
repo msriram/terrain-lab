@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#000"><title>Terrain Lab</title><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="control-icon.css"></head>
+<body><main class="app-shell">
+<header class="topbar"><div class="identity"><span class="mark"></span><strong>Terrain Lab</strong><span class="version">Kinect field viewer</span></div><div class="status"><span id="statusDot"></span><strong id="statusText">Connecting…</strong><output id="fps">-- fps</output></div></header>
+<section class="stage-card"><canvas id="terrain" aria-label="Interactive topographic terrain"></canvas>
+<aside class="controls" id="controlsPanel"><div class="panel-heading"><div><span class="panel-kicker">Scene control</span><h1>Terrain</h1></div><button id="collapseControls" class="icon-button" aria-label="Collapse controls">−</button></div>
+<div class="control-body">
+<label class="field"><span>World</span><select id="theme" aria-label="Color theme"></select></label><div class="theme-preview" id="themePreview"></div>
+<div class="section-title"><span>Depth band</span><button id="autoRange" class="text-button">Auto fit</button></div><p class="help">Choose which slice of real-world depth becomes the full color range.</p>
+<label><span>Position <output id="centerValue">1150 mm</output></span><input id="center" type="range" min="500" max="3500" step="10" value="1150"></label>
+<label><span>Range <output id="spanValue">1300 mm</output></span><input id="span" type="range" min="150" max="3000" step="10" value="1300"></label><div class="range-readout"><span id="nearReadout">Near 500</span><span id="farReadout">Far 1800</span></div>
+<label><span>Color spread <output id="gammaValue">1.00×</output></span><input id="gamma" type="range" min="50" max="200" value="100"></label>
+<label><span>Stability <output id="smoothingValue">62%</output></span><input id="smoothing" type="range" min="0" max="92" value="62"></label>
+<div class="section-title"><span>Display</span></div><label><span>Water line <output id="waterValue">28%</output></span><input id="water" type="range" min="0" max="65" value="28"></label>
+<label class="switch-row"><span>Contour lines</span><input id="contours" type="checkbox" checked></label><label class="switch-row"><span>Live Kinect</span><input id="liveSensor" type="checkbox" checked></label>
+<button id="projector" class="primary">Enter projection <kbd>F</kbd></button></div></aside>
+<button id="showControls" class="show-controls" aria-label="Show scene controls" title="Scene controls"><span aria-hidden="true">▦</span></button></section>
+</main><script src="app.js"></script></body></html>
