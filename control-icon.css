@@ -34,6 +34,21 @@
   color: #c8c9c3;
 }
 
+.calibration-button {
+  width: auto;
+  margin: 0;
+  padding: 6px 10px;
+  background: #20221f;
+  border-color: var(--line);
+  color: #c8c9c3;
+  font-size: 12px;
+}
+
+.calibration-button.ready {
+  color: #9edc91;
+  border-color: rgba(142, 211, 131, .4);
+}
+
 button:disabled {
   opacity: .38;
   cursor: not-allowed;
@@ -42,15 +57,6 @@ button:disabled {
 @media (max-width: 600px) {
   .status { display: none; }
 }
-
-.calibration-status {
-  color: #d98973;
-  font-size: 10px;
-  letter-spacing: 0;
-  text-transform: none;
-}
-
-.calibration-status.ready { color: #8ed383; }
 
 .calibration-prompt {
   position: absolute;
