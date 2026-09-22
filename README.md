@@ -28,6 +28,19 @@ run `./scripts/run.sh`, open the hosted page, and press **Connect Kinect**. The
 hosted interface discovers the local bridge; the depth data never leaves the
 machine. Projection remains disabled until a live sensor is connected.
 
+### Reliable Kinect service on macOS
+
+For a fixed sandbox machine, run this once after cloning the repository:
+
+```bash
+./scripts/install-kinect-service.sh
+```
+
+It installs a per-user background service which starts at login, waits idle
+without holding the Kinect, starts capture when **Connect Kinect** is pressed,
+releases the USB device on **Disconnect**, and retries a failed capture. For a
+portable one-off session, double-click `Open Terrain Lab.command` instead.
+
 If port 8080 is already occupied, the launcher automatically tries 8081 through
 8099 and prints the selected address. To request a specific port, run
 `PORT=9000 ./scripts/run.sh`.
@@ -90,6 +103,8 @@ native/kinect_depth_bridge.c native Kinect v1 capture helper
 scripts/kinect_server.py local static/depth server
 scripts/run.sh         build-and-run launcher
 scripts/check-kinect.sh verify Kinect USB and FreenectTD setup on macOS
+scripts/install-kinect-service.sh install the managed macOS background bridge
+Open Terrain Lab.command one-click portable launcher
 Open Kinect Viewer.command double-click launcher for the Kinect viewer
 touchdesigner/Kinect Viewer.toe ready-made FreenectTD viewer project
 docs/PLAN.md           research, architecture, and milestones

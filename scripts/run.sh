@@ -45,6 +45,10 @@ finally:
     exit 1
   fi
 
+  if [ "${BRIDGE_IDLE:-0}" = "1" ]; then
+    exec python3 scripts/kinect_server.py --port "$port" --bridge "$bridge" --idle
+  fi
+
   exec python3 scripts/kinect_server.py --port "$port" --bridge "$bridge"
 fi
 
