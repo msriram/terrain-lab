@@ -17,6 +17,13 @@ The launcher prints the URL to open. It builds the small native capture bridge
 when needed and starts the browser application. Close TouchDesigner first so
 the Kinect is available to the app.
 
+The interface is also hosted at
+[msriram.github.io/terrain-lab](https://msriram.github.io/terrain-lab/). On a
+Mac with the Kinect, first
+run `./scripts/run.sh`, open the hosted page, and press **Connect Kinect**. The
+hosted interface discovers the local bridge; the depth data never leaves the
+machine. Projection remains disabled until a live sensor is connected.
+
 If port 8080 is already occupied, the launcher automatically tries 8081 through
 8099 and prints the selected address. To request a specific port, run
 `PORT=9000 ./scripts/run.sh`.

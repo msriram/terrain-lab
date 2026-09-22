@@ -90,6 +90,18 @@ class DepthReader:
 
 def make_handler(depth_reader):
     class Handler(SimpleHTTPRequestHandler):
+        def _send_api_headers(self):
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Access-Control-Allow-Private-Network", "true")
+            self.send_header("Cache-Control", "no-store")
+
+        def do_OPTIONS(self):
+            self.send_response(HTTPStatus.NO_CONTENT)
+            self._send_api_headers()
+            self.send_header("Access-Control-Allow-Methods", "GET, OPTIONS")
+            self.send_header("Access-Control-Allow-Headers", "*")
+            self.end_headers()
+
         def do_GET(self):
             request_path = urlsplit(self.path).path
             if request_path == "/api/status":
@@ -104,7 +116,7 @@ def make_handler(depth_reader):
                 }).encode()
                 self.send_response(HTTPStatus.OK)
                 self.send_header("Content-Type", "application/json")
-                self.send_header("Cache-Control", "no-store")
+                self._send_api_headers()
                 self.send_header("Content-Length", str(len(body)))
                 self.end_headers()
                 self.wfile.write(body)
@@ -116,14 +128,14 @@ def make_handler(depth_reader):
                     body = json.dumps({"error": error or "No depth frame yet"}).encode()
                     self.send_response(HTTPStatus.SERVICE_UNAVAILABLE)
                     self.send_header("Content-Type", "application/json")
-                    self.send_header("Cache-Control", "no-store")
+                    self._send_api_headers()
                     self.send_header("Content-Length", str(len(body)))
                     self.end_headers()
                     self.wfile.write(body)
                     return
                 self.send_response(HTTPStatus.OK)
                 self.send_header("Content-Type", "application/octet-stream")
-                self.send_header("Cache-Control", "no-store")
+                self._send_api_headers()
                 self.send_header("X-Depth-Width", str(WIDTH))
                 self.send_header("X-Depth-Height", str(HEIGHT))
                 self.send_header("X-Frame-Number", str(number))

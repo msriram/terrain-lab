@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#000"><title>Terrain Lab</title><link rel="stylesheet" href="styles.css?v=2"><link rel="stylesheet" href="control-icon.css?v=2"></head>
 <body><main class="app-shell">
-<header class="topbar"><div class="identity"><span class="mark"></span><strong>Terrain Lab</strong><span class="version">Kinect field viewer</span></div><div class="status"><span id="statusDot"></span><strong id="statusText">Connecting…</strong><output id="fps">-- fps</output></div></header>
+<header class="topbar"><div class="identity"><span class="mark"></span><strong>Terrain Lab</strong><span class="version">Kinect field viewer</span></div><div class="header-actions"><div class="status"><span id="statusDot" class="offline"></span><strong id="statusText">Not connected</strong><output id="fps">-- fps</output></div><button id="connectKinect" class="connect-button">Connect Kinect</button></div></header>
 <section class="stage-card"><canvas id="terrain" aria-label="Interactive topographic terrain"></canvas>
 <aside class="controls" id="controlsPanel"><div class="panel-heading"><div><span class="panel-kicker">Scene control</span><h1>Terrain</h1></div><button id="collapseControls" class="icon-button" aria-label="Collapse controls">−</button></div>
 <div class="control-body">
@@ -13,6 +13,6 @@
 <label><span>Stability <output id="smoothingValue">62%</output></span><input id="smoothing" type="range" min="0" max="92" value="62"></label>
 <div class="section-title"><span>Display</span></div><label><span>Water line <output id="waterValue">28%</output></span><input id="water" type="range" min="0" max="65" value="28"></label>
 <label class="switch-row"><span>Contour lines</span><input id="contours" type="checkbox" checked></label><label class="switch-row"><span>Live Kinect</span><input id="liveSensor" type="checkbox" checked></label>
-<button id="projector" class="primary">Enter projection <kbd>F</kbd></button></div></aside>
+<button id="projector" class="primary" disabled>Enter projection <kbd>F</kbd></button></div></aside>
 <button id="showControls" class="show-controls" aria-label="Show scene controls" title="Scene controls"><span aria-hidden="true">▦</span></button></section>
-</main><script src="app.js?v=2"></script></body></html>
+</main><script src="app.js?v=3"></script></body></html>
