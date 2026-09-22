@@ -11,8 +11,11 @@
 <label><span>Range <output id="spanValue">1300 mm</output></span><input id="span" type="range" min="150" max="3000" step="10" value="1300"></label><div class="range-readout"><span id="nearReadout">Near 500</span><span id="farReadout">Far 1800</span></div>
 <label><span>Color spread <output id="gammaValue">1.00×</output></span><input id="gamma" type="range" min="50" max="200" value="100"></label>
 <label><span>Stability <output id="smoothingValue">62%</output></span><input id="smoothing" type="range" min="0" max="92" value="62"></label>
+<div class="section-title"><span>Calibration</span><span id="calibrationStatus" class="calibration-status">Not calibrated</span></div><p class="help">Mark the four inside corners of the sand surface in order.</p>
+<button id="startCalibration">Set sandbox corners</button><button id="resetCalibration">Clear calibration</button><label class="switch-row"><span>Alignment grid</span><input id="alignmentGrid" type="checkbox"></label>
 <div class="section-title"><span>Display</span></div><label><span>Water line <output id="waterValue">28%</output></span><input id="water" type="range" min="0" max="65" value="28"></label>
 <label class="switch-row"><span>Contour lines</span><input id="contours" type="checkbox" checked></label><label class="switch-row"><span>Live Kinect</span><input id="liveSensor" type="checkbox" checked></label>
 <button id="projector" class="primary" disabled>Enter projection <kbd>F</kbd></button></div></aside>
 <button id="showControls" class="show-controls" aria-label="Show scene controls" title="Scene controls"><span aria-hidden="true">▦</span></button></section>
-</main><script src="app.js?v=4"></script></body></html>
+<div id="calibrationPrompt" class="calibration-prompt" hidden><strong id="calibrationInstruction">Select top-left corner</strong><span id="calibrationCount">0 / 4</span><button id="undoCalibration">Undo</button><button id="cancelCalibration">Cancel</button><button id="saveCalibration" disabled>Save</button></div>
+</main><script src="app.js?v=6"></script></body></html>

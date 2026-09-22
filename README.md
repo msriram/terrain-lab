@@ -69,13 +69,15 @@ brew install libfreenect
 - Water-level visualization
 - Separate, fullscreen-friendly projector view
 - Adjustable depth position, range, contrast, smoothing, and automatic fitting
+- Saved four-corner sandbox ROI calibration with alignment-grid preview
 - Responsive UI for ordinary laptop screens
 
 ## Remaining physical-rig work
 
-Live depth is implemented. Automatic camera/projector correspondence calibration
-and water-flow physics remain future milestones. Use Projector view for a clean
-fullscreen output and adjust near/far depth for the current mounting height.
+Live depth and four-corner sandbox-region capture are implemented. Automatic
+camera/projector correspondence, reference-plane fitting, and water-flow physics
+remain future milestones. Use Projector view for a clean fullscreen output and
+adjust the depth band for the current mounting height.
 
 ## Repository layout
 

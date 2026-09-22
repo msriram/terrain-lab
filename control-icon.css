@@ -42,3 +42,33 @@ button:disabled {
 @media (max-width: 600px) {
   .status { display: none; }
 }
+
+.calibration-status {
+  color: #d98973;
+  font-size: 10px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.calibration-status.ready { color: #8ed383; }
+
+.calibration-prompt {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: rgba(10, 10, 10, .92);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, .45);
+}
+
+.calibration-prompt[hidden] { display: none; }
+.calibration-prompt strong { min-width: 150px; font-size: 12px; }
+.calibration-prompt span { color: var(--muted); font-size: 11px; }
+.calibration-prompt button { width: auto; margin: 0; padding: 5px 8px; font-size: 11px; }
