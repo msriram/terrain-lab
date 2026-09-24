@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#000"><title>Terrain Lab</title><link rel="stylesheet" href="styles.css?v=2"><link rel="stylesheet" href="control-icon.css?v=2"></head>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#000"><title>Terrain Lab</title><link rel="stylesheet" href="styles.css?v=2"><link rel="stylesheet" href="control-icon.css?v=2"><style>body.projector.flip-180 #terrain{transform:rotate(180deg)}</style></head>
 <body><main class="app-shell">
 <header class="topbar"><div class="identity"><span class="mark"></span><strong>Terrain Lab</strong><span class="version">Kinect field viewer</span></div><div class="header-actions"><div class="status"><span id="statusDot" class="offline"></span><strong id="statusText">Not connected</strong><output id="fps">-- fps</output></div><button id="startCalibration" class="calibration-button"><span id="calibrationStatus">Calibrate</span></button><button id="connectKinect" class="connect-button">Connect Kinect</button></div></header>
 <section class="stage-card"><canvas id="terrain" aria-label="Interactive topographic terrain"></canvas>
@@ -12,8 +12,8 @@
 <label><span>Color spread <output id="gammaValue">1.00×</output></span><input id="gamma" type="range" min="50" max="200" value="100"></label>
 <label><span>Stability <output id="smoothingValue">62%</output></span><input id="smoothing" type="range" min="0" max="92" value="62"></label>
 <div class="section-title"><span>Display</span></div><label><span>Water line <output id="waterValue">28%</output></span><input id="water" type="range" min="0" max="65" value="28"></label>
-<label class="switch-row"><span>Contour lines</span><input id="contours" type="checkbox" checked></label><label class="switch-row"><span>Live Kinect</span><input id="liveSensor" type="checkbox" checked></label>
+<label class="switch-row"><span>Contour lines</span><input id="contours" type="checkbox" checked></label><label class="switch-row"><span>Live Kinect</span><input id="liveSensor" type="checkbox" checked></label><label class="switch-row"><span>Rotate projector 180°</span><input id="rotateProjector" type="checkbox"></label>
 <button id="projector" class="primary" disabled>Open projector window <kbd>F</kbd></button></div></aside>
 <button id="showControls" class="show-controls" aria-label="Show scene controls" title="Scene controls"><span aria-hidden="true">▦</span></button></section>
 <div id="calibrationPrompt" class="calibration-prompt" hidden><strong id="calibrationInstruction">Select top-left corner</strong><span id="calibrationCount">0 / 4</span><button id="autoCalibration">Detect corners</button><button id="undoCalibration">Undo</button><button id="resetCalibration">Clear saved</button><button id="cancelCalibration">Cancel</button><button id="saveCalibration" disabled>Save</button></div>
-</main><script src="app.js?v=13"></script></body></html>
+</main><script src="app.js?v=14"></script></body></html>
