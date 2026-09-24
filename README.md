@@ -52,7 +52,8 @@ Controls:
 - Choose from 20 color worlds in the in-scene control panel.
 - Press **Auto fit** to map the visible surface to the full color range.
 - Move **Position** to shift the color band nearer/farther and adjust **Range**
-  for shallow or deep terrain. The minimum 150 mm span avoids noisy extremes.
+  for shallow or deep terrain. A 50 mm minimum supports shallow terrain; use
+  **Stability** to suppress Kinect noise at very narrow ranges.
 - Use **Color spread** for palette contrast and **Stability** to reduce flicker.
 - Toggle contour lines and the simulated water level.
 - Press **Reset terrain** to restore the sample landscape.
