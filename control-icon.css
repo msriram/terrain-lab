@@ -61,20 +61,37 @@ button:disabled {
 .calibration-prompt {
   position: absolute;
   z-index: 5;
-  left: 50%;
-  bottom: 18px;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px;
-  background: rgba(10, 10, 10, .92);
+  left: 28px;
+  bottom: 28px;
+  width: 340px;
+  max-height: calc(100vh - 130px);
+  overflow: auto;
+  padding: 15px;
+  background: rgba(15, 16, 16, .94);
   border: 1px solid var(--line);
-  border-radius: 6px;
-  box-shadow: 0 10px 35px rgba(0, 0, 0, .45);
+  border-radius: 8px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .52);
+  backdrop-filter: blur(18px);
 }
 
 .calibration-prompt[hidden] { display: none; }
-.calibration-prompt strong { min-width: 150px; font-size: 12px; }
-.calibration-prompt span { color: var(--muted); font-size: 11px; }
-.calibration-prompt button { width: auto; margin: 0; padding: 5px 8px; font-size: 11px; }
+.calibration-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.calibration-heading strong { display: block; margin-top: 2px; font-size: 15px; font-weight: 590; }
+.calibration-heading > span { color: var(--accent); font-size: 12px; font-variant-numeric: tabular-nums; }
+.calibration-help, .rig-limits > p { margin: 7px 0 13px; color: var(--muted); font-size: 11px; line-height: 1.4; }
+.calibration-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.calibration-actions button, .calibration-footer button { width: auto; margin: 0; padding: 7px 8px; font-size: 11px; }
+.calibration-actions #undoCalibration { grid-column: span 2; }
+.rig-limits { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+.rig-limits summary { color: #ddd; cursor: pointer; font-size: 12px; }
+.limit-grid { display: grid; grid-template-columns: 1fr; gap: 7px; }
+.limit-grid label { display: grid; grid-template-columns: 1fr auto; gap: 3px 8px; margin: 0; color: #ddd; font-size: 11px; }
+.limit-grid label > span { color: var(--muted); }
+.limit-grid label > div { grid-column: span 2; display: grid; grid-template-columns: 1fr 12px 1fr; align-items: center; gap: 5px; color: var(--muted); text-align: center; }
+.limit-grid input { width: 100%; min-width: 0; padding: 6px 7px; border: 1px solid var(--line); border-radius: 4px; background: #191a19; color: var(--text); font: inherit; }
+.calibration-footer { display: grid; grid-template-columns: auto auto 1fr; gap: 6px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+.save-calibration { background: var(--accent); border-color: var(--accent); color: #111; font-weight: 650; }
+
+@media (max-width: 700px) {
+  .calibration-prompt { left: 12px; right: 12px; bottom: 12px; width: auto; max-height: calc(100vh - 74px); }
+}
