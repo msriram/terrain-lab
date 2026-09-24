@@ -5,6 +5,7 @@ import argparse
 import json
 import os
 import pathlib
+import select
 import signal
 import struct
 import subprocess
@@ -117,11 +118,15 @@ class DepthReader:
                     self.error = "Starting Kinect bridge"
                 threading.Thread(target=self._read_stderr, args=(process,), daemon=True).start()
 
+                awaiting_first_frame = True
                 while True:
                     with self.lock:
                         active = self.capture_requested and not self.closed
                     if not active:
                         break
+                    ready, _, _ = select.select([process.stdout], [], [], 8 if awaiting_first_frame else 4)
+                    if not ready:
+                        raise RuntimeError("Timed out waiting for Kinect depth frames; restarting capture")
                     packet = self._read_exact(process.stdout, FRAME_SIZE)
                     if packet is None:
                         raise RuntimeError(f"Kinect bridge stopped (exit {process.poll()})")
@@ -135,6 +140,7 @@ class DepthReader:
                         self.frame_number = frame_number
                         self.timestamp = timestamp
                         self.error = None
+                    awaiting_first_frame = False
             except Exception as exc:
                 with self.lock:
                     if self.capture_requested and not self.closed:

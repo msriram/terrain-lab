@@ -27,6 +27,8 @@ Mac with the Kinect, first
 run `./scripts/run.sh`, open the hosted page, and press **Connect Kinect**. The
 hosted interface discovers the local bridge; the depth data never leaves the
 machine. Projection remains disabled until a live sensor is connected.
+Do not open `index.html` with a `file:///` URL: use the hosted page or the
+local bridge URL printed by the launcher.
 
 ### Reliable Kinect service on macOS
 
