@@ -82,6 +82,13 @@ button:disabled {
 .calibration-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .calibration-actions button, .calibration-footer button { width: auto; margin: 0; padding: 7px 8px; font-size: 11px; }
 .calibration-actions #undoCalibration { grid-column: span 2; }
+.alignment-nudge { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+.alignment-nudge > div { display: flex; align-items: center; justify-content: space-between; }
+.alignment-nudge output { color: var(--accent); font-size: 11px; font-variant-numeric: tabular-nums; }
+.alignment-nudge p { margin: 6px 0 9px; color: var(--muted); font-size: 11px; line-height: 1.35; }
+.nudge-pad { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; width: 148px; margin: 0 auto; }
+.nudge-pad button { width: auto; margin: 0; padding: 5px; font-size: 12px; }
+.nudge-pad #resetAlignment { font-size: 10px; }
 .rig-limits { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
 .rig-limits summary { color: #ddd; cursor: pointer; font-size: 12px; }
 .limit-grid { display: grid; grid-template-columns: 1fr; gap: 7px; }
