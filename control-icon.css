@@ -81,7 +81,9 @@ button:disabled {
 .calibration-help, .rig-limits > p { margin: 7px 0 13px; color: var(--muted); font-size: 11px; line-height: 1.4; }
 .calibration-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .calibration-actions button, .calibration-footer button { width: auto; margin: 0; padding: 7px 8px; font-size: 11px; }
-.calibration-actions #undoCalibration { grid-column: span 2; }
+.calibration-actions #captureFlatReference, .calibration-actions #undoCalibration { grid-column: span 2; }
+.flat-reference-status { margin: 8px 0 0; color: var(--muted); font-size: 11px; line-height: 1.4; }
+.flat-reference-status.ready { color: var(--accent); }
 .alignment-nudge { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
 .alignment-nudge > div { display: flex; align-items: center; justify-content: space-between; }
 .alignment-nudge output { color: var(--accent); font-size: 11px; font-variant-numeric: tabular-nums; }
