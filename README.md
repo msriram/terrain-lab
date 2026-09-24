@@ -1,4 +1,4 @@
-# Terrain Lab
+# Terrain Lab v0.1.0
 
 [**Open the live Terrain Lab →**](https://msriram.github.io/terrain-lab/)
 
@@ -8,6 +8,14 @@ A Mac-first Kinect-powered augmented-reality sandbox inspired by
 [Magic-Sand](https://github.com/thomwolf/Magic-Sand) and
 [DuneBox](https://github.com/Manaiakalani/DuneBox). A small native depth bridge
 feeds a dependency-free browser display.
+
+## Release package
+
+**v0.1.0** is the first portable Terrain Lab release. Download the
+[v0.1.0 source package](https://github.com/msriram/terrain-lab/archive/refs/tags/v0.1.0.zip),
+unzip it, then run `./scripts/install-kinect-service.sh` once on a fixed Mac
+or `./scripts/run.sh` for a portable session. The package includes the hosted
+web application, local Kinect bridge, calibration tools, and macOS launchers.
 
 ## Run it
 
