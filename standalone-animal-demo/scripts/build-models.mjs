@@ -4,6 +4,8 @@ import { makeLandAnimal } from "./models/land.mjs";
 import { optimizeModel } from "./models/common.mjs";
 import { makeOtherworld } from "./models/otherworld.mjs";
 import { mkdir } from "node:fs/promises";
+import { WORLD_FAUNA } from "../src/catalog/world-fauna.js";
+import { makeWorldFauna } from "./models/world-fauna.mjs";
 import { makeShark } from "./models/shark.mjs";
 // Registers FileReader and rebuilds the original animated koi.
 await import("./build-fish.mjs");
@@ -17,13 +19,16 @@ for (const species of [
   "microbe",
   "phage",
   "drone",
+  ...Object.keys(WORLD_FAUNA),
 ]) {
   const { root, clips } =
     species === "shark"
       ? makeShark()
       : ["deer", "wolf", "rabbit"].includes(species)
         ? makeLandAnimal(species)
-        : makeOtherworld(species);
+        : WORLD_FAUNA[species]
+          ? makeWorldFauna(species)
+          : makeOtherworld(species);
   await optimizeModel(root);
   const binary = await new GLTFExporter().parseAsync(root, {
     binary: true,

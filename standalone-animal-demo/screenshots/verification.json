@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-09-25T13:52:54.328Z",
+  "testedAt": "2026-09-25T14:57:29.480Z",
   "browser": "153.0.8010.53",
   "mode": "Headless Chrome, production build, external requests blocked",
   "hardware": "Apple M3 Pro MacBook Pro, 36 GB RAM",
@@ -22,49 +22,49 @@
       "weather": "clouds",
       "caption": "Wind in the trees. Waves finding the shore.",
       "underwater": false,
-      "time": 13.649399999999954
+      "time": 13.599299999999948
     },
     "captures": 0,
     "rescues": 0,
     "waiting": 0,
-    "drawCalls": 163,
-    "triangles": 22457,
+    "drawCalls": 161,
+    "triangles": 22265,
     "pack": "earth",
     "behaviors": [
       {
         "id": 0,
         "species": "fox",
-        "mode": "shake",
+        "mode": "roam",
         "active": true
       },
       {
         "id": 1,
         "species": "deer",
-        "mode": "graze",
+        "mode": "roam",
         "active": true
       },
       {
         "id": 2,
         "species": "rabbit",
-        "mode": "look",
+        "mode": "roam",
         "active": true
       },
       {
         "id": 3,
         "species": "shark",
-        "mode": "cruise",
+        "mode": "dive",
         "active": true
       },
       {
         "id": 4,
         "species": "koi",
-        "mode": "breach",
+        "mode": "roam",
         "active": true
       },
       {
         "id": 5,
         "species": "koi",
-        "mode": "roam",
+        "mode": "dart",
         "active": true
       },
       {
@@ -80,18 +80,18 @@
         "active": true
       }
     ],
-    "frames": 813,
-    "averageFPS": 60.09675577723119,
+    "frames": 809,
+    "averageFPS": 60.09013520294768,
     "resolution": [
       1024,
       768
     ],
-    "p95FrameMs": 16.799999999999272,
+    "p95FrameMs": 16.700000000000728,
     "benchmarkFrames": 600,
     "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M3 Pro, Unspecified Version)"
   },
   "checks": [
-    "11 selectable animated species / 8 slots",
+    "33 selectable animated species / 8 slots",
     "wolf/deer and fox/rabbit proximity pursuit",
     "shark/koi pursuit",
     "fish breaches",

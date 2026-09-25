@@ -13,5 +13,8 @@ export {
   LANDSCAPES,
   AQUATIC_ROSTER,
   WORLD_ROSTERS,
+  WORLD_SIGNATURES,
   rosterForWorld,
 } from "./catalog/landscapes.js";
+
+export { WORLD_FAUNA } from "./catalog/world-fauna.js";

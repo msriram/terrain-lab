@@ -50,3 +50,19 @@ test("new world rosters use original animated species and majority prey", async 
     );
   }
 });
+
+test("each signature creature appears in its own world", async () => {
+  const { WORLD_FAUNA } = await import("../src/catalog/world-fauna.js");
+  const { WORLD_ROSTERS } = await import("../src/catalog/landscapes.js");
+  for (const [id, animal] of Object.entries(WORLD_FAUNA))
+    assert.ok(
+      WORLD_ROSTERS[animal.world].includes(id),
+      `${id} missing from ${animal.world}`,
+    );
+  for (const [world, roster] of Object.entries(WORLD_ROSTERS))
+    if (world !== "earth" && world !== "forest")
+      assert.ok(
+        !roster?.includes("deer") && !roster?.includes("rabbit"),
+        world,
+      );
+});

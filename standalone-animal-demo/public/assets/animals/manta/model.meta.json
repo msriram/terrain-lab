@@ -1,0 +1,17 @@
+{
+  "name": "Atlantis manta",
+  "habitat": "water",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 54456,
+  "sha256": "5439ceea33931de0c48e53e50912324e527c48e429fb5da4c274b9eb2a3a48ec",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

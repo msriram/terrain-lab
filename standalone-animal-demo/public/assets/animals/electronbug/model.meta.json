@@ -1,0 +1,17 @@
+{
+  "name": "Electron beetle",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 147196,
+  "sha256": "8a953e1f6c41f30d4fd5c2a60952e641feff7bef53be88d3168d581388ab1060",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

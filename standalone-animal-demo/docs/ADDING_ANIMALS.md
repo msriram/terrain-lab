@@ -97,7 +97,20 @@ idle transitions, tail/antler shoreline clearance, and behavior with a nearby
 predator/prey. Test terrain changes and missing habitats. Add a behavior test
 for a new decision rule; avoid tests that just duplicate a catalog value.
 
-The current tests explicitly enumerate the six shipped models. Extend that
-asset check when adding a new species. The browser preloads the catalog once;
+The asset test walks every species in the catalog and verifies each local GLB has animation and no external references. The browser preloads the catalog once;
 for a large collection, evolve that cache into lazy loading with an explicit
 loading state before increasing the active-creature budget.
+
+## Signature animals for a world
+
+`src/catalog/world-fauna.js` holds the 22 additional original species. Each
+record names its home world, habitat, colors, top-down size, and body form.
+`scripts/models/world-fauna.mjs` builds individually composed low-poly bodies
+from reusable primitives and exports three real animation clips: Idle, Move,
+and Dash. Add a form there (or author your own GLB), run `npm run assets`, and
+check the generated `model.glb` and `model.meta.json` in
+`public/assets/animals/<id>/`. Add the species to its eight-slot
+`WORLD_ROSTERS` entry in `src/catalog/landscapes.js`; the sandbox and standalone
+viewer share that catalog. Predators list their prey in `src/catalog/species.js`
+or in the world fauna record. Preserve local licenses and update
+`public/assets/animals/ATTRIBUTION.md`.

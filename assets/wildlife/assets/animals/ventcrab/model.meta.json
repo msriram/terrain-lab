@@ -1,0 +1,17 @@
+{
+  "name": "Vent crab",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 95852,
+  "sha256": "43f5d9a88e6896fe95a789cd576c0fb60270596e005465041c5d71fa9a52c110",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

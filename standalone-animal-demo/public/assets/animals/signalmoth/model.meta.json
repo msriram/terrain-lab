@@ -1,0 +1,17 @@
+{
+  "name": "Signal moth",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 156572,
+  "sha256": "c6897dcb3068c059d1059c5e9d295d29cdb2a518fe5c0ff15c2f08c9c88aa9b2",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

@@ -67,20 +67,8 @@ test("creatures travel and turn smoothly without crossing a narrow channel", () 
     assert.ok(d > 0.12, `animal ${i} traveled only ${d}`),
   );
 });
-test("all eleven GLBs bundle animations and have no external asset references", () => {
-  for (const name of [
-    "fox/model.glb",
-    "koi/model.glb",
-    "deer/model.glb",
-    "wolf/model.glb",
-    "rabbit/model.glb",
-    "shark/model.glb",
-    "starseed/model.glb",
-    "voidray/model.glb",
-    "microbe/model.glb",
-    "phage/model.glb",
-    "drone/model.glb",
-  ]) {
+test("every bundled GLB has local animation and no external assets", () => {
+  for (const name of Object.values(SPECIES).map((species) => species.model)) {
     const b = readFileSync(
       new URL(`../public/assets/animals/${name}`, import.meta.url),
     );
@@ -98,6 +86,13 @@ test("each predator chases nearby prey, which flees; distant prey is ignored", (
     ["fox", "rabbit", false],
     ["wolf", "deer", false],
     ["shark", "koi", true],
+    ["shark", "manta", true],
+    ["anglerfish", "seahorse", true],
+    ["sandscorpion", "dusthopper", false],
+    ["heatserpent", "lavafinch", false],
+    ["voidray", "glowbug", false],
+    ["wolf", "mountaingoat", false],
+    ["phage", "signalmoth", false],
   ]) {
     const sim = new AnimalSimulation({
       sampleTerrain: () => (water ? 0 : 1),

@@ -1,3 +1,4 @@
+import { worldFaunaSpecies } from "./world-fauna.js";
 /** Data-only catalog. Models face +Z with +Y up. Length is in the 4 × 3 world. */
 export const SPECIES = {
   fox: {
@@ -7,7 +8,7 @@ export const SPECIES = {
     length: 0.34,
     radius: 0.045,
     speed: 0.027,
-    prey: ["rabbit"],
+    prey: ["rabbit", "stagbeetle"],
     sight: 0.26,
     actions: { idle: "Survey", move: "Walk", chase: "Run", flee: "Run" },
     idleBehaviors: ["look", "shake", "sniff"],
@@ -33,7 +34,7 @@ export const SPECIES = {
     length: 0.35,
     radius: 0.046,
     speed: 0.029,
-    prey: ["deer", "rabbit"],
+    prey: ["deer", "rabbit", "muskox", "mountaingoat"],
     sight: 0.29,
     actions: { idle: "Survey", move: "Walk", chase: "Run", alert: "Howl" },
     idleBehaviors: ["look", "howl", "shake"],
@@ -85,7 +86,17 @@ export const SPECIES = {
     length: 0.41,
     radius: 0.05,
     speed: 0.033,
-    prey: ["starseed"],
+    prey: [
+      "starseed",
+      "glowbug",
+      "lunamoth",
+      "prismwing",
+      "clockbeetle",
+      "jadebird",
+      "sugarsnail",
+      "inkbird",
+      "dreamwhale",
+    ],
     sight: 0.33,
     actions: { idle: "Float", move: "Glide", chase: "Dash" },
     idleBehaviors: ["cruise", "look"],
@@ -111,7 +122,7 @@ export const SPECIES = {
     length: 0.3,
     radius: 0.042,
     speed: 0.031,
-    prey: ["microbe"],
+    prey: ["microbe", "signalmoth", "electronbug"],
     sight: 0.3,
     actions: { idle: "Float", move: "Glide", chase: "Dash" },
     idleBehaviors: ["look", "cruise"],
@@ -130,6 +141,7 @@ export const SPECIES = {
     idleBehaviors: ["look", "cruise"],
     accent: "#64e8d6",
   },
+  ...worldFaunaSpecies(),
   shark: {
     label: "Shark",
     habitat: "water",
@@ -137,7 +149,7 @@ export const SPECIES = {
     length: 0.44,
     radius: 0.058,
     speed: 0.034,
-    prey: ["koi"],
+    prey: ["koi", "manta", "seahorse"],
     sight: 0.32,
     actions: { idle: "Swim", move: "Swim", chase: "Hunt" },
     idleBehaviors: ["dive", "cruise"],

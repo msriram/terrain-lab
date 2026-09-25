@@ -1,0 +1,17 @@
+{
+  "name": "Musk ox",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 78928,
+  "sha256": "b6630167d2c07fc0cf5057f228435ac83d66a9adaf6ecef315b518524f9487f2",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

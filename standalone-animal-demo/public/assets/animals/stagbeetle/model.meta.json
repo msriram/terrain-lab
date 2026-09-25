@@ -1,0 +1,17 @@
+{
+  "name": "Stag beetle",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 110300,
+  "sha256": "3a5333fad2f69ef67c47a7e6ee6da9e907b139f3c4020db50ffb8e4391dd4a3d",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

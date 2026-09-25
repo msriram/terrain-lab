@@ -1,0 +1,17 @@
+{
+  "name": "Jade bird",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 193920,
+  "sha256": "3f15d208c54f7e611d1af355465c1bb3c63995f9b76b9862039ed6a76d9020be",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

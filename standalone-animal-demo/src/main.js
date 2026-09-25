@@ -1,5 +1,9 @@
 import "./style.css";
-import { LANDSCAPES, rosterForWorld } from "./catalog/landscapes.js";
+import {
+  LANDSCAPES,
+  WORLD_SIGNATURES,
+  rosterForWorld,
+} from "./catalog/landscapes.js";
 import { bindAnimalInteraction } from "./interaction/drag.js";
 import { SPECIES, randomRoster, PRESETS } from "./catalog/species.js";
 import { createAnimalLayer } from "./rendering/animal-layer.js";
@@ -51,7 +55,11 @@ try {
     layer.setOptions({ theme, pack: wet ? "atlantis" : "earth" });
     paint();
     $("landscape").value = theme;
-    $("pack-note").textContent = LANDSCAPES[theme].caption;
+    $("pack-note").textContent =
+      LANDSCAPES[theme].caption +
+      (WORLD_SIGNATURES[theme]
+        ? ` Meet the ${SPECIES[WORLD_SIGNATURES[theme]].label}.`
+        : "");
     document.querySelectorAll("[data-pack]").forEach((b) => {
       const chosen = wet
         ? b.dataset.pack === "atlantis"
@@ -231,7 +239,10 @@ try {
       $("count").textContent = stats.active;
       $("pack-note").textContent = stats.landscape.erupting
         ? "Volcano active — lava and ash rising."
-        : stats.landscape.caption;
+        : stats.landscape.caption +
+          (WORLD_SIGNATURES[state.pack]
+            ? ` Meet the ${SPECIES[WORLD_SIGNATURES[state.pack]].label}.`
+            : "");
       $("calls").textContent = stats.drawCalls;
       $("status").textContent = state.paused
         ? "MOTION PAUSED"

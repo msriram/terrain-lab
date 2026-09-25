@@ -1,0 +1,17 @@
+{
+  "name": "Abyss angler",
+  "habitat": "water",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 142860,
+  "sha256": "2e6d802a5b61a7e533e0bc282fc11444edda36f01370da57c4e96d19bcc67bd8",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

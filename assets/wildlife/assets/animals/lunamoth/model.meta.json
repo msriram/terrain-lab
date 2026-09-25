@@ -1,0 +1,17 @@
+{
+  "name": "Lunar moth",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 151940,
+  "sha256": "793521d3c82cb8983e23bbcc9effab846dac97379ea93d0c6709d09eb919b5d8",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

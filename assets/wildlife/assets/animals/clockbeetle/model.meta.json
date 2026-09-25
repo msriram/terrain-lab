@@ -1,0 +1,17 @@
+{
+  "name": "Clockwork beetle",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 154892,
+  "sha256": "226d7d2d1a276a9e2b22d826137455249b6b4f135f743c8fdf2bcab5d085456b",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

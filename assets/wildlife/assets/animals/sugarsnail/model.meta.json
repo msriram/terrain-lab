@@ -1,0 +1,17 @@
+{
+  "name": "Sugar snail",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 97852,
+  "sha256": "5c9320f065fec8496b8887c05f894dfcfe02fd347c727c28bbaed0a3a3e9b212",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

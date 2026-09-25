@@ -19,6 +19,29 @@ they can be replaced independently through `src/catalog/species.js`.
 | `phage/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/otherworld.mjs` |
 | `drone/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/otherworld.mjs` |
 
+| `dusthopper/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `manta/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `glowbug/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `lunamoth/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `snowowl/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `lavafinch/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `sandscorpion/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `stagbeetle/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `seahorse/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `muskox/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `prismwing/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `ventcrab/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `mountaingoat/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `heatserpent/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `clockbeetle/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `jadebird/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `sugarsnail/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `anglerfish/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `inkbird/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `signalmoth/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `electronbug/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `dreamwhale/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+
 The fox GLB is bundled unmodified. Runtime changes: normalization, lighting,
 clip cross-fades, additive sniff/shake gestures, and scene placement.
 Original animals use authored hierarchical parts and embedded glTF animations.

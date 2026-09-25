@@ -61,7 +61,7 @@ If port 8080 is already occupied, the launcher automatically tries 8081 through
 
 Controls:
 
-- Choose from 26 living worlds in the in-scene control panel.
+- Choose from 26 living worlds and 33 animated species in the in-scene control panel. Each world starts with signature fauna; all eight animal slots remain editable.
 - Press **Auto fit** to map the visible surface to the full color range.
 - Move **Position** to shift the color band nearer/farther and adjust **Range**
   for shallow or deep terrain. A 50 mm minimum supports shallow terrain; use

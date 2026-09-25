@@ -1,6 +1,6 @@
 # Terrain Lab · Field Notes
 
-A standalone 3D wildlife viewer for a 4:3 AR sandbox. Eleven locally bundled,
+A standalone 3D wildlife viewer for a 4:3 AR sandbox. Thirty-three locally bundled,
 animated GLB species; up to eight creatures; habitat-safe wandering and
 predator/prey reactions. This module now also powers the integrated sandbox at
 `/sandbox/`, while the focused public demo is available at `/wildlife/`.
@@ -34,7 +34,7 @@ Do not open the HTML through `file://`.
 - **World:** Earth or Atlantis (moonlit terrain and luminous aquatic materials).
 - **Rescue:** drag any animal to a valid habitat. Held animals are safe; release
   grants three seconds of protection. Wrong-habitat moves are rejected.
-- **New population:** randomizes species and safe spawn positions, with six
+- **New population:** randomizes safe spawn positions and uses the selected world's signature fauna. Earth uses six
   prey/herbivores and two predators.
 - **Interaction preset:** Fox & rabbit, Wolf & deer, or Shark & koi.
 - **Choose each animal:** change any of eight roster slots to any species.
@@ -213,3 +213,16 @@ Void Ray, Microbe, Phage, and Drone; Phages pursue microbes and Void Rays pursue
 Starseeds. Other worlds also start with habitat-appropriate themed rosters;
 all eight slots remain editable. The top-down shark model now has a broad,
 contrast-marked caudal fin and the Atlantis trident faces screen-up.
+
+### Signature fauna in every world
+
+Each of the 26 themes now starts with a curated eight-creature population.
+Twenty-two additional original GLB models introduce recognizably different
+silhouettes and animations: manta, seahorse, anglerfish, several birds and
+moths, beetles, scorpion, crab, snail, ox, goat, serpent, and dream whale.
+Earth retains its fox/rabbit/deer ecology; deer and rabbits appear only in
+Earth and Ancient Forest starter populations. Every other world has its own
+signature creature, recorded in `src/catalog/world-fauna.js`. Add a creature
+there, draw its 3D parts and animation in `scripts/models/world-fauna.mjs`,
+run `npm run assets`, then add it to `src/catalog/landscapes.js` rosters.
+Generated GLBs and SHA-256 metadata live under `public/assets/animals/`.

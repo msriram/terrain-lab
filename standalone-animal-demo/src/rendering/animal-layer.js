@@ -48,7 +48,7 @@ export async function createAnimalLayer({
   scene.add(rim);
   const loader = new GLTFLoader(),
     models = {};
-  // All six small GLBs are prefetched once: changing the roster is synchronous.
+  // All bundled GLBs are prefetched once: changing the roster is synchronous.
   try {
     await Promise.all(
       Object.entries(SPECIES).map(async ([id, s]) => {
@@ -89,7 +89,8 @@ export async function createAnimalLayer({
         material.emissiveIntensity = 1;
         if (
           pack === "atlantis" &&
-          simulation.creatures[i].habitat === "water"
+          simulation.creatures[i].habitat === "water" &&
+          ["shark", "koi"].includes(simulation.creatures[i].species)
         ) {
           const glow = new THREE.Color(
             [0x50f4db, 0x69b6ff, 0xc099ff, 0x7cffe3, 0x80d9ff][i % 5],

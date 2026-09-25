@@ -1,0 +1,17 @@
+{
+  "name": "Prism wing",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 151948,
+  "sha256": "7f6f70bf797103068dff02dcc2b6e4c2d6503839a5a1aefc1e67b5c89272f01b",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Coral seahorse",
+  "habitat": "water",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 87672,
+  "sha256": "cc222dcfd309c79c68e714c05a9adc5364e41ec3a8657b99ea965fbbacaa4054",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Glow beetle",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 108752,
+  "sha256": "0f96e7eb2a8c19ff79a6edc3e6f5f3c6bb60a88572f9294d4609b471f65a33da",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

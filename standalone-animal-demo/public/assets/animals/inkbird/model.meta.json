@@ -1,0 +1,17 @@
+{
+  "name": "Ink bird",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 114160,
+  "sha256": "d64864806061e173471849fe1de8f258576a2cf41d7d17b82298cbd34b8bc2c6",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

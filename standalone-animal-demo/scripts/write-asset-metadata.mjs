@@ -1,3 +1,4 @@
+import { WORLD_FAUNA } from "../src/catalog/world-fauna.js";
 import { readFile, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { SPECIES } from "../src/catalog/species.js";
@@ -29,9 +30,13 @@ for (const [id, species] of Object.entries(SPECIES)) {
           ? "scripts/build-fish.mjs"
           : id === "shark"
             ? "scripts/models/shark.mjs"
-            : ["starseed", "voidray", "microbe", "phage", "drone"].includes(id)
-              ? "scripts/models/otherworld.mjs"
-              : "scripts/models/land.mjs",
+            : WORLD_FAUNA[id]
+              ? "scripts/models/world-fauna.mjs"
+              : ["starseed", "voidray", "microbe", "phage", "drone"].includes(
+                    id,
+                  )
+                ? "scripts/models/otherworld.mjs"
+                : "scripts/models/land.mjs",
   };
   await writeFile(
     new URL("model.meta.json", url),

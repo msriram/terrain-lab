@@ -1,0 +1,17 @@
+{
+  "name": "Mountain goat",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 86644,
+  "sha256": "c323cda22e70fff9a2f9541c7ed3ab799d4d2ed9b10777a1072ab31013888dbe",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

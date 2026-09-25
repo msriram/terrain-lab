@@ -1,0 +1,17 @@
+{
+  "name": "Snow owl",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 129548,
+  "sha256": "44f230f8aafd8e7ff963a4381807fe207b5bf107ae132ea384585e8097fbaeaf",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

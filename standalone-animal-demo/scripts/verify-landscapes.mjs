@@ -1,6 +1,6 @@
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
-import { LANDSCAPES } from "../src/catalog/landscapes.js";
+import { LANDSCAPES, WORLD_SIGNATURES } from "../src/catalog/landscapes.js";
 const browser = await chromium.launch({ channel: "chrome" });
 try {
   const page = await browser.newPage({
@@ -18,6 +18,14 @@ try {
         animalDemo.getMetrics().landscape.props > 0,
       theme,
     );
+    const species = await page.evaluate(() =>
+      animalDemo.layer.simulation.creatures.map((c) => c.species),
+    );
+    if (WORLD_SIGNATURES[theme])
+      assert.ok(
+        species.includes(WORLD_SIGNATURES[theme]),
+        `${theme} lacks its signature animal`,
+      );
     if (theme === "atlantis") {
       const stats = await page.evaluate(() => animalDemo.getMetrics());
       assert.equal(stats.active, 8);
@@ -90,7 +98,7 @@ try {
     .screenshot({ path: "../website/images/landscape.png" });
   assert.deepEqual(errors, []);
   console.log(
-    "PASS: 26 themes, underwater props, eruption onset/removal, weather pause, no browser errors",
+    "PASS: 26 themes with signature fauna, underwater props, eruption onset/removal, weather pause, no browser errors",
   );
 } finally {
   await browser.close();

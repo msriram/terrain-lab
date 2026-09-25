@@ -1,0 +1,17 @@
+{
+  "name": "Heat serpent",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 106392,
+  "sha256": "5647283deb2fb09cfbadc60cf274630fd1f658b9b2d028ecf44288d849b76cbd",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}
