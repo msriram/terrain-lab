@@ -1,0 +1,17 @@
+{
+  "name": "Drone",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Float",
+    "Glide",
+    "Dash"
+  ],
+  "bytes": 46384,
+  "sha256": "c047de5b4e250e18b4b81f2307f22f632ddb911e76f9c376e5ac1a20c91acbd0",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/otherworld.mjs"
+}

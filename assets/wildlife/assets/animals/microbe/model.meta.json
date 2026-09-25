@@ -1,0 +1,17 @@
+{
+  "name": "Microbe",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Float",
+    "Glide",
+    "Dash"
+  ],
+  "bytes": 95636,
+  "sha256": "ca556d054053bc9d463a8acc6d67d202bcdfb6731bab0d32096c64f651802474",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/otherworld.mjs"
+}

@@ -8,8 +8,8 @@
     "Swim",
     "Hunt"
   ],
-  "bytes": 121624,
-  "sha256": "a0e69469e77c420d839c1cd6bf0152a7d0596778089a01960f3a36cd807ad6e7",
+  "bytes": 122340,
+  "sha256": "05992cb6e5f0b8148e23c2b153f4a141df1f9906afbdc3a815c0ac438e4a60b3",
   "license": "CC0-1.0",
   "author": "Original procedural Terrain Lab artwork",
   "source": "scripts/models/shark.mjs"

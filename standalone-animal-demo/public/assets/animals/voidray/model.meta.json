@@ -1,0 +1,17 @@
+{
+  "name": "Void ray",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Float",
+    "Glide",
+    "Dash"
+  ],
+  "bytes": 40128,
+  "sha256": "3304a6993f8debdd30c72a22621914c92c01a63418e82ec5567e5f0bb1311476",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/otherworld.mjs"
+}

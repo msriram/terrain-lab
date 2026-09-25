@@ -1,5 +1,5 @@
 import "./style.css";
-import { LANDSCAPES, AQUATIC_ROSTER } from "./catalog/landscapes.js";
+import { LANDSCAPES, rosterForWorld } from "./catalog/landscapes.js";
 import { bindAnimalInteraction } from "./interaction/drag.js";
 import { SPECIES, randomRoster, PRESETS } from "./catalog/species.js";
 import { createAnimalLayer } from "./rendering/animal-layer.js";
@@ -33,30 +33,21 @@ try {
     onMessage: (text) => ($("rescue-message").textContent = text),
   });
   $("shuffle").addEventListener("click", () => {
-    state.roster = LANDSCAPES[state.pack]?.underwater
-      ? [...AQUATIC_ROSTER]
-      : randomRoster();
+    state.roster = rosterForWorld(state.pack, randomRoster());
     $("preset").value = "random";
     layer.setRoster(state.roster);
     rebuildRoster();
   });
   const labels = $("behavior-labels");
-  let savedLandRoster = [...state.roster];
   function setLandscape(theme) {
-    const wet = !!LANDSCAPES[theme].underwater,
-      wasWet = !!LANDSCAPES[state.pack]?.underwater;
-    if (wet && !wasWet) {
-      savedLandRoster = [...state.roster];
-      state.roster = [...AQUATIC_ROSTER];
-      layer.setRoster(state.roster);
-      rebuildRoster();
-    }
-    if (!wet && wasWet) {
-      state.roster = [...savedLandRoster];
-      layer.setRoster(state.roster);
-      rebuildRoster();
-    }
+    const was = state.pack;
     state.pack = theme;
+    if (theme !== was) {
+      state.roster = rosterForWorld(theme, randomRoster());
+      layer.setRoster(state.roster);
+      rebuildRoster();
+    }
+    const wet = !!LANDSCAPES[theme].underwater;
     layer.setOptions({ theme, pack: wet ? "atlantis" : "earth" });
     paint();
     $("landscape").value = theme;
@@ -72,6 +63,9 @@ try {
   Object.entries(LANDSCAPES).forEach(([id, recipe]) =>
     $("landscape").add(new Option(recipe.label, id)),
   );
+  const requestedWorld = new URLSearchParams(location.search).get("theme");
+  if (requestedWorld && LANDSCAPES[requestedWorld])
+    setLandscape(requestedWorld);
   $("landscape").addEventListener("change", (e) =>
     setLandscape(e.target.value),
   );
@@ -122,9 +116,7 @@ try {
   $("preset").addEventListener("change", (e) => {
     state.roster =
       e.target.value === "random"
-        ? LANDSCAPES[state.pack]?.underwater
-          ? [...AQUATIC_ROSTER]
-          : randomRoster()
+        ? rosterForWorld(state.pack, randomRoster())
         : [...PRESETS[e.target.value].roster];
     layer.setRoster(state.roster);
     rebuildRoster();

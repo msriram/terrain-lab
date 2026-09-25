@@ -1,6 +1,6 @@
 # Terrain Lab · Field Notes
 
-A standalone 3D wildlife viewer for a 4:3 AR sandbox. Six locally bundled,
+A standalone 3D wildlife viewer for a 4:3 AR sandbox. Eleven locally bundled,
 animated GLB species; up to eight creatures; habitat-safe wandering and
 predator/prey reactions. This module now also powers the integrated sandbox at
 `/sandbox/`, while the focused public demo is available at `/wildlife/`.
@@ -180,7 +180,7 @@ No marketplace-only, editorial-only, or testing-only models are included.
 
 ### Living landscapes
 
-The landscape selector offers 20 shared scenery recipes. Trees sway, forest rain
+The landscape selector offers 26 shared scenery recipes. Trees sway, forest rain
 falls, clouds drift, and surf follows the sampled shoreline. Atlantis, Coral Reef,
 and Abyss treat the entire map as seafloor and start with one shark and seven koi.
 Atlantis includes treasure chests, ruins, tridents, kelp, coral, and sea knolls.
@@ -202,3 +202,14 @@ Scenery performance check (September 2026, local M3 Pro, Chrome, 1018 × 764):
 59.7 average FPS across a 10-second Earth scene with 20 props, clouds, shoreline
 surf, and a randomized eight-animal population (one capture during the sample).
 Physical projector readability and performance still require testing on the rig.
+
+### Beyond Earth
+
+Universe turns raised terrain into up to four rotating spiral galaxies. Low
+terrain scatters background stars. Microscopic, Neuron Network, Atomic,
+Cyberpunk, and Dreamscape add original terrain props, particles, and themed
+populations. Five new locally bundled animated GLB creatures are Starseed,
+Void Ray, Microbe, Phage, and Drone; Phages pursue microbes and Void Rays pursue
+Starseeds. Other worlds also start with habitat-appropriate themed rosters;
+all eight slots remain editable. The top-down shark model now has a broad,
+contrast-marked caudal fin and the Atlantis trident faces screen-up.

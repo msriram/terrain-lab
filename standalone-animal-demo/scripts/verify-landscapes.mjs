@@ -28,6 +28,31 @@ try {
         .screenshot({ path: "../website/images/atlantis.png" });
     }
   }
+  await page.locator("#landscape").selectOption("universe");
+  await page.locator("#fixture").selectOption("3");
+  await page.waitForFunction(
+    () => animalDemo.getMetrics().landscape.galaxies >= 2,
+  );
+  assert.ok(
+    (await page.evaluate(
+      () => animalDemo.getMetrics().landscape.scatteredStars,
+    )) > 0,
+  );
+  await page.locator("#landscape").selectOption("microscopic");
+  assert.deepEqual(
+    await page.evaluate(() =>
+      animalDemo.layer.simulation.creatures.map((c) => c.species).slice(0, 2),
+    ),
+    ["phage", "microbe"],
+  );
+  await page.locator("#landscape").selectOption("neuron");
+  await page.waitForFunction(
+    () => animalDemo.getMetrics().landscape.signalLinks > 0,
+  );
+  await page.locator("#landscape").selectOption("atomic");
+  await page.waitForFunction(() =>
+    animalDemo.getMetrics().landscape.propKinds.includes("atom"),
+  );
   await page.locator("#landscape").selectOption("volcanic");
   await page.evaluate(() => animalDemo.layer.setTerrain(() => 0.2, 0.43));
   await page.waitForFunction(() => !animalDemo.getMetrics().landscape.erupting);
@@ -65,7 +90,7 @@ try {
     .screenshot({ path: "../website/images/landscape.png" });
   assert.deepEqual(errors, []);
   console.log(
-    "PASS: 20 themes, underwater props, eruption onset/removal, weather pause, no browser errors",
+    "PASS: 26 themes, underwater props, eruption onset/removal, weather pause, no browser errors",
   );
 } finally {
   await browser.close();

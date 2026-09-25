@@ -57,7 +57,7 @@ try {
     path: "screenshots/controller-earth.png",
     fullPage: true,
   });
-  // Exercise roster rebuilding and all six model/animation controllers.
+  // Exercise roster rebuilding and all eleven model/animation controllers.
   async function arrangeEncounter() {
     await page.evaluate(() => {
       const sim = animalDemo.layer.simulation;
@@ -239,7 +239,7 @@ try {
     hardware: "Apple M3 Pro MacBook Pro, 36 GB RAM",
     measurement,
     checks: [
-      "6 selectable animated species / 8 slots",
+      "11 selectable animated species / 8 slots",
       "wolf/deer and fox/rabbit proximity pursuit",
       "shark/koi pursuit",
       "fish breaches",

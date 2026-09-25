@@ -50,15 +50,26 @@ export function makeShark() {
   ]);
   const tail = pivot(root, "Tail", [0, 0, -0.62]);
   ellipsoid(tail, "Tail stalk", blue, [0, 0, -0.15], [0.09, 0.1, 0.25]);
-  fin(tail, "Upper caudal", blue, [
-    [0, 0, -0.15],
-    [0, 0.43, -0.65],
-    [0, 0.03, -0.5],
+  // Broaden the tail in the top-down view: a swept, high-contrast crescent.
+  fin(tail, "Left caudal lobe", blue, [
+    [-0.02, 0.01, -0.18],
+    [-0.49, 0.02, -0.78],
+    [-0.08, 0.01, -0.55],
   ]);
-  fin(tail, "Lower caudal", blue, [
-    [0, 0, -0.15],
-    [0, -0.26, -0.56],
-    [0, 0.03, -0.5],
+  fin(tail, "Right caudal lobe", blue, [
+    [0.02, 0.01, -0.18],
+    [0.42, 0.02, -0.69],
+    [0.08, 0.01, -0.55],
+  ]);
+  fin(tail, "Left tail highlight", white, [
+    [-0.08, 0.035, -0.37],
+    [-0.37, 0.035, -0.72],
+    [-0.09, 0.035, -0.55],
+  ]);
+  fin(tail, "Right tail highlight", white, [
+    [0.08, 0.035, -0.37],
+    [0.32, 0.035, -0.64],
+    [0.09, 0.035, -0.55],
   ]);
   const swim = new T.AnimationClip("Swim", 1.4, [
     rotateTrack(

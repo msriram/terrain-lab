@@ -13,6 +13,12 @@ they can be replaced independently through `src/catalog/species.js`.
 | `rabbit/model.glb` | Original procedural Terrain Lab artwork generated for this prototype | CC0-1.0 | `scripts/models/land.mjs` in the source distribution |
 | `shark/model.glb` | Original procedural Terrain Lab artwork generated for this prototype | CC0-1.0 | `scripts/models/shark.mjs` in the source distribution |
 
+| `starseed/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/otherworld.mjs` |
+| `voidray/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/otherworld.mjs` |
+| `microbe/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/otherworld.mjs` |
+| `phage/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/otherworld.mjs` |
+| `drone/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/otherworld.mjs` |
+
 The fox GLB is bundled unmodified. Runtime changes: normalization, lighting,
 clip cross-fades, additive sniff/shake gestures, and scene placement.
 Original animals use authored hierarchical parts and embedded glTF animations.

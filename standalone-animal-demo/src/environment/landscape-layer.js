@@ -195,6 +195,128 @@ export function createLandscapeLayer(
   const smoke = new T.Points(smokeGeometry, smokeMaterial);
   smoke.frustumCulled = false;
   root.add(smoke);
+  const galaxyGeometry = own(new T.BufferGeometry());
+  galaxyGeometry.setAttribute(
+    "position",
+    new T.Float32BufferAttribute(new Float32Array(900 * 3), 3),
+  );
+  const galaxyMaterial = own(
+    new T.PointsMaterial({
+      color: 0xe4c9ff,
+      size: 8,
+      sizeAttenuation: false,
+      map: glowTexture,
+      transparent: true,
+      opacity: 0.87,
+      depthWrite: false,
+      depthTest: false,
+      blending: T.AdditiveBlending,
+    }),
+  );
+  const galaxyPoints = new T.Points(galaxyGeometry, galaxyMaterial);
+  galaxyPoints.frustumCulled = false;
+  root.add(galaxyPoints);
+  let galaxies = [],
+    starSeeds = [],
+    scatteredStars = 0;
+  function galaxyLayout() {
+    const candidates = [];
+    for (let y = 2; y < 16; y++)
+      for (let x = 2; x < 22; x++) {
+        const u = x / 24,
+          v = y / 18,
+          h = sampleTerrain(u, v);
+        if (!Number.isFinite(h) || h < 0.55) continue;
+        const neighbors = [
+          [u - 0.045, v],
+          [u + 0.045, v],
+          [u, v - 0.06],
+          [u, v + 0.06],
+        ].map(([a, b]) => sampleTerrain(a, b));
+        if (neighbors.every((n) => Number.isFinite(n) && h >= n))
+          candidates.push({ u, v, h });
+      }
+    candidates.sort((a, b) => b.h - a.h);
+    galaxies = [];
+    for (const p of candidates)
+      if (
+        galaxies.length < 4 &&
+        galaxies.every((q) => Math.hypot(q.u - p.u, q.v - p.v) > 0.18)
+      )
+        galaxies.push(p);
+    starSeeds = [];
+    for (let i = 0; i < 900; i++) {
+      const seed = particles[i % particles.length],
+        u = (seed.x + i * 0.618033) % 1,
+        v = (seed.z + i * 0.414214) % 1,
+        h = sampleTerrain(u, v);
+      if (i < 720 && galaxies.length) {
+        const center = galaxies[i % galaxies.length],
+          arm = i % 3,
+          theta = i * 0.31 + (arm * Math.PI * 2) / 3,
+          r = 0.008 + Math.sqrt((i % 105) / 105) * (0.09 + center.h * 0.09);
+        starSeeds.push({ u: center.u, v: center.v, r, theta, cluster: true });
+      } else if (Number.isFinite(h) && h < waterLevel + 0.05) {
+        starSeeds.push({ u, v, r: 0, theta: 0, cluster: false });
+      } else starSeeds.push({ u: -3, v: -3, r: 0, theta: 0, cluster: false });
+    }
+    scatteredStars = starSeeds.filter((s) => !s.cluster && s.u >= 0).length;
+  }
+  const networkGeometry = own(new T.BufferGeometry());
+  networkGeometry.setAttribute(
+    "position",
+    new T.Float32BufferAttribute(new Float32Array(48 * 6), 3),
+  );
+  const networkMaterial = own(
+    new T.LineBasicMaterial({
+      color: 0x9dcfff,
+      transparent: true,
+      opacity: 0.46,
+      depthWrite: false,
+    }),
+  );
+  const networkLines = new T.LineSegments(networkGeometry, networkMaterial);
+  networkLines.frustumCulled = false;
+  root.add(networkLines);
+  const signalGeometry = own(new T.BufferGeometry());
+  signalGeometry.setAttribute(
+    "position",
+    new T.Float32BufferAttribute(new Float32Array(48 * 3), 3),
+  );
+  const signalMaterial = own(
+    new T.PointsMaterial({
+      size: 9,
+      sizeAttenuation: false,
+      map: glowTexture,
+      color: 0xffe9a8,
+      transparent: true,
+      opacity: 0.9,
+      depthWrite: false,
+      blending: T.AdditiveBlending,
+    }),
+  );
+  const signals = new T.Points(signalGeometry, signalMaterial);
+  signals.frustumCulled = false;
+  root.add(signals);
+  let links = [];
+  function rebuildNetwork() {
+    links = [];
+    if (!["neuron", "cyberpunk"].includes(theme)) return;
+    for (let i = 0; i < props.length; i++) {
+      const a = props[i].object.position;
+      const neighbors = props
+        .map((p, j) => ({ j, d: p.object.position.distanceToSquared(a) }))
+        .filter((p) => p.j !== i)
+        .sort((a, b) => a.d - b.d)
+        .slice(0, 2);
+      for (const n of neighbors) {
+        const j = n.j;
+        if (i < j && !links.some((e) => e[0] === i && e[1] === j))
+          links.push([i, j]);
+      }
+    }
+    links = links.slice(0, 48);
+  }
   function rebuild() {
     layout = analyzeLandscape(sampleTerrain, waterLevel, {
       underwater: recipe.underwater,
@@ -202,6 +324,12 @@ export function createLandscapeLayer(
     propsRoot.clear();
     ventsRoot.clear();
     props = [];
+    if (recipe.weather === "galaxy") galaxyLayout();
+    else {
+      galaxies = [];
+      starSeeds = [];
+      scatteredStars = 0;
+    }
     const candidates = recipe.underwater ? layout.sea : layout.land;
     candidates.slice(0, recipe.underwater ? 24 : 20).forEach((p, i) => {
       const kind = recipe.props[i % recipe.props.length],
@@ -218,6 +346,7 @@ export function createLandscapeLayer(
       propsRoot.add(object);
       props.push({ object, kind, p, scale });
     });
+    rebuildNetwork();
     for (const wave of waves)
       wave.geometry.setAttribute(
         "position",
@@ -252,7 +381,16 @@ export function createLandscapeLayer(
         object.rotation.z = Math.sin(time * 1.3 + p.phase) * 0.055;
         object.rotation.x = Math.cos(time * 0.9 + p.phase) * 0.025;
       }
-      if (["mushroom", "jellyfish", "gumdrop"].includes(kind)) {
+      if (
+        [
+          "mushroom",
+          "jellyfish",
+          "gumdrop",
+          "cell",
+          "enzyme",
+          "nucleus",
+        ].includes(kind)
+      ) {
         const pulse = 1 + Math.sin(time * 2 + p.phase) * 0.065;
         object.scale.set(scale * pulse, scale, scale * pulse);
       }
@@ -262,7 +400,67 @@ export function createLandscapeLayer(
         object.scale.setScalar(
           scale * (1 + Math.sin(time * 2 + p.phase) * 0.04),
         );
+      if (["eye", "planet", "starcore", "neuron", "atom"].includes(kind))
+        object.rotation.y = p.phase + time * 0.17;
+      if (kind === "eye")
+        object.position.y = 0.05 + Math.sin(time + p.phase) * 0.03;
       if (kind === "gear") object.rotation.y = p.phase + time * 0.15;
+    }
+    networkLines.visible = signals.visible = [
+      "neuron",
+      "cyberpunk",
+      "atomic",
+    ].includes(theme);
+    if (networkLines.visible) {
+      const lineData = networkGeometry.attributes.position.array,
+        pointData = signalGeometry.attributes.position.array;
+      if (theme === "atomic") {
+        networkLines.visible = false;
+        const count = Math.min(48, props.length * 2);
+        for (let i = 0; i < count; i++) {
+          const base = props[Math.floor(i / 2)].object.position,
+            angle = time * (i % 2 ? 2.4 : -1.9) + i * 2.4;
+          pointData.set(
+            [
+              base.x + Math.cos(angle) * 0.14,
+              0.3,
+              base.z + Math.sin(angle) * 0.14,
+            ],
+            i * 3,
+          );
+        }
+        signalGeometry.setDrawRange(0, count);
+      } else {
+        links.forEach(([i, j], k) => {
+          const a = props[i].object.position,
+            b = props[j].object.position,
+            t = (time * 0.3 + k * 0.17) % 1;
+          lineData.set([a.x, 0.12, a.z, b.x, 0.12, b.z], k * 6);
+          pointData.set(
+            [a.x + (b.x - a.x) * t, 0.16, a.z + (b.z - a.z) * t],
+            k * 3,
+          );
+        });
+        networkGeometry.setDrawRange(0, links.length * 2);
+        networkGeometry.attributes.position.needsUpdate = true;
+        signalGeometry.setDrawRange(0, links.length);
+      }
+      signalGeometry.attributes.position.needsUpdate = true;
+    }
+    galaxyPoints.visible = recipe.weather === "galaxy";
+    if (galaxyPoints.visible) {
+      const data = galaxyGeometry.attributes.position.array;
+      starSeeds.forEach((s, i) => {
+        let u = s.u,
+          v = s.v;
+        if (s.cluster) {
+          const a = s.theta + time * 0.07 * (i % 2 ? 1 : -1);
+          u += Math.cos(a) * s.r;
+          v += Math.sin(a) * s.r * 0.75;
+        }
+        data.set([(u - 0.5) * 4, 0.035, (v - 0.5) * 3], i * 3);
+      });
+      galaxyGeometry.attributes.position.needsUpdate = true;
     }
     const weather = recipe.weather;
     const bubbles = weather === "bubbles" || weather === "marine-snow";
@@ -438,6 +636,9 @@ export function createLandscapeLayer(
     getStats() {
       return {
         theme,
+        galaxies: galaxies.length,
+        signalLinks: links.length,
+        scatteredStars,
         props: props.length,
         propKinds: [...new Set(props.map((p) => p.kind))],
         shoreSegments: layout.shore.length,

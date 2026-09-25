@@ -1,5 +1,10 @@
 import { LANDSCAPES } from "../catalog/landscapes.js";
-export const FIXTURES = ["River valley", "Twin islands", "Tidal lagoon"];
+export const FIXTURES = [
+  "River valley",
+  "Twin islands",
+  "Tidal lagoon",
+  "Galaxy clusters",
+];
 export function createTerrain(fixture = 0) {
   return (u, v) => {
     let h;
@@ -12,6 +17,22 @@ export function createTerrain(fixture = 0) {
         -(((u - 0.75) / 0.21) ** 2 + ((v - 0.68) / 0.27) ** 2),
       );
       h = 0.23 + 0.54 * Math.max(a, b);
+    } else if (fixture === 3) {
+      const peaks = [
+        [0.25, 0.32, 0.8],
+        [0.67, 0.34, 0.67],
+        [0.53, 0.73, 0.74],
+      ];
+      h =
+        0.26 +
+        peaks.reduce(
+          (sum, [cx, cy, amp]) =>
+            sum +
+            amp * Math.exp(-(((u - cx) / 0.11) ** 2 + ((v - cy) / 0.12) ** 2)),
+          0,
+        );
+      h -=
+        0.16 * Math.exp(-(((u - 0.42) / 0.2) ** 2 + ((v - 0.57) / 0.18) ** 2));
     } else {
       const r = Math.hypot((u - 0.5) * 1.1, v - 0.5);
       h =
@@ -57,6 +78,7 @@ export function paintTerrain(canvas, sample, water, pack) {
       if (!night && pack !== "earth" && pack !== "forest" && !wet)
         c = mix(colors[0], colors[1], (e - water) / 0.55);
       if (night) c = mix([5, 25, 53], [36, 120, 128], e * 0.85 + 0.1);
+      if (pack === "universe") c = mix([5, 10, 30], [36, 25, 78], e);
       const slope = (sample(u + 0.002, v + 0.002) - e) * 100;
       const contour = Math.abs(((e * 26) % 1) - 0.5) < 0.035;
       const light =

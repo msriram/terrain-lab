@@ -1,0 +1,17 @@
+{
+  "name": "Phage",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Float",
+    "Glide",
+    "Dash"
+  ],
+  "bytes": 28164,
+  "sha256": "fbf52cbcc9d42b102f64637723b71f9c30729ba3da71530f926329a06de94a05",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/otherworld.mjs"
+}

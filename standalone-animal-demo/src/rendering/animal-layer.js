@@ -95,7 +95,13 @@ export async function createAnimalLayer({
             [0x50f4db, 0x69b6ff, 0xc099ff, 0x7cffe3, 0x80d9ff][i % 5],
           );
           // Keep dark eyes/gills and the dorsal markings visible in the luminous pack.
-          if (color.getHSL({}).l > 0.15) {
+          if (
+            color.getHSL({}).l > 0.15 &&
+            !(
+              simulation.creatures[i].species === "shark" &&
+              color.getHSL({}).l > 0.7
+            )
+          ) {
             material.color.lerp(glow, 0.68);
             material.emissive.copy(glow).multiplyScalar(0.3);
           }
@@ -163,14 +169,17 @@ export async function createAnimalLayer({
       lastSample = sample;
       requestedWater = level;
       const underwater = !!LANDSCAPES[landscapeTheme]?.underwater;
+      const allLand = !!LANDSCAPES[landscapeTheme]?.allLand;
       const terrain = underwater
         ? (u, v) => {
             const h = sample(u, v);
             return Number.isFinite(h) ? Math.min(0.97, h) : NaN;
           }
-        : sample;
+        : allLand
+          ? (u, v) => (Number.isFinite(sample(u, v)) ? 0.7 : NaN)
+          : sample;
       simulation.setTerrain(terrain, underwater ? 1 : level);
-      landscape.setTerrain(terrain, underwater ? 1 : level);
+      landscape.setTerrain(sample, level);
     },
     setRoster(next) {
       validateRoster(next);

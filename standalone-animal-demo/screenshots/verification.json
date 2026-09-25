@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-09-25T06:13:42.428Z",
+  "testedAt": "2026-09-25T13:52:54.328Z",
   "browser": "153.0.8010.53",
   "mode": "Headless Chrome, production build, external requests blocked",
   "hardware": "Apple M3 Pro MacBook Pro, 36 GB RAM",
@@ -7,6 +7,9 @@
     "active": 8,
     "landscape": {
       "theme": "earth",
+      "galaxies": 0,
+      "signalLinks": 0,
+      "scatteredStars": 0,
       "props": 20,
       "propKinds": [
         "tree",
@@ -19,31 +22,31 @@
       "weather": "clouds",
       "caption": "Wind in the trees. Waves finding the shore.",
       "underwater": false,
-      "time": 13.532899999999945
+      "time": 13.649399999999954
     },
     "captures": 0,
     "rescues": 0,
     "waiting": 0,
-    "drawCalls": 160,
-    "triangles": 22263,
+    "drawCalls": 163,
+    "triangles": 22457,
     "pack": "earth",
     "behaviors": [
       {
         "id": 0,
         "species": "fox",
-        "mode": "sniff",
+        "mode": "shake",
         "active": true
       },
       {
         "id": 1,
         "species": "deer",
-        "mode": "roam",
+        "mode": "graze",
         "active": true
       },
       {
         "id": 2,
         "species": "rabbit",
-        "mode": "flee",
+        "mode": "look",
         "active": true
       },
       {
@@ -55,19 +58,19 @@
       {
         "id": 4,
         "species": "koi",
-        "mode": "flee",
+        "mode": "breach",
         "active": true
       },
       {
         "id": 5,
         "species": "koi",
-        "mode": "flee",
+        "mode": "roam",
         "active": true
       },
       {
         "id": 6,
         "species": "koi",
-        "mode": "roam",
+        "mode": "flee",
         "active": true
       },
       {
@@ -77,8 +80,8 @@
         "active": true
       }
     ],
-    "frames": 798,
-    "averageFPS": 60.019806536156935,
+    "frames": 813,
+    "averageFPS": 60.09675577723119,
     "resolution": [
       1024,
       768
@@ -88,7 +91,7 @@
     "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M3 Pro, Unspecified Version)"
   },
   "checks": [
-    "6 selectable animated species / 8 slots",
+    "11 selectable animated species / 8 slots",
     "wolf/deer and fox/rabbit proximity pursuit",
     "shark/koi pursuit",
     "fish breaches",

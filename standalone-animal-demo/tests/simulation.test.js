@@ -67,7 +67,7 @@ test("creatures travel and turn smoothly without crossing a narrow channel", () 
     assert.ok(d > 0.12, `animal ${i} traveled only ${d}`),
   );
 });
-test("all six GLBs bundle animations and have no external asset references", () => {
+test("all eleven GLBs bundle animations and have no external asset references", () => {
   for (const name of [
     "fox/model.glb",
     "koi/model.glb",
@@ -75,6 +75,11 @@ test("all six GLBs bundle animations and have no external asset references", () 
     "wolf/model.glb",
     "rabbit/model.glb",
     "shark/model.glb",
+    "starseed/model.glb",
+    "voidray/model.glb",
+    "microbe/model.glb",
+    "phage/model.glb",
+    "drone/model.glb",
   ]) {
     const b = readFileSync(
       new URL(`../public/assets/animals/${name}`, import.meta.url),

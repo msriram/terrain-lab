@@ -29,7 +29,24 @@ test("underwater recipes populate the whole seafloor without surface shores", ()
   const a = analyzeLandscape(() => 0.8, 1, { underwater: true });
   assert.equal(a.sea.length, 28);
   assert.equal(a.shore.length, 0);
-  assert.equal(Object.keys(LANDSCAPES).length, 20);
+  assert.equal(Object.keys(LANDSCAPES).length, 26);
   for (const kind of ["chest", "trident", "ruin", "knoll"])
     assert.ok(LANDSCAPES.atlantis.props.includes(kind));
+});
+
+test("new world rosters use original animated species and majority prey", async () => {
+  const { WORLD_ROSTERS } = await import("../src/catalog/landscapes.js");
+  const { SPECIES } = await import("../src/catalog/species.js");
+  for (const [world, roster] of Object.entries(WORLD_ROSTERS)) {
+    if (!roster) continue;
+    assert.equal(roster.length, 8, world);
+    assert.ok(
+      roster.every((id) => SPECIES[id]),
+      world,
+    );
+    assert.ok(
+      roster.filter((id) => SPECIES[id].prey.length === 0).length >= 5,
+      world,
+    );
+  }
 });

@@ -1,12 +1,12 @@
 // Terrain Lab adapter: same wildlife module as the public Field Notes demo.
-import { createAnimalLayer, bindAnimalInteraction, randomRoster, SPECIES, PRESETS, LANDSCAPES, AQUATIC_ROSTER } from './assets/wildlife/animal-layer.js';
+import { createAnimalLayer, bindAnimalInteraction, randomRoster, SPECIES, PRESETS, LANDSCAPES, rosterForWorld } from './assets/wildlife/animal-layer.js';
 
 const host=window.TerrainLab,stage=document.querySelector('.stage-card');
 const $=id=>document.getElementById(id);
 if(host&&stage){
  const canvas=document.createElement('canvas');canvas.className='wildlife-layer';canvas.setAttribute('aria-label','Drag wildlife to safe habitat');stage.append(canvas);
  const projection=host.getState().projection;
- let roster=randomRoster(),landRoster=[...roster],lastTheme="earth",paused=false,layer,raf,last=performance.now(),lastRevision=-1,lastSent=0,gridSent=-1;
+ let roster=randomRoster(),lastTheme="earth",paused=false,layer,raf,last=performance.now(),lastRevision=-1,lastSent=0,gridSent=-1;
  let channel=null;try{channel=new BroadcastChannel('terrain-lab-wildlife');}catch{}
  const announce=text=>{$('rescueHelp').textContent=text;};
  try{
@@ -21,8 +21,8 @@ if(host&&stage){
    });
   }
   rosterControls();
-  $('animalPreset').addEventListener('change',event=>{roster=event.target.value==='random'?(LANDSCAPES[host.getState().theme]?.underwater?[...AQUATIC_ROSTER]:randomRoster()):[...PRESETS[event.target.value].roster];layer.setRoster(roster);rosterControls();});
-  $('shuffleAnimals').addEventListener('click',()=>{roster=LANDSCAPES[host.getState().theme]?.underwater?[...AQUATIC_ROSTER]:randomRoster();$('animalPreset').value='random';layer.setRoster(roster);rosterControls();});
+  $('animalPreset').addEventListener('change',event=>{roster=event.target.value==='random'?rosterForWorld(host.getState().theme,randomRoster()):[...PRESETS[event.target.value].roster];layer.setRoster(roster);rosterControls();});
+  $('shuffleAnimals').addEventListener('click',()=>{roster=rosterForWorld(host.getState().theme,randomRoster());$('animalPreset').value='random';layer.setRoster(roster);rosterControls();});
   $('pauseAnimals').addEventListener('click',()=>{paused=!paused;$('pauseAnimals').textContent=paused?'Resume wildlife':'Pause wildlife';});
   const unbind=bindAnimalInteraction({element:canvas,layer,toUV:host.pointerUV,enabled:()=>!projection&&host.getState().enabled&&!host.getState().calibrating&&host.getState().tool==='rescue',onMessage:announce});
   const observer=new ResizeObserver(()=>{const r=stage.getBoundingClientRect();layer.resize(r.width,r.height);});observer.observe(stage);
@@ -39,10 +39,7 @@ if(host&&stage){
   function frame(now){
    const dt=(now-last)/1000;last=now;const state=host.getState();
    if(state.theme!==lastTheme){
-    const wet=!!LANDSCAPES[state.theme]?.underwater,wasWet=!!LANDSCAPES[lastTheme]?.underwater;
-    if(wet&&!wasWet){landRoster=[...roster];roster=[...AQUATIC_ROSTER];layer.setRoster(roster);rosterControls();}
-    if(!wet&&wasWet){roster=[...landRoster];layer.setRoster(roster);rosterControls();}
-    lastTheme=state.theme;
+    roster=rosterForWorld(state.theme,randomRoster());layer.setRoster(roster);rosterControls();$('animalPreset').value='random';lastTheme=state.theme;
    }
    canvas.style.transform=state.transform;
    canvas.style.pointerEvents=!projection&&!state.calibrating&&state.tool==='rescue'&&state.enabled?'auto':'none';

@@ -1,0 +1,17 @@
+{
+  "name": "Starseed",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Float",
+    "Glide",
+    "Dash"
+  ],
+  "bytes": 35892,
+  "sha256": "6938343f94861ee63a16c58cb5e471836265f71a2e08ce874a52056523f7116e",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/otherworld.mjs"
+}

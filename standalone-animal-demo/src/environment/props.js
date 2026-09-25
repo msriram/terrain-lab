@@ -142,6 +142,68 @@ export function createPropFactory() {
           mats[1],
         );
       }
+    } else if (kind === "starcore" || kind === "planet" || kind === "nebula") {
+      ball(
+        [0, 0.28, 0],
+        [
+          kind === "starcore" ? 0.32 : 0.47,
+          0.28,
+          kind === "starcore" ? 0.32 : 0.47,
+        ],
+        mats[0],
+      );
+      ring([0, 0.3, 0], kind === "planet" ? 0.65 : 0.5, 0.035, mats[1], [
+        Math.PI / 2,
+        0,
+        0.35,
+      ]);
+      for (let i = 0; i < 5; i++) {
+        const q = (i * Math.PI * 2) / 5;
+        ball(
+          [Math.cos(q) * 0.52, 0.28, Math.sin(q) * 0.52],
+          [0.07, 0.07, 0.07],
+          mats[2],
+        );
+      }
+    } else if (kind === "cell" || kind === "nucleus" || kind === "enzyme") {
+      ball([0, 0.2, 0], [0.56, 0.2, 0.46], mats[0]);
+      ball([0.08, 0.36, -0.04], [0.22, 0.08, 0.18], mats[1]);
+      for (let i = 0; i < 8; i++) {
+        const q = (i * Math.PI) / 4;
+        ball(
+          [Math.sin(q) * 0.38, 0.39, Math.cos(q) * 0.31],
+          [0.07, 0.04, 0.08],
+          mats[2],
+        );
+      }
+    } else if (kind === "neuron" || kind === "synapse" || kind === "axon") {
+      ball([0, 0.24, 0], [0.25, 0.18, 0.25], mats[0]);
+      for (let i = 0; i < 7; i++) {
+        const q = (i * Math.PI * 2) / 7,
+          x = Math.cos(q) * 0.65,
+          z = Math.sin(q) * 0.65;
+        rod([0, 0.24, 0], [x, 0.13, z], 0.025, mats[1]);
+        ball([x, 0.13, z], [0.08, 0.08, 0.08], mats[2]);
+      }
+    } else if (kind === "atom" || kind === "orbital") {
+      ball([0, 0.24, 0], [0.22, 0.22, 0.22], mats[0]);
+      for (let i = 0; i < 3; i++)
+        ring([0, 0.24, 0], 0.5, 0.025, mats[(i + 1) % 3], [
+          Math.PI / 2,
+          (i * Math.PI) / 3,
+          i * 0.2,
+        ]);
+    } else if (kind === "hologram" || kind === "circuit") {
+      box([0, 0.03, 0], [0.75, 0.06, 0.5], mats[0]);
+      for (let i = -1; i <= 1; i++) {
+        rod([i * 0.22, 0.08, -0.2], [i * 0.22, 0.08, 0.2], 0.025, mats[1]);
+        ball([i * 0.22, 0.12, 0.2], [0.07, 0.05, 0.07], mats[2]);
+      }
+      if (kind === "hologram") cone([0, 0.47, 0], 0.25, 0.7, mats[2]);
+    } else if (kind === "eye") {
+      ball([0, 0.18, 0], [0.65, 0.17, 0.4], mats[0]);
+      ball([0, 0.35, 0], [0.24, 0.035, 0.23], mats[1]);
+      ball([0, 0.39, 0], [0.12, 0.02, 0.11], mats[2]);
     } else if (kind === "chest") {
       box([0, 0.16, 0], [0.9, 0.3, 0.62], wood);
       box([0, 0.32, 0.04], [0.73, 0.04, 0.47], gold);
@@ -158,14 +220,15 @@ export function createPropFactory() {
           i % 3 ? gold : mats[1],
         );
     } else if (kind === "trident") {
-      rod([0, 0.1, -0.65], [0, 0.1, 0.45], 0.04, gold);
-      rod([-0.28, 0.1, 0.22], [0.28, 0.1, 0.22], 0.035, gold);
-      for (const x of [-0.28, 0, 0.28]) {
-        rod([x, 0.1, 0.2], [x, 0.1, 0.64], 0.035, gold);
-        const m = cone([x, 0.1, 0.72], 0.085, 0.21, gold, 4);
-        m.rotation.x = Math.PI / 2;
+      // The camera looks down with screen-up at -Z; tines point toward -Z.
+      rod([0, 0.09, 0.72], [0, 0.09, -0.38], 0.055, gold);
+      rod([-0.32, 0.09, -0.27], [0.32, 0.09, -0.27], 0.045, gold);
+      for (const x of [-0.32, 0, 0.32]) {
+        rod([x, 0.09, -0.27], [x, 0.09, -0.66], 0.045, gold);
+        const m = cone([x, 0.09, -0.74], 0.095, 0.2, gold, 4);
+        m.rotation.x = -Math.PI / 2;
       }
-      ball([0, 0.13, -0.4], [0.09, 0.045, 0.12], mats[0]);
+      ball([0, 0.12, 0.48], [0.09, 0.045, 0.12], mats[0]);
     } else if (kind === "ruin") {
       box([0, 0.025, 0], [1.25, 0.08, 0.85], mats[2]);
       for (const x of [-0.44, 0, 0.44])
