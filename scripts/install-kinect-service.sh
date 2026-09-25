@@ -29,4 +29,4 @@ PLIST
 
 launchctl bootout "gui/$(id -u)" "$agent_path" 2>/dev/null || true
 launchctl bootstrap "gui/$(id -u)" "$agent_path"
-echo "Terrain Lab Kinect service installed. Open https://msriram.github.io/terrain-lab/ and press Connect Kinect."
+echo "Terrain Lab Kinect service installed. Open https://msriram.github.io/terrain-lab/sandbox/ and press Connect Kinect."

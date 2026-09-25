@@ -1,0 +1,19 @@
+{
+  "name": "Wolf",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Walk",
+    "Run",
+    "Survey",
+    "Alert",
+    "Howl"
+  ],
+  "bytes": 208236,
+  "sha256": "f0387fcb02da6c7b9049035408bfe118114a0b342d2887d972468b2c699351e2",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/land.mjs"
+}

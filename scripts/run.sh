@@ -52,5 +52,5 @@ finally:
   exec python3 scripts/kinect_server.py --port "$port" --bridge "$bridge"
 fi
 
-echo "Python 3 was not found. Open index.html directly in a modern browser." >&2
+echo "Python 3 was not found. Install Python 3 to run the local Kinect bridge." >&2
 exit 1

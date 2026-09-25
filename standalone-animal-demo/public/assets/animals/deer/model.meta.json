@@ -1,0 +1,18 @@
+{
+  "name": "Deer",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Walk",
+    "Run",
+    "Graze",
+    "Alert"
+  ],
+  "bytes": 298152,
+  "sha256": "4f4a6be93f02e7b7139d08265651af53726ccd52c169e7241c0cc7ae4307109e",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/land.mjs"
+}

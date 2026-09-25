@@ -6,5 +6,5 @@ bridge_pid=$!
 
 # Give the local service a moment to bind before the hosted interface scans it.
 sleep 1
-open "https://msriram.github.io/terrain-lab/?autoconnect=1"
+open "https://msriram.github.io/terrain-lab/sandbox/?autoconnect=1"
 wait "$bridge_pid"

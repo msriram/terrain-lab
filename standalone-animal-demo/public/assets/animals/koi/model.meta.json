@@ -1,0 +1,15 @@
+{
+  "name": "Koi",
+  "habitat": "water",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Swim"
+  ],
+  "bytes": 210812,
+  "sha256": "541df985d6edc91b3cf1371f0f4f5b31eaa2d5ed8121fd8a8976882cf73ddce5",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/build-fish.mjs"
+}

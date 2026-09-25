@@ -1,0 +1,17 @@
+{
+  "name": "Fox",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Survey",
+    "Walk",
+    "Run"
+  ],
+  "bytes": 162852,
+  "sha256": "d97044e701822bac5a62696459b27d7b375aada5de8574ed4362edbba94771f7",
+  "license": "CC0-1.0 AND CC-BY-4.0",
+  "author": "PixelMannen; tomkranis; AsoboStudio; scurest",
+  "source": "https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/Fox"
+}

@@ -1,0 +1,91 @@
+{
+  "testedAt": "2026-09-25T01:01:59.623Z",
+  "browser": "153.0.8010.53",
+  "mode": "Headless Chrome, production build, external requests blocked",
+  "hardware": "Apple M3 Pro MacBook Pro, 36 GB RAM",
+  "measurement": {
+    "active": 8,
+    "captures": 0,
+    "rescues": 0,
+    "waiting": 0,
+    "drawCalls": 86,
+    "triangles": 16051,
+    "pack": "earth",
+    "behaviors": [
+      {
+        "id": 0,
+        "species": "fox",
+        "mode": "shake",
+        "active": true
+      },
+      {
+        "id": 1,
+        "species": "deer",
+        "mode": "roam",
+        "active": true
+      },
+      {
+        "id": 2,
+        "species": "rabbit",
+        "mode": "shake",
+        "active": true
+      },
+      {
+        "id": 3,
+        "species": "shark",
+        "mode": "cruise",
+        "active": true
+      },
+      {
+        "id": 4,
+        "species": "koi",
+        "mode": "roam",
+        "active": true
+      },
+      {
+        "id": 5,
+        "species": "koi",
+        "mode": "flee",
+        "active": true
+      },
+      {
+        "id": 6,
+        "species": "koi",
+        "mode": "flee",
+        "active": true
+      },
+      {
+        "id": 7,
+        "species": "koi",
+        "mode": "roam",
+        "active": true
+      }
+    ],
+    "frames": 811,
+    "averageFPS": 60.113614731986765,
+    "resolution": [
+      1024,
+      768
+    ],
+    "p95FrameMs": 16.799999999999272,
+    "benchmarkFrames": 600,
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M3 Pro, Unspecified Version)"
+  },
+  "checks": [
+    "6 selectable animated species / 8 slots",
+    "wolf/deer and fox/rabbit proximity pursuit",
+    "shark/koi pursuit",
+    "fish breaches",
+    "production offline runtime",
+    "habitat edits",
+    "pause",
+    "alpha compositing",
+    "visibility",
+    "PNG export",
+    "4:3 resize",
+    "mobile layout",
+    "no browser errors"
+  ],
+  "externalRequests": [],
+  "errors": []
+}

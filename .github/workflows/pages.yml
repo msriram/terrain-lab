@@ -22,11 +22,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build static site
-        run: |
-          mkdir _site
-          cp index.html app.js styles.css control-icon.css _site/
-          touch _site/.nojekyll
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: standalone-animal-demo/package-lock.json
+      - name: Install local rendering dependencies
+        run: npm ci --prefix standalone-animal-demo
+      - name: Check wildlife simulation and assets
+        run: npm test --prefix standalone-animal-demo
+      - name: Build showcase and demos
+        run: node scripts/build-site.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

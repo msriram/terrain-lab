@@ -84,6 +84,7 @@ button:disabled {
 .calibration-actions #captureFlatReference, .calibration-actions #undoCalibration { grid-column: span 2; }
 .flat-reference-status { margin: 8px 0 0; color: var(--muted); font-size: 11px; line-height: 1.4; }
 .flat-reference-status.ready { color: var(--accent); }
+.wildlife-layer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
 .calibration-backup { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
 .calibration-backup > div { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 7px; }
 .calibration-backup button { width: auto; margin: 0; padding: 7px 8px; font-size: 11px; }

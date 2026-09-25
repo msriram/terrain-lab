@@ -1,0 +1,63 @@
+{
+  "testedAt": "2026-09-25T00:39:43.766Z",
+  "mode": "Portable ES module on plain HTTP server; eight animated deer",
+  "result": {
+    "active": 8,
+    "drawCalls": 184,
+    "triangles": 22608,
+    "pack": "earth",
+    "behaviors": [
+      {
+        "id": 0,
+        "species": "deer",
+        "mode": "look",
+        "active": true
+      },
+      {
+        "id": 1,
+        "species": "deer",
+        "mode": "graze",
+        "active": true
+      },
+      {
+        "id": 2,
+        "species": "deer",
+        "mode": "roam",
+        "active": true
+      },
+      {
+        "id": 3,
+        "species": "deer",
+        "mode": "graze",
+        "active": true
+      },
+      {
+        "id": 4,
+        "species": "deer",
+        "mode": "graze",
+        "active": true
+      },
+      {
+        "id": 5,
+        "species": "deer",
+        "mode": "graze",
+        "active": true
+      },
+      {
+        "id": 6,
+        "species": "deer",
+        "mode": "graze",
+        "active": true
+      },
+      {
+        "id": 7,
+        "species": "deer",
+        "mode": "look",
+        "active": true
+      }
+    ],
+    "frames": 300,
+    "averageFPS": 60.00240009600385
+  },
+  "errors": []
+}

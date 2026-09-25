@@ -1,0 +1,16 @@
+{
+  "name": "Shark",
+  "habitat": "water",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Swim",
+    "Hunt"
+  ],
+  "bytes": 121624,
+  "sha256": "a0e69469e77c420d839c1cd6bf0152a7d0596778089a01960f3a36cd807ad6e7",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/shark.mjs"
+}

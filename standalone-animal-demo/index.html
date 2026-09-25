@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101e22" />
+    <title>Field Notes — Terrain Lab Wildlife</title>
+  </head>
+  <body>
+    <main class="shell">
+      <header>
+        <a class="wordmark" href="./"
+          ><span class="brand-mark">≋</span> TERRAIN LAB
+          <span class="divider">/</span> FIELD NOTES</a
+        ><span class="edition"><a href="../">SHOWCASE ↗</a></span>
+      </header>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">
+            <span class="live-dot"></span> A LIVING LANDSCAPE
+          </p>
+          <h1>A little world, <br /><em>alive.</em></h1>
+          <p class="subtitle">
+            Animated wildlife that follows the land. <br />Built for the
+            sandbox. Ready to explore.
+          </p>
+        </div>
+        <div class="intro-note">
+          <span>01 — EARTH & ATLANTIS</span>
+          <p>Six species.<br />Eight creatures.<br />One changing landscape.</p>
+        </div>
+      </section>
+      <section class="workspace">
+        <div class="viewport-column">
+          <div class="map-header">
+            <span id="map-title">RIVER VALLEY</span
+            ><span>ORTHOGRAPHIC · 4:3</span>
+          </div>
+          <div id="stage" class="stage">
+            <canvas id="terrain" aria-label="Terrain elevation map"></canvas
+            ><canvas id="animals" aria-label="Animated 3D wildlife"></canvas>
+            <div class="map-corner">N <span>↑</span></div>
+            <div id="behavior-labels" aria-hidden="true"></div>
+            <div id="loading" role="status">Preparing the wildlife…</div>
+          </div>
+          <div class="map-footer">
+            <span id="population"
+              ><i class="key land"></i> 3 LAND <i class="key water"></i> 5
+              WATER</span
+            ><span id="status" aria-live="polite">LOADING LOCAL ASSETS</span>
+          </div>
+        </div>
+        <aside>
+          <div class="panel-title">
+            <span>FIELD CONTROLS</span><span>↗</span>
+          </div>
+          <fieldset>
+            <legend>01 <span>World</span></legend>
+            <div class="pack-switch">
+              <button data-pack="earth" class="selected" aria-pressed="true">
+                Earth <span>↗</span></button
+              ><button data-pack="atlantis" aria-pressed="false">
+                Atlantis <span>✧</span>
+              </button>
+            </div>
+            <p id="pack-note" class="help">Warm earth. Curious creatures.</p>
+          </fieldset>
+          <fieldset class="wildlife-controls">
+            <legend>02 <span>Wildlife</span></legend>
+            <label for="preset">Interaction preset</label
+            ><select id="preset">
+              <option value="random">Balanced · random wildlife</option>
+              <option value="reef">Shark & koi</option>
+              <option value="meadow">Fox & rabbit</option>
+              <option value="woodland">Wolf & deer</option>
+              <option value="custom" disabled>Custom roster</option>
+            </select>
+            <details>
+              <summary>Choose each animal <span>8 slots</span></summary>
+              <div id="roster"></div>
+            </details>
+            <button class="capture" id="shuffle">
+              New population <span>↻</span>
+            </button>
+            <p id="rescue-message" class="help" role="status">
+              Drag an animal to safety. Prey escape at 2× speed.
+            </p>
+            <button class="capture" id="stir">
+              Stir wildlife <span>↝</span></button
+            ><label class="toggle behavior-toggle"
+              >Show behavior labels<input id="labels" type="checkbox" checked
+            /></label>
+            <p id="encounter" class="help" aria-live="polite">
+              Watching for nearby encounters…
+            </p>
+          </fieldset>
+          <fieldset>
+            <legend>03 <span>Landscape</span></legend>
+            <label for="fixture">Terrain fixture</label
+            ><select id="fixture">
+              <option value="0">River valley</option>
+              <option value="1">Twin islands</option>
+              <option value="2">Tidal lagoon</option></select
+            ><label class="range-label" for="water"
+              >Water level <output id="water-value">43%</output></label
+            ><input id="water" type="range" min="30" max="60" value="43" />
+            <div class="range-ends">
+              <span>LOW TIDE</span><span>HIGH TIDE</span>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>04 <span>Display</span></legend>
+            <label class="toggle"
+              >Transparent WebGL layer<input
+                id="transparent"
+                type="checkbox"
+                checked /></label
+            ><label class="toggle"
+              >Show terrain canvas<input
+                id="terrain-visible"
+                type="checkbox"
+                checked /></label
+            ><label class="toggle"
+              >Show wildlife<input id="enabled" type="checkbox" checked
+            /></label>
+            <div class="actions">
+              <button id="pause">Pause motion</button
+              ><button id="project">Projection ↗</button>
+            </div>
+            <button class="capture" id="capture">
+              Save 1024 × 768 capture <span>↓</span>
+            </button>
+          </fieldset>
+          <div class="metrics">
+            <div><strong id="fps">—</strong><span>AVG FPS</span></div>
+            <div><strong id="count">8</strong><span>CREATURES</span></div>
+            <div><strong id="calls">—</strong><span>DRAW CALLS</span></div>
+          </div>
+          <p class="footnote">
+            Habitat-aware movement · Local GLB assets<br /><a
+              href="./assets/animals/ATTRIBUTION.md"
+              target="_blank"
+              rel="noreferrer"
+              >Model credits & licenses ↗</a
+            >
+          </p>
+        </aside>
+      </section>
+      <footer>
+        <span>AN EXPERIMENT IN PROJECTED NATURE</span
+        ><span>LOCAL PROTOTYPE / NO SENSOR REQUIRED</span>
+      </footer>
+    </main>
+    <button id="exit-projection">← Back to controls</button>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

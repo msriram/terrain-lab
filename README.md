@@ -1,6 +1,9 @@
 # Terrain Lab v0.1.0
 
-[**Open the live Terrain Lab →**](https://msriram.github.io/terrain-lab/)
+[**Terrain Lab showcase →**](https://msriram.github.io/terrain-lab/) ·
+[**Live sandbox →**](https://msriram.github.io/terrain-lab/sandbox/) ·
+[**Wildlife demo →**](https://msriram.github.io/terrain-lab/wildlife/) ·
+[**Field guide →**](https://msriram.github.io/terrain-lab/guide/)
 
 ![Terrain Lab rendering live Kinect depth as colored topographic contours](assets/terrain-lab-kinect.png)
 
@@ -29,12 +32,13 @@ The launcher prints the URL to open. It builds the small native capture bridge
 when needed and starts the browser application. Close TouchDesigner first so
 the Kinect is available to the app.
 
-The interface is also hosted at
-[msriram.github.io/terrain-lab](https://msriram.github.io/terrain-lab/). On a
+The sandbox controller is hosted at
+[msriram.github.io/terrain-lab/sandbox](https://msriram.github.io/terrain-lab/sandbox/). On a
 Mac with the Kinect, first
 run `./scripts/run.sh`, open the hosted page, and press **Connect Kinect**. The
 hosted interface discovers the local bridge; the depth data never leaves the
-machine. Projection remains disabled until a live sensor is connected.
+machine. Sample terrain and projector preview work without a sensor. Wildlife follows
+the same terrain grid and calibration transform as the Canvas landscape.
 Do not open `index.html` with a `file:///` URL: use the hosted page or the
 local bridge URL printed by the launcher.
 
@@ -73,8 +77,9 @@ Controls:
   preview; Terrain Lab crops and stretches that camera region to fill the
   projector window.
 
-No package manager, build step, account, or network access is required after
-the repository is downloaded.
+The checked-in sandbox runtime needs no package manager, account, or network
+after downloading the repository. Rebuilding the wildlife module or website
+requires Node.js and the pinned dependencies described below.
 
 ## Open the Kinect viewer
 
@@ -113,7 +118,14 @@ adjust the depth band for the current mounting height.
 
 ```text
 app.js                 browser renderer and interaction
-index.html             application shell
+index.html             public project showcase
+sandbox/index.html     integrated sandbox controller
+guide/index.html       public field guide
+website/               shared site styling and showcase images
+animals.js             adapter for wildlife and projector synchronization
+assets/wildlife/       generated, offline wildlife runtime and licensed models
+standalone-animal-demo/ source, assets, tests, and focused wildlife viewer
+scripts/build-site.mjs builds all GitHub Pages routes
 styles.css             responsive presentation
 control-icon.css        compact collapsed-control affordance
 native/kinect_depth_bridge.c native Kinect v1 capture helper
@@ -134,3 +146,32 @@ upstream-magic-sand/   unmodified upstream reference checkout
 The local `upstream-magic-sand` reference checkout is excluded from publishing.
 Magic-Sand is GPL-2.0 licensed and remains an upstream design reference. A final
 license should be chosen for the original Terrain Lab code before release.
+
+## Wildlife, rescue, and website development
+
+The sandbox and wildlife demo support foxes, wolves, deer, rabbits, koi, and
+sharks. Drag an animal to safe habitat to rescue it. Prey flee at double speed;
+caught animals disappear without gore and repopulate after 10–16 seconds.
+Random populations favor prey six-to-two. Calibration retains pointer control,
+and the controller synchronizes its animals with the projector window.
+
+```sh
+npm ci --prefix standalone-animal-demo
+npm test --prefix standalone-animal-demo
+node scripts/build-site.mjs
+python3 -m http.server 5180 --directory _site
+```
+
+Open `http://localhost:5180/`. Routes: `/` showcase, `/sandbox/` integrated app,
+`/wildlife/` focused demo, `/guide/` documentation. GitHub Actions builds this
+same `_site/` directory and deploys it beneath `/terrain-lab/`. The macOS
+launcher opens the sandbox path; old `?autoconnect=1` and `?projection=1`
+bookmarks at the site root redirect to it.
+
+Run `npm run test:site --prefix standalone-animal-demo` after building (requires
+local Google Chrome). It checks subpath links, mobile layouts, wildlife drag
+rescue, terrain editing, and controller/projector synchronization. Physical
+Kinect capture and on-sand alignment still require a hardware check.
+
+See [the animal extension guide](standalone-animal-demo/docs/ADDING_ANIMALS.md)
+and [model attribution](standalone-animal-demo/public/assets/animals/ATTRIBUTION.md).

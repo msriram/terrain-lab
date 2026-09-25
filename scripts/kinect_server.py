@@ -253,7 +253,7 @@ def main():
 
     signal.signal(signal.SIGTERM, handle_stop)
     signal.signal(signal.SIGHUP, handle_stop)
-    print(f"Terrain Lab bridge: http://localhost:{args.port}", flush=True)
+    print(f"Terrain Lab sandbox: http://localhost:{args.port}/sandbox/", flush=True)
     print("Kinect capture is restartable; use /api/connect and /api/disconnect.", flush=True)
     try:
         server.serve_forever()

@@ -4,3 +4,5 @@ scripts/__pycache__/
 *.pyc
 upstream-magic-sand/
 touchdesigner/*.1.toe
+
+_site/

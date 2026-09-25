@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased — showcase and living wildlife
+
+- Project homepage, separate sandbox and wildlife demos, and a public field guide.
+- Integrated animated wildlife with six selectable species, randomized prey-heavy
+  populations, 2× escape speed, capture/respawn, and drag-to-safety protection.
+- Shared terrain/animal projector transforms, synchronized controller/projector
+  wildlife, and editable browser sample terrain.
+- Local model/animation/behavior modules, documented licenses, and a reproducible
+  GitHub Pages build with automated simulation and browser checks.
+
+
 ## v0.1.0 — 2026-09-24
 
 First portable Terrain Lab release.

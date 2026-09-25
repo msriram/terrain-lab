@@ -1,0 +1,19 @@
+{
+  "name": "Rabbit",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Walk",
+    "Run",
+    "Nibble",
+    "Alert",
+    "Hop"
+  ],
+  "bytes": 222124,
+  "sha256": "a81b5d04782a91374f882fffcfc4a317c43e992a2186f238e9ccb4129d500147",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/land.mjs"
+}

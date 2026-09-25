@@ -1,0 +1,10 @@
+Original Terrain Lab procedural animal assets
+
+The koi, deer, wolf, rabbit and shark geometry and animation data were generated
+specifically for this prototype. They contain no third-party model geometry,
+textures, or motion-capture data. To the extent copyright applies to these
+original generated assets, they are dedicated to the public domain under CC0
+1.0 Universal: https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
+This dedication covers the five original GLB assets, not the third-party fox,
+Three.js, or the existing Terrain Lab application.

@@ -1,0 +1,19 @@
+{
+  "testedAt": "2026-09-25T01:01:10.541Z",
+  "checks": [
+    "GitHub Pages subpath routing",
+    "all internal links return 200",
+    "desktop and mobile layouts",
+    "integrated wildlife loading",
+    "drag rescue in both demos",
+    "3-second protection",
+    "terrain editing",
+    "calibration pointer ownership",
+    "rotation alignment",
+    "projector state and terrain synchronization",
+    "random population"
+  ],
+  "errors": [],
+  "missing": [],
+  "external": []
+}
