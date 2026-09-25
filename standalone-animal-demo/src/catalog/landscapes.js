@@ -147,7 +147,7 @@ export const LANDSCAPES = {
   },
   universe: {
     label: "Universe",
-    props: ["starcore", "planet", "nebula"],
+    props: ["nebula", "starfield", "dustlane"],
     colors: ["#7050b7", "#ffbf8a", "#9ee7fc"],
     weather: "galaxy",
     allLand: true,

@@ -183,6 +183,9 @@ No marketplace-only, editorial-only, or testing-only models are included.
 The landscape selector offers 26 shared scenery recipes. Trees sway, forest rain
 falls, clouds drift, and surf follows the sampled shoreline. Atlantis, Coral Reef,
 and Abyss treat the entire map as seafloor and start with one shark and seven koi.
+Clouds are translucent wind-shaped wisps. Moon craters and volcanic vents use
+low-profile ground textures instead of raised rings, while Universe uses nebula
+haze and terrain-driven spiral star fields instead of spherical galaxy props.
 Atlantis includes treasure chests, ruins, tridents, kelp, coral, and sea knolls.
 Volcanic terrain erupts when an interior peak exceeds 78% normalized elevation
 and rises prominently above its neighbors; lowering the peak stops the eruption.

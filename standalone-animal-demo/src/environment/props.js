@@ -4,6 +4,76 @@ import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 export function createPropFactory() {
   const cache = new Map(),
     resources = [];
+  function groundTexture(kind, colors) {
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = 256;
+    const context = canvas.getContext("2d");
+    const pixels = context.createImageData(256, 256);
+    const color = new T.Color(colors[kind === "vent" ? 2 : 0]);
+    const smooth = (a, b, x) => {
+      const t = Math.max(0, Math.min(1, (x - a) / (b - a)));
+      return t * t * (3 - 2 * t);
+    };
+    for (let y = 0; y < 256; y++)
+      for (let x = 0; x < 256; x++) {
+        const dx = (x - 128) / 128,
+          dy = (y - 128) / 128;
+        const angle = Math.atan2(dy, dx);
+        const irregular =
+          1 +
+          0.045 * Math.sin(angle * 7 + 0.8) +
+          0.025 * Math.sin(angle * 13 - 0.7);
+        const r = Math.hypot(dx, dy) / irregular;
+        let rgb, alpha;
+        if (kind === "crater") {
+          const floor = 1 - smooth(0.31, 0.43, r);
+          const rim = smooth(0.35, 0.45, r) * (1 - smooth(0.56, 0.72, r));
+          const light = (dx - dy) * 0.5;
+          rgb = 62 + floor * 12 + rim * (light > 0 ? 106 : 17);
+          alpha =
+            (floor * 0.62 + rim * (light > 0 ? 0.63 : 0.42)) *
+            (1 - smooth(0.72, 0.91, r));
+        } else if (kind === "vent") {
+          const core = 1 - smooth(0.12, 0.42, r);
+          const rim = smooth(0.29, 0.44, r) * (1 - smooth(0.56, 0.79, r));
+          const fracture =
+            Math.pow(Math.max(0, Math.sin(angle * 9 + r * 14)), 12) * rim;
+          rgb = 45 + core * 170 + fracture * 90;
+          alpha =
+            (core * 0.84 + rim * 0.55 + fracture * 0.25) *
+            (1 - smooth(0.76, 0.95, r));
+        } else {
+          const arm = Math.sin(angle * 2.7 - r * 11);
+          const haze =
+            Math.exp(-r * r * 8) +
+            Math.max(0, arm) * Math.exp(-r * r * 3.5) * 0.36;
+          rgb = 115 + haze * 110;
+          alpha = Math.min(0.43, haze * 0.31) * (1 - smooth(0.7, 1, r));
+        }
+        const offset = (y * 256 + x) * 4;
+        const tint =
+          kind === "nebula" || kind === "starfield" || kind === "dustlane"
+            ? color
+            : null;
+        pixels.data[offset] = tint ? tint.r * rgb : rgb;
+        pixels.data[offset + 1] = tint
+          ? tint.g * rgb
+          : kind === "vent"
+            ? rgb * 0.55
+            : rgb;
+        pixels.data[offset + 2] = tint
+          ? tint.b * rgb
+          : kind === "vent"
+            ? rgb * 0.26
+            : rgb;
+        pixels.data[offset + 3] = Math.round(alpha * 255);
+      }
+    context.putImageData(pixels, 0, 0);
+    const texture = new T.CanvasTexture(canvas);
+    texture.colorSpace = T.SRGBColorSpace;
+    resources.push(texture);
+    return texture;
+  }
   function build(kind, colors) {
     const key = kind + colors.join();
     if (cache.has(key)) return cache.get(key).clone();
@@ -142,29 +212,27 @@ export function createPropFactory() {
           mats[1],
         );
       }
-    } else if (kind === "starcore" || kind === "planet" || kind === "nebula") {
-      ball(
-        [0, 0.28, 0],
-        [
-          kind === "starcore" ? 0.32 : 0.47,
-          0.28,
-          kind === "starcore" ? 0.32 : 0.47,
-        ],
-        mats[0],
+    } else if (
+      ["starcore", "planet", "nebula", "starfield", "dustlane"].includes(kind)
+    ) {
+      const map = groundTexture("nebula", colors);
+      const material = new T.MeshBasicMaterial({
+        map,
+        transparent: true,
+        depthWrite: false,
+        side: T.DoubleSide,
+        blending: T.AdditiveBlending,
+      });
+      put(
+        new T.PlaneGeometry(
+          kind === "dustlane" ? 2.5 : 1.9,
+          kind === "dustlane" ? 0.9 : 1.5,
+        ),
+        material,
+        [0, 0.018, 0],
+        [1, 1, 1],
+        [-Math.PI / 2, 0, 0],
       );
-      ring([0, 0.3, 0], kind === "planet" ? 0.65 : 0.5, 0.035, mats[1], [
-        Math.PI / 2,
-        0,
-        0.35,
-      ]);
-      for (let i = 0; i < 5; i++) {
-        const q = (i * Math.PI * 2) / 5;
-        ball(
-          [Math.cos(q) * 0.52, 0.28, Math.sin(q) * 0.52],
-          [0.07, 0.07, 0.07],
-          mats[2],
-        );
-      }
     } else if (kind === "cell" || kind === "nucleus" || kind === "enzyme") {
       ball([0, 0.2, 0], [0.56, 0.2, 0.46], mats[0]);
       ball([0.08, 0.36, -0.04], [0.22, 0.08, 0.18], mats[1]);
@@ -261,11 +329,16 @@ export function createPropFactory() {
         );
       }
     } else if (kind === "crater" || kind === "vent") {
-      ring([0, 0.04, 0], 0.45, 0.15, kind === "vent" ? mats[0] : mats[1]);
+      const material = new T.MeshBasicMaterial({
+        map: groundTexture(kind, colors),
+        transparent: true,
+        depthWrite: false,
+        side: T.DoubleSide,
+      });
       put(
-        new T.CircleGeometry(0.36, 24),
-        kind === "vent" ? mats[2] : mats[0],
-        [0, 0.041, 0],
+        new T.PlaneGeometry(1.75, 1.75),
+        material,
+        [0, 0.014, 0],
         [1, 1, 1],
         [-Math.PI / 2, 0, 0],
       );

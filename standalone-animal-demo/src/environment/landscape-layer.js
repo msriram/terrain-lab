@@ -31,9 +31,33 @@ export function createLandscapeLayer(
   const own = (value) => (resources.push(value), value);
   function texture(kind) {
     const canvas = document.createElement("canvas");
-    canvas.width = canvas.height = 128;
+    canvas.width = kind === "cloud" ? 256 : 128;
+    canvas.height = 128;
     const c = canvas.getContext("2d");
-    if (kind === "bubble") {
+    if (kind === "cloud") {
+      const pixels = c.createImageData(256, 128);
+      for (let y = 0; y < 128; y++)
+        for (let x = 0; x < 256; x++) {
+          const u = (x - 128) / 128,
+            v = (y - 64) / 64;
+          const waves =
+            Math.sin(u * 8 + v * 3) * 0.13 + Math.sin(u * 17 - v * 5) * 0.045;
+          const width = 0.31 + 0.12 * Math.cos(u * 3) + waves;
+          const body = Math.max(
+            0,
+            1 - Math.abs(v - 0.09 * Math.sin(u * 5)) / Math.max(0.06, width),
+          );
+          const taper = Math.max(0, 1 - Math.abs(u) ** 2.3);
+          const filament = Math.max(0, Math.sin(v * 17 + u * 9)) * 0.08;
+          const alpha = Math.pow(body, 1.7) * taper * (0.52 + filament);
+          const offset = (y * 256 + x) * 4;
+          pixels.data[offset] = 239;
+          pixels.data[offset + 1] = 250;
+          pixels.data[offset + 2] = 255;
+          pixels.data[offset + 3] = Math.round(alpha * 255);
+        }
+      c.putImageData(pixels, 0, 0);
+    } else if (kind === "bubble") {
       c.strokeStyle = "rgba(204,255,249,.72)";
       c.lineWidth = 5;
       c.beginPath();
@@ -44,14 +68,7 @@ export function createLandscapeLayer(
       c.arc(47, 40, 9, 0, Math.PI * 2);
       c.fill();
     } else {
-      const g = c.createRadialGradient(
-        64,
-        64,
-        kind === "cloud" ? 12 : 0,
-        64,
-        64,
-        63,
-      );
+      const g = c.createRadialGradient(64, 64, 0, 64, 64, 63);
       g.addColorStop(0, "rgba(255,255,255,.9)");
       g.addColorStop(0.45, "rgba(255,255,255,.35)");
       g.addColorStop(1, "rgba(255,255,255,0)");
@@ -108,21 +125,19 @@ export function createLandscapeLayer(
   const clouds = [];
   for (let i = 0; i < 4; i++) {
     const group = new T.Group();
-    for (let j = 0; j < 4; j++) {
-      const material = own(
-        new T.SpriteMaterial({
-          map: cloudTexture,
-          color: 0xe5eee7,
-          transparent: true,
-          opacity: 0.16,
-          depthWrite: false,
-        }),
-      );
-      const sprite = new T.Sprite(material);
-      sprite.position.set((j - 1.5) * 0.18, 0.7, Math.sin(j * 2) * 0.09);
-      sprite.scale.set(0.8, 0.5, 1);
-      group.add(sprite);
-    }
+    const material = own(
+      new T.SpriteMaterial({
+        map: cloudTexture,
+        color: 0xe5eee7,
+        transparent: true,
+        opacity: 0.38,
+        depthWrite: false,
+      }),
+    );
+    const sprite = new T.Sprite(material);
+    sprite.position.y = 0.7;
+    sprite.scale.set(1.7 + i * 0.13, 0.47 + i * 0.04, 1);
+    group.add(sprite);
     root.add(group);
     clouds.push(group);
   }
@@ -256,9 +271,19 @@ export function createLandscapeLayer(
         h = sampleTerrain(u, v);
       if (i < 720 && galaxies.length) {
         const center = galaxies[i % galaxies.length],
-          arm = i % 3,
-          theta = i * 0.31 + (arm * Math.PI * 2) / 3,
-          r = 0.008 + Math.sqrt((i % 105) / 105) * (0.09 + center.h * 0.09);
+          rank = Math.floor(i / galaxies.length),
+          arm = rank % 3,
+          progress =
+            Math.floor(rank / 3) /
+            Math.max(1, Math.floor(720 / galaxies.length / 3)),
+          theta =
+            (arm * Math.PI * 2) / 3 +
+            progress * Math.PI * 3.5 +
+            (seed.phase - 0.5) * 0.25,
+          r =
+            0.005 +
+            Math.sqrt(progress) * (0.09 + center.h * 0.08) +
+            (seed.size - 0.5) * 0.009;
         starSeeds.push({ u: center.u, v: center.v, r, theta, cluster: true });
       } else if (Number.isFinite(h) && h < waterLevel + 0.05) {
         starSeeds.push({ u, v, r: 0, theta: 0, cluster: false });
@@ -344,7 +369,9 @@ export function createLandscapeLayer(
           ? 0.29
           : kind === "knoll"
             ? 0.48
-            : 0.23) * p.size * PROP_SCALE;
+            : 0.23) *
+        p.size *
+        PROP_SCALE;
       object.scale.setScalar(scale);
       object.position.set((p.u - 0.5) * 4, 0.004, (p.v - 0.5) * 3);
       object.rotation.y = p.phase;
@@ -562,7 +589,7 @@ export function createLandscapeLayer(
       );
       cloud.children.forEach((s) => {
         s.material.opacity =
-          weather === "fog" ? 0.12 : weather === "rain" ? 0.23 : 0.16;
+          weather === "fog" ? 0.18 : weather === "rain" ? 0.39 : 0.43;
         s.material.color.set(recipe.clouds ? "#edd2e2" : "#dce8e5");
       });
     });
