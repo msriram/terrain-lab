@@ -58,13 +58,6 @@
           </div>
           <fieldset>
             <legend>01 <span>World</span></legend>
-            <div class="pack-switch">
-              <button data-pack="earth" class="selected" aria-pressed="true">
-                Earth <span>↗</span></button
-              ><button data-pack="atlantis" aria-pressed="false">
-                Atlantis <span>✧</span>
-              </button>
-            </div>
             <label for="landscape">Landscape story</label
             ><select id="landscape" aria-label="Landscape story"></select>
             <label class="toggle"
@@ -72,6 +65,9 @@
                 id="scenery"
                 type="checkbox"
                 checked /></label
+            ><button class="capture" id="randomize-landscape">
+              Randomize landscape elements <span>↻</span>
+            </button>
             ><label class="toggle"
               >Weather & motion<input id="atmosphere" type="checkbox" checked
             /></label>
@@ -95,7 +91,7 @@
               New population <span>↻</span>
             </button>
             <p id="rescue-message" class="help" role="status">
-              Drag an animal to safety. Prey escape at 2× speed.
+              Drag to carve a hollow. Right-drag to add sand.
             </p>
             <button class="capture" id="stir">
               Stir wildlife <span>↝</span></button

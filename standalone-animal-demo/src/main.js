@@ -4,10 +4,9 @@ import {
   WORLD_SIGNATURES,
   rosterForWorld,
 } from "./catalog/landscapes.js";
-import { bindAnimalInteraction } from "./interaction/drag.js";
 import { SPECIES, randomRoster, PRESETS } from "./catalog/species.js";
 import { createAnimalLayer } from "./rendering/animal-layer.js";
-import { createTerrain, paintTerrain, FIXTURES } from "./terrain/fixtures.js";
+import { createSculptableTerrain, paintTerrain, FIXTURES } from "./terrain/fixtures.js";
 const $ = (id) => document.getElementById(id);
 const state = {
   fixture: 0,
@@ -16,7 +15,7 @@ const state = {
   paused: false,
   roster: randomRoster(),
 };
-let sample = createTerrain();
+let terrainModel = createSculptableTerrain(), sample = terrainModel.sample;
 const terrain = $("terrain"),
   stage = $("stage");
 const paint = () => paintTerrain(terrain, sample, state.water, state.pack);
@@ -30,12 +29,9 @@ try {
     assetBase: import.meta.env.BASE_URL + "assets/animals/",
   });
   $("loading").hidden = true;
-  const unbind = bindAnimalInteraction({
-    element: $("animals"),
-    layer,
-    enabled: () => $("enabled").checked,
-    onMessage: (text) => ($("rescue-message").textContent = text),
-  });
+  // The landscape is the primary interaction surface. The animal canvas stays
+  // visual-only so a drag always sculpts, even when an animal crosses it.
+  $("animals").style.pointerEvents = "none";
   $("shuffle").addEventListener("click", () => {
     state.roster = rosterForWorld(state.pack, randomRoster());
     $("preset").value = "random";
@@ -60,13 +56,6 @@ try {
       (WORLD_SIGNATURES[theme]
         ? ` Meet the ${SPECIES[WORLD_SIGNATURES[theme]].label}.`
         : "");
-    document.querySelectorAll("[data-pack]").forEach((b) => {
-      const chosen = wet
-        ? b.dataset.pack === "atlantis"
-        : b.dataset.pack === "earth";
-      b.classList.toggle("selected", chosen);
-      b.setAttribute("aria-pressed", String(chosen));
-    });
   }
   Object.entries(LANDSCAPES).forEach(([id, recipe]) =>
     $("landscape").add(new Option(recipe.label, id)),
@@ -80,6 +69,10 @@ try {
   $("scenery").addEventListener("change", (e) =>
     layer.setOptions({ scenery: e.target.checked }),
   );
+  $("randomize-landscape").addEventListener("click", () => {
+    layer.randomizeLandscape();
+    $("pack-note").textContent = "Fresh landscape elements placed.";
+  });
   $("atmosphere").addEventListener("change", (e) =>
     layer.setOptions({ atmosphere: e.target.checked }),
   );
@@ -143,10 +136,35 @@ try {
   });
   resize.observe(stage);
   const refresh = () => {
-    sample = createTerrain(state.fixture);
+    terrainModel = createSculptableTerrain(state.fixture);
+    sample = terrainModel.sample;
     layer.setTerrain(sample, state.water);
     paint();
   };
+  let sculptPointer = null;
+  const toUV = (event) => {
+    const rect = stage.getBoundingClientRect();
+    return { u: Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width)), v: Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height)) };
+  };
+  const sculpt = (event) => {
+    if (sculptPointer !== event.pointerId) return;
+    const point = toUV(event), addSand = event.buttons === 2 || event.button === 2;
+    terrainModel.sculpt(point.u, point.v, addSand ? 0.035 : -0.035);
+    layer.setTerrain(sample, state.water);
+    paint();
+  };
+  stage.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0 && event.button !== 2) return;
+    sculptPointer = event.pointerId;
+    stage.setPointerCapture(event.pointerId);
+    sculpt(event);
+    event.stopPropagation();
+    event.preventDefault();
+  }, { capture: true });
+  stage.addEventListener("pointermove", sculpt);
+  stage.addEventListener("pointerup", (event) => { if (sculptPointer === event.pointerId) sculptPointer = null; });
+  stage.addEventListener("pointercancel", () => (sculptPointer = null));
+  stage.addEventListener("contextmenu", (event) => event.preventDefault());
   $("fixture").addEventListener("change", (e) => {
     state.fixture = Number(e.target.value);
     $("map-title").textContent = FIXTURES[state.fixture].toUpperCase();
@@ -157,11 +175,6 @@ try {
     $("water-value").value = e.target.value + "%";
     refresh();
   });
-  document.querySelectorAll("[data-pack]").forEach((button) =>
-    button.addEventListener("click", () => {
-      setLandscape(button.dataset.pack);
-    }),
-  );
   $("transparent").addEventListener("change", (e) =>
     layer.setOptions({ transparent: e.target.checked }),
   );
@@ -274,7 +287,6 @@ try {
     () => {
       cancelAnimationFrame(raf);
       resize.disconnect();
-      unbind();
       layer.dispose();
     },
     { once: true },

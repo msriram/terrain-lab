@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-09-25T14:57:29.480Z",
+  "testedAt": "2026-09-25T20:47:46.143Z",
   "browser": "153.0.8010.53",
   "mode": "Headless Chrome, production build, external requests blocked",
   "hardware": "Apple M3 Pro MacBook Pro, 36 GB RAM",
@@ -22,7 +22,7 @@
       "weather": "clouds",
       "caption": "Wind in the trees. Waves finding the shore.",
       "underwater": false,
-      "time": 13.599299999999948
+      "time": 13.666199999999959
     },
     "captures": 0,
     "rescues": 0,
@@ -58,13 +58,13 @@
       {
         "id": 4,
         "species": "koi",
-        "mode": "roam",
+        "mode": "flee",
         "active": true
       },
       {
         "id": 5,
         "species": "koi",
-        "mode": "dart",
+        "mode": "flee",
         "active": true
       },
       {
@@ -76,17 +76,17 @@
       {
         "id": 7,
         "species": "koi",
-        "mode": "flee",
+        "mode": "roam",
         "active": true
       }
     ],
-    "frames": 809,
-    "averageFPS": 60.09013520294768,
+    "frames": 811,
+    "averageFPS": 60.10879692300389,
     "resolution": [
       1024,
       768
     ],
-    "p95FrameMs": 16.700000000000728,
+    "p95FrameMs": 16.799999999999272,
     "benchmarkFrames": 600,
     "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M3 Pro, Unspecified Version)"
   },

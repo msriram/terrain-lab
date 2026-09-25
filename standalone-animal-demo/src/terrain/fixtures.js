@@ -43,6 +43,27 @@ export function createTerrain(fixture = 0) {
     return Math.max(0, Math.min(1, h));
   };
 }
+export function createSculptableTerrain(fixture = 0, width = 160, height = 120) {
+  const base = createTerrain(fixture), edits = new Float32Array(width * height);
+  const clamp = (value) => Math.max(0, Math.min(1, value));
+  function delta(u, v) {
+    const x = clamp(u) * (width - 1), y = clamp(v) * (height - 1);
+    const x0 = Math.floor(x), y0 = Math.floor(y), x1 = Math.min(width - 1, x0 + 1), y1 = Math.min(height - 1, y0 + 1), tx = x - x0, ty = y - y0;
+    const a = edits[y0 * width + x0], b = edits[y0 * width + x1], c = edits[y1 * width + x0], d = edits[y1 * width + x1];
+    return a * (1 - tx) * (1 - ty) + b * tx * (1 - ty) + c * (1 - tx) * ty + d * tx * ty;
+  }
+  return {
+    sample: (u, v) => clamp(base(u, v) + delta(u, v)),
+    sculpt(u, v, amount, radius = 0.075) {
+      const minX = Math.max(0, Math.floor((u - radius) * width)), maxX = Math.min(width - 1, Math.ceil((u + radius) * width));
+      const minY = Math.max(0, Math.floor((v - radius) * height)), maxY = Math.min(height - 1, Math.ceil((v + radius) * height));
+      for (let y = minY; y <= maxY; y++) for (let x = minX; x <= maxX; x++) {
+        const du = x / (width - 1) - u, dv = y / (height - 1) - v, distance = Math.hypot(du, dv);
+        if (distance < radius) edits[y * width + x] = Math.max(-1, Math.min(1, edits[y * width + x] + amount * (1 - distance / radius) ** 2));
+      }
+    },
+  };
+}
 const mix = (a, b, t) =>
   a.map((x, i) => Math.round(x + (b[i] - x) * Math.max(0, Math.min(1, t))));
 export function paintTerrain(canvas, sample, water, pack) {

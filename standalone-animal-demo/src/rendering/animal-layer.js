@@ -120,7 +120,9 @@ export async function createAnimalLayer({
       const bounds = new THREE.Box3().setFromObject(model),
         size = bounds.getSize(new THREE.Vector3()),
         center = bounds.getCenter(new THREE.Vector3());
-      const scale = species.length / Math.max(size.x, size.z);
+      // The display represents a broad sandbox footprint, not a life-size
+      // diorama. Keep every creature at half its authored footprint.
+      const scale = (species.length / Math.max(size.x, size.z)) * 0.5;
       model.scale.multiplyScalar(scale);
       model.position.set(
         -center.x * scale,
@@ -219,6 +221,9 @@ export async function createAnimalLayer({
     },
     stir() {
       simulation.stir();
+    },
+    randomizeLandscape() {
+      landscape.randomize();
     },
     setOptions(options = {}) {
       if (options.scenery !== undefined) scenery = options.scenery;

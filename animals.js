@@ -1,5 +1,5 @@
 // Terrain Lab adapter: same wildlife module as the public Field Notes demo.
-import { createAnimalLayer, bindAnimalInteraction, randomRoster, SPECIES, PRESETS, LANDSCAPES, WORLD_SIGNATURES, rosterForWorld } from './assets/wildlife/animal-layer.js';
+import { createAnimalLayer, bindAnimalInteraction, randomRoster, SPECIES, LANDSCAPES, WORLD_SIGNATURES, rosterForWorld } from './assets/wildlife/animal-layer.js';
 
 const host=window.TerrainLab,stage=document.querySelector('.stage-card');
 const $=id=>document.getElementById(id);
@@ -20,9 +20,11 @@ if(host&&stage){
     select.addEventListener('change',()=>{roster[index]=select.value;$('animalPreset').value='custom';layer.setRoster(roster);});row.append(number,select);$('animalRoster').append(row);
    });
   }
-  rosterControls();
-  $('animalPreset').addEventListener('change',event=>{roster=event.target.value==='random'?rosterForWorld(host.getState().theme,randomRoster()):[...PRESETS[event.target.value].roster];layer.setRoster(roster);rosterControls();});
-  $('shuffleAnimals').addEventListener('click',()=>{roster=rosterForWorld(host.getState().theme,randomRoster());$('animalPreset').value='random';layer.setRoster(roster);rosterControls();});
+  function updatePopulationChoices(theme){const world=LANDSCAPES[theme],signature=SPECIES[WORLD_SIGNATURES[theme]],worldOption=$('animalPreset').querySelector('option[value="world"]');worldOption.textContent=`${world?.label||'World'} cast · ${signature?signature.label:'theme-matched creatures'}`;}
+  function setPopulation(kind){roster=kind==='balanced'?randomRoster():rosterForWorld(host.getState().theme,randomRoster());layer.setRoster(roster);rosterControls();}
+  updatePopulationChoices(host.getState().theme);roster=rosterForWorld(host.getState().theme,roster);layer.setRoster(roster);rosterControls();
+  $('animalPreset').addEventListener('change',event=>{if(event.target.value==='custom')return;setPopulation(event.target.value);});
+  $('shuffleAnimals').addEventListener('click',()=>{const kind=$('animalPreset').value==='balanced'?'balanced':'world';$('animalPreset').value=kind;setPopulation(kind);});
   $('pauseAnimals').addEventListener('click',()=>{paused=!paused;$('pauseAnimals').textContent=paused?'Resume wildlife':'Pause wildlife';});
   const unbind=bindAnimalInteraction({element:canvas,layer,toUV:host.pointerUV,enabled:()=>!projection&&host.getState().enabled&&!host.getState().calibrating&&host.getState().tool==='rescue',onMessage:announce});
   const observer=new ResizeObserver(()=>{const r=stage.getBoundingClientRect();layer.resize(r.width,r.height);});observer.observe(stage);
@@ -39,7 +41,7 @@ if(host&&stage){
   function frame(now){
    const dt=(now-last)/1000;last=now;const state=host.getState();
    if(state.theme!==lastTheme){
-    roster=rosterForWorld(state.theme,randomRoster());layer.setRoster(roster);rosterControls();$('animalPreset').value='random';lastTheme=state.theme;
+    updatePopulationChoices(state.theme);if($('animalPreset').value==='world'){setPopulation('world');}lastTheme=state.theme;
    }
    canvas.style.transform=state.transform;
    canvas.style.pointerEvents=!projection&&!state.calibrating&&state.tool==='rescue'&&state.enabled?'auto':'none';

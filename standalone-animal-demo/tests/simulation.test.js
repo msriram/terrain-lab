@@ -6,7 +6,7 @@ import {
   DEFAULT_ROSTER,
 } from "../src/catalog/species.js";
 import { AnimalSimulation } from "../src/simulation/world.js";
-import { createTerrain } from "../src/terrain/fixtures.js";
+import { createTerrain, createSculptableTerrain } from "../src/terrain/fixtures.js";
 import { readFileSync } from "node:fs";
 
 test("eight animals stay inside habitat footprints through terrain and water changes", () => {
@@ -47,6 +47,16 @@ test("missing habitat hides residents and restoring terrain recovers them", () =
   assert.equal(sim.creatures.filter((c) => c.active).length, 8);
   sim.setTerrain(() => NaN);
   assert.equal(sim.creatures.filter((c) => c.active).length, 0);
+});
+test("sculptable terrain carves and fills only the touched area", () => {
+  const terrain = createSculptableTerrain();
+  const center = terrain.sample(0.5, 0.5);
+  const untouched = terrain.sample(0.05, 0.05);
+  terrain.sculpt(0.5, 0.5, -0.2, 0.06);
+  assert.ok(terrain.sample(0.5, 0.5) < center);
+  assert.equal(terrain.sample(0.05, 0.05), untouched);
+  terrain.sculpt(0.5, 0.5, 0.4, 0.06);
+  assert.ok(terrain.sample(0.5, 0.5) > center);
 });
 test("creatures travel and turn smoothly without crossing a narrow channel", () => {
   const sim = new AnimalSimulation({

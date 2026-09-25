@@ -161,7 +161,12 @@ try {
   });
   await page.screenshot({ path: "screenshots/projection-earth.png" });
   await page.keyboard.press("Escape");
-  await page.getByRole("button", { name: "Atlantis" }).click();
+  await page.selectOption("#landscape", "atlantis");
+  await page.getByRole("button", { name: "Randomize landscape elements" }).click();
+  assert.equal(
+    await page.locator("#pack-note").textContent(),
+    "Fresh landscape elements placed.",
+  );
   await page.selectOption("#fixture", "2");
   await page.locator("#water").fill("50");
   await page.locator("#water").dispatchEvent("input");

@@ -4,6 +4,9 @@ import { analyzeLandscape } from "./layout.js";
 import { createPropFactory } from "./props.js";
 import { seededRandom } from "../simulation/world.js";
 
+const PROP_SCALE = 0.5;
+const LANDSCAPE_REBUILD_DELAY_SECONDS = 2.4;
+
 /** Shared scene layer: terrain-aware props, weather, shores, and mountain events. */
 export function createLandscapeLayer(
   scene,
@@ -22,7 +25,8 @@ export function createLandscapeLayer(
     motion = true,
     time = 0,
     layout = { shore: [], volcanoes: [] },
-    props = [];
+    props = [],
+    layoutSeed = 31;
   const resources = [];
   const own = (value) => (resources.push(value), value);
   function texture(kind) {
@@ -320,6 +324,7 @@ export function createLandscapeLayer(
   function rebuild() {
     layout = analyzeLandscape(sampleTerrain, waterLevel, {
       underwater: recipe.underwater,
+      seed: layoutSeed,
     });
     propsRoot.clear();
     ventsRoot.clear();
@@ -339,7 +344,7 @@ export function createLandscapeLayer(
           ? 0.29
           : kind === "knoll"
             ? 0.48
-            : 0.23) * p.size;
+            : 0.23) * p.size * PROP_SCALE;
       object.scale.setScalar(scale);
       object.position.set((p.u - 0.5) * 4, 0.004, (p.v - 0.5) * 3);
       object.rotation.y = p.phase;
@@ -357,7 +362,7 @@ export function createLandscapeLayer(
       );
     for (const p of recipe.eruption ? layout.volcanoes : []) {
       const vent = factory.build("vent", ["#42353a", "#8d4336", "#ff742b"]);
-      vent.scale.setScalar(0.48);
+      vent.scale.setScalar(0.48 * PROP_SCALE);
       vent.position.set((p.u - 0.5) * 4, 0.01, (p.v - 0.5) * 3);
       ventsRoot.add(vent);
     }
@@ -371,7 +376,13 @@ export function createLandscapeLayer(
     root.visible = enabled;
     if (!enabled) return;
     if (motion) time += Math.max(0, Math.min(dt, 0.05));
-    if (dirty && (time - lastBuild > 0.3 || !motion)) rebuild();
+    // Rebuilds are deliberately paced: a new set of scenery should ease into
+    // the world rather than popping in almost immediately after a change.
+    if (
+      dirty &&
+      (time - lastBuild > LANDSCAPE_REBUILD_DELAY_SECONDS || !motion)
+    )
+      rebuild();
     for (const { object, kind, p, scale } of props) {
       if (
         ["tree", "palm", "flowers", "seaweed", "coral", "snowpine"].includes(
@@ -632,6 +643,11 @@ export function createLandscapeLayer(
       }
       if (options.enabled !== undefined) enabled = options.enabled;
       if (options.motion !== undefined) motion = options.motion;
+    },
+    randomize() {
+      layoutSeed = Math.floor(Math.random() * 2147483647);
+      dirty = true;
+      lastBuild = -Infinity;
     },
     getStats() {
       return {
