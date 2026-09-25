@@ -1,12 +1,12 @@
 // Terrain Lab adapter: same wildlife module as the public Field Notes demo.
-import { createAnimalLayer, bindAnimalInteraction, randomRoster, SPECIES, PRESETS } from './assets/wildlife/animal-layer.js';
+import { createAnimalLayer, bindAnimalInteraction, randomRoster, SPECIES, PRESETS, LANDSCAPES, AQUATIC_ROSTER } from './assets/wildlife/animal-layer.js';
 
 const host=window.TerrainLab,stage=document.querySelector('.stage-card');
 const $=id=>document.getElementById(id);
 if(host&&stage){
  const canvas=document.createElement('canvas');canvas.className='wildlife-layer';canvas.setAttribute('aria-label','Drag wildlife to safe habitat');stage.append(canvas);
  const projection=host.getState().projection;
- let roster=randomRoster(),paused=false,layer,raf,last=performance.now(),lastRevision=-1,lastSent=0,gridSent=-1;
+ let roster=randomRoster(),landRoster=[...roster],lastTheme="earth",paused=false,layer,raf,last=performance.now(),lastRevision=-1,lastSent=0,gridSent=-1;
  let channel=null;try{channel=new BroadcastChannel('terrain-lab-wildlife');}catch{}
  const announce=text=>{$('rescueHelp').textContent=text;};
  try{
@@ -21,8 +21,8 @@ if(host&&stage){
    });
   }
   rosterControls();
-  $('animalPreset').addEventListener('change',event=>{roster=event.target.value==='random'?randomRoster():[...PRESETS[event.target.value].roster];layer.setRoster(roster);rosterControls();});
-  $('shuffleAnimals').addEventListener('click',()=>{roster=randomRoster();$('animalPreset').value='random';layer.setRoster(roster);rosterControls();});
+  $('animalPreset').addEventListener('change',event=>{roster=event.target.value==='random'?(LANDSCAPES[host.getState().theme]?.underwater?[...AQUATIC_ROSTER]:randomRoster()):[...PRESETS[event.target.value].roster];layer.setRoster(roster);rosterControls();});
+  $('shuffleAnimals').addEventListener('click',()=>{roster=LANDSCAPES[host.getState().theme]?.underwater?[...AQUATIC_ROSTER]:randomRoster();$('animalPreset').value='random';layer.setRoster(roster);rosterControls();});
   $('pauseAnimals').addEventListener('click',()=>{paused=!paused;$('pauseAnimals').textContent=paused?'Resume wildlife':'Pause wildlife';});
   const unbind=bindAnimalInteraction({element:canvas,layer,toUV:host.pointerUV,enabled:()=>!projection&&host.getState().enabled&&!host.getState().calibrating&&host.getState().tool==='rescue',onMessage:announce});
   const observer=new ResizeObserver(()=>{const r=stage.getBoundingClientRect();layer.resize(r.width,r.height);});observer.observe(stage);
@@ -31,23 +31,29 @@ if(host&&stage){
     if(data.type==='request'&&!projection){gridSent=-1;lastSent=0;}
     if(data.type==='state'&&projection){
      if(data.grid)host.applyGrid(data.grid);
-     layer.applySnapshot(data.snapshot);paused=data.paused;
+     layer.applySnapshot(data.snapshot);paused=data.paused;if(data.scenery!==undefined)$('scenery').checked=data.scenery;if(data.atmosphere!==undefined)$('atmosphere').checked=data.atmosphere;
     }
    };
    if(projection)channel.postMessage({type:'request'});
   }
   function frame(now){
    const dt=(now-last)/1000;last=now;const state=host.getState();
+   if(state.theme!==lastTheme){
+    const wet=!!LANDSCAPES[state.theme]?.underwater,wasWet=!!LANDSCAPES[lastTheme]?.underwater;
+    if(wet&&!wasWet){landRoster=[...roster];roster=[...AQUATIC_ROSTER];layer.setRoster(roster);rosterControls();}
+    if(!wet&&wasWet){roster=[...landRoster];layer.setRoster(roster);rosterControls();}
+    lastTheme=state.theme;
+   }
    canvas.style.transform=state.transform;
    canvas.style.pointerEvents=!projection&&!state.calibrating&&state.tool==='rescue'&&state.enabled?'auto':'none';
-   layer.setOptions({enabled:state.enabled&&!state.calibrating,paused,pack:state.theme==='atlantis'?'atlantis':'earth'});
+   layer.setOptions({enabled:state.enabled&&!state.calibrating,paused,pack:LANDSCAPES[state.theme]?.underwater?'atlantis':'earth',theme:state.theme,scenery:$('scenery').checked&&!state.calibrating,atmosphere:$('atmosphere').checked});
    if(lastRevision!==state.revision){layer.setTerrain(host.sampleTerrain,state.waterLevel);lastRevision=state.revision;}
    layer.update(dt);
    if(now-lastSent>100){
     lastSent=now;const stats=layer.getStats();
     $('wildlife-status').textContent=`${stats.active} WILDLIFE · ${stats.captures} EATEN · ${stats.waiting} REPOPULATING`;
-    $('rescue-count').textContent=`${stats.rescues} RESCUED`;
-    if(channel&&!projection){const message={type:'state',snapshot:layer.getSnapshot(),paused};if(gridSent!==state.revision&&!state.live){message.grid=host.getGrid();gridSent=state.revision;}channel.postMessage(message);}
+    $('rescue-count').textContent=`${stats.rescues} RESCUED`;$('landscapeNote').textContent=stats.landscape.erupting?'Volcano active — lava and ash rising.':stats.landscape.caption;
+    if(channel&&!projection){const message={type:'state',snapshot:layer.getSnapshot(),paused,scenery:$('scenery').checked,atmosphere:$('atmosphere').checked};if(gridSent!==state.revision&&!state.live){message.grid=host.getGrid();gridSent=state.revision;}channel.postMessage(message);}
    }
    raf=requestAnimationFrame(frame);
   }

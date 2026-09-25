@@ -207,6 +207,7 @@ try {
   assert.equal(await alpha(), 255);
   await page.locator("#transparent").check();
   await page.locator("#terrain-visible").check();
+  await page.locator("#scenery").uncheck();
   await page.locator("#enabled").uncheck();
   await page.waitForFunction(() => animalDemo.getMetrics().drawCalls === 0);
   await page.locator("#enabled").check();

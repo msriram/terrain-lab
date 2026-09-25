@@ -3,6 +3,8 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone } from "three/addons/utils/SkeletonUtils.js";
 import { AnimalSimulation } from "../simulation/world.js";
 import { SPECIES, validateRoster } from "../catalog/species.js";
+import { createLandscapeLayer } from "../environment/landscape-layer.js";
+import { LANDSCAPES } from "../catalog/landscapes.js";
 import { createEffects } from "./effects.js";
 import { createAnimationController } from "../animation/controller.js";
 
@@ -58,6 +60,12 @@ export async function createAnimalLayer({
     throw new Error(`Animal assets could not load: ${error.message}`);
   }
   const effects = createEffects();
+  const landscape = createLandscapeLayer(scene, { sampleTerrain, waterLevel });
+  let landscapeTheme = "earth",
+    scenery = true,
+    atmosphere = true,
+    requestedWater = waterLevel,
+    lastSample = sampleTerrain;
   let animals = [],
     enabled = true,
     paused = false,
@@ -152,7 +160,17 @@ export async function createAnimalLayer({
   const api = {
     simulation,
     setTerrain(sample, level = simulation.waterLevel) {
-      simulation.setTerrain(sample, level);
+      lastSample = sample;
+      requestedWater = level;
+      const underwater = !!LANDSCAPES[landscapeTheme]?.underwater;
+      const terrain = underwater
+        ? (u, v) => {
+            const h = sample(u, v);
+            return Number.isFinite(h) ? Math.min(0.97, h) : NaN;
+          }
+        : sample;
+      simulation.setTerrain(terrain, underwater ? 1 : level);
+      landscape.setTerrain(terrain, underwater ? 1 : level);
     },
     setRoster(next) {
       validateRoster(next);
@@ -193,6 +211,16 @@ export async function createAnimalLayer({
       simulation.stir();
     },
     setOptions(options = {}) {
+      if (options.scenery !== undefined) scenery = options.scenery;
+      if (options.atmosphere !== undefined) atmosphere = options.atmosphere;
+      const nextTheme =
+        options.theme ??
+        (options.pack && options.pack !== pack ? options.pack : landscapeTheme);
+      if (nextTheme !== landscapeTheme) {
+        landscapeTheme = nextTheme;
+        landscape.setOptions({ theme: landscapeTheme });
+        api.setTerrain(lastSample, requestedWater);
+      }
       if (options.enabled !== undefined) enabled = options.enabled;
       if (options.paused !== undefined) paused = options.paused;
       if (options.transparent !== undefined)
@@ -255,6 +283,8 @@ export async function createAnimalLayer({
           simulation.time,
         );
       });
+      landscape.setOptions({ enabled: scenery, motion: atmosphere && !paused });
+      landscape.update(paused ? 0 : Math.max(0, Math.min(dt, 0.05)));
       renderer.render(scene, camera);
     },
     getStats() {
@@ -262,6 +292,7 @@ export async function createAnimalLayer({
         active: enabled
           ? simulation.creatures.filter((c) => c.active).length
           : 0,
+        landscape: landscape.getStats(),
         captures: simulation.captures,
         rescues: simulation.rescues,
         waiting: simulation.creatures.filter((c) => c.respawnAt !== null)
@@ -299,6 +330,7 @@ export async function createAnimalLayer({
       geometries.forEach((g) => g.dispose());
       materials.forEach((m) => m.dispose());
       textures.forEach((t) => t.dispose());
+      landscape.dispose();
       effects.dispose();
       renderer.dispose();
     },

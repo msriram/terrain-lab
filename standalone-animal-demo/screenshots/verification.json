@@ -1,21 +1,37 @@
 {
-  "testedAt": "2026-09-25T01:01:59.623Z",
+  "testedAt": "2026-09-25T06:13:42.428Z",
   "browser": "153.0.8010.53",
   "mode": "Headless Chrome, production build, external requests blocked",
   "hardware": "Apple M3 Pro MacBook Pro, 36 GB RAM",
   "measurement": {
     "active": 8,
+    "landscape": {
+      "theme": "earth",
+      "props": 20,
+      "propKinds": [
+        "tree",
+        "flowers",
+        "rock"
+      ],
+      "shoreSegments": 107,
+      "erupting": false,
+      "volcanoes": 0,
+      "weather": "clouds",
+      "caption": "Wind in the trees. Waves finding the shore.",
+      "underwater": false,
+      "time": 13.532899999999945
+    },
     "captures": 0,
     "rescues": 0,
     "waiting": 0,
-    "drawCalls": 86,
-    "triangles": 16051,
+    "drawCalls": 160,
+    "triangles": 22263,
     "pack": "earth",
     "behaviors": [
       {
         "id": 0,
         "species": "fox",
-        "mode": "shake",
+        "mode": "sniff",
         "active": true
       },
       {
@@ -27,7 +43,7 @@
       {
         "id": 2,
         "species": "rabbit",
-        "mode": "shake",
+        "mode": "flee",
         "active": true
       },
       {
@@ -39,7 +55,7 @@
       {
         "id": 4,
         "species": "koi",
-        "mode": "roam",
+        "mode": "flee",
         "active": true
       },
       {
@@ -51,18 +67,18 @@
       {
         "id": 6,
         "species": "koi",
-        "mode": "flee",
+        "mode": "roam",
         "active": true
       },
       {
         "id": 7,
         "species": "koi",
-        "mode": "roam",
+        "mode": "flee",
         "active": true
       }
     ],
-    "frames": 811,
-    "averageFPS": 60.113614731986765,
+    "frames": 798,
+    "averageFPS": 60.019806536156935,
     "resolution": [
       1024,
       768

@@ -8,3 +8,5 @@ export {
 } from "./catalog/species.js";
 
 export { bindAnimalInteraction } from "./interaction/drag.js";
+
+export { LANDSCAPES, AQUATIC_ROSTER } from "./catalog/landscapes.js";

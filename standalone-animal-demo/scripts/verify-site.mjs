@@ -208,6 +208,7 @@ try {
   const c = await page.evaluate(() =>
     animalDemo.layer.simulation.creatures.find((c) => c.active),
   );
+  await page.locator("#stage").scrollIntoViewIfNeeded();
   const rect = await page.locator("#stage").boundingBox();
   await page.mouse.move(rect.x + c.u * rect.width, rect.y + c.v * rect.height);
   await page.mouse.down();

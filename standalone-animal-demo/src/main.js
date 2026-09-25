@@ -1,4 +1,5 @@
 import "./style.css";
+import { LANDSCAPES, AQUATIC_ROSTER } from "./catalog/landscapes.js";
 import { bindAnimalInteraction } from "./interaction/drag.js";
 import { SPECIES, randomRoster, PRESETS } from "./catalog/species.js";
 import { createAnimalLayer } from "./rendering/animal-layer.js";
@@ -32,12 +33,54 @@ try {
     onMessage: (text) => ($("rescue-message").textContent = text),
   });
   $("shuffle").addEventListener("click", () => {
-    state.roster = randomRoster();
+    state.roster = LANDSCAPES[state.pack]?.underwater
+      ? [...AQUATIC_ROSTER]
+      : randomRoster();
     $("preset").value = "random";
     layer.setRoster(state.roster);
     rebuildRoster();
   });
   const labels = $("behavior-labels");
+  let savedLandRoster = [...state.roster];
+  function setLandscape(theme) {
+    const wet = !!LANDSCAPES[theme].underwater,
+      wasWet = !!LANDSCAPES[state.pack]?.underwater;
+    if (wet && !wasWet) {
+      savedLandRoster = [...state.roster];
+      state.roster = [...AQUATIC_ROSTER];
+      layer.setRoster(state.roster);
+      rebuildRoster();
+    }
+    if (!wet && wasWet) {
+      state.roster = [...savedLandRoster];
+      layer.setRoster(state.roster);
+      rebuildRoster();
+    }
+    state.pack = theme;
+    layer.setOptions({ theme, pack: wet ? "atlantis" : "earth" });
+    paint();
+    $("landscape").value = theme;
+    $("pack-note").textContent = LANDSCAPES[theme].caption;
+    document.querySelectorAll("[data-pack]").forEach((b) => {
+      const chosen = wet
+        ? b.dataset.pack === "atlantis"
+        : b.dataset.pack === "earth";
+      b.classList.toggle("selected", chosen);
+      b.setAttribute("aria-pressed", String(chosen));
+    });
+  }
+  Object.entries(LANDSCAPES).forEach(([id, recipe]) =>
+    $("landscape").add(new Option(recipe.label, id)),
+  );
+  $("landscape").addEventListener("change", (e) =>
+    setLandscape(e.target.value),
+  );
+  $("scenery").addEventListener("change", (e) =>
+    layer.setOptions({ scenery: e.target.checked }),
+  );
+  $("atmosphere").addEventListener("change", (e) =>
+    layer.setOptions({ atmosphere: e.target.checked }),
+  );
   function rebuildRoster() {
     $("roster").replaceChildren();
     labels.replaceChildren();
@@ -79,7 +122,9 @@ try {
   $("preset").addEventListener("change", (e) => {
     state.roster =
       e.target.value === "random"
-        ? randomRoster()
+        ? LANDSCAPES[state.pack]?.underwater
+          ? [...AQUATIC_ROSTER]
+          : randomRoster()
         : [...PRESETS[e.target.value].roster];
     layer.setRoster(state.roster);
     rebuildRoster();
@@ -114,17 +159,7 @@ try {
   });
   document.querySelectorAll("[data-pack]").forEach((button) =>
     button.addEventListener("click", () => {
-      state.pack = button.dataset.pack;
-      layer.setOptions({ pack: state.pack });
-      paint();
-      document.querySelectorAll("[data-pack]").forEach((b) => {
-        b.classList.toggle("selected", b === button);
-        b.setAttribute("aria-pressed", String(b === button));
-      });
-      $("pack-note").textContent =
-        state.pack === "earth"
-          ? "Warm earth. Curious creatures."
-          : "Moonlit shores. Bioluminescent koi.";
+      setLandscape(button.dataset.pack);
     }),
   );
   $("transparent").addEventListener("change", (e) =>
@@ -202,6 +237,9 @@ try {
         samples.length / samples.reduce((a, b) => a + b, 0),
       );
       $("count").textContent = stats.active;
+      $("pack-note").textContent = stats.landscape.erupting
+        ? "Volcano active — lava and ash rising."
+        : stats.landscape.caption;
       $("calls").textContent = stats.drawCalls;
       $("status").textContent = state.paused
         ? "MOTION PAUSED"

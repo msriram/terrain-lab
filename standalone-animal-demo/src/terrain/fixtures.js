@@ -1,3 +1,4 @@
+import { LANDSCAPES } from "../catalog/landscapes.js";
 export const FIXTURES = ["River valley", "Twin islands", "Tidal lagoon"];
 export function createTerrain(fixture = 0) {
   return (u, v) => {
@@ -28,7 +29,10 @@ export function paintTerrain(canvas, sample, water, pack) {
     h = (canvas.height = 768),
     ctx = canvas.getContext("2d");
   const img = ctx.createImageData(w, h);
-  const night = pack === "atlantis";
+  const colors = (LANDSCAPES[pack] || LANDSCAPES.earth).colors.map((hex) =>
+    [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)),
+  );
+  const night = ["atlantis", "coral", "deepsea"].includes(pack);
   for (let y = 0; y < h; y++)
     for (let x = 0; x < w; x++) {
       const u = x / w,
@@ -50,6 +54,9 @@ export function paintTerrain(canvas, sample, water, pack) {
               night ? [81, 104, 107] : [196, 190, 135],
               (e - water) / 0.48,
             );
+      if (!night && pack !== "earth" && pack !== "forest" && !wet)
+        c = mix(colors[0], colors[1], (e - water) / 0.55);
+      if (night) c = mix([5, 25, 53], [36, 120, 128], e * 0.85 + 0.1);
       const slope = (sample(u + 0.002, v + 0.002) - e) * 100;
       const contour = Math.abs(((e * 26) % 1) - 0.5) < 0.035;
       const light =

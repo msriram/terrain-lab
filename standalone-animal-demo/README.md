@@ -177,3 +177,28 @@ five original procedural assets use CC0. Full provenance and source links are
 in [`public/assets/animals/ATTRIBUTION.md`](public/assets/animals/ATTRIBUTION.md).
 Three.js is MIT; its notice is bundled as `public/THIRD_PARTY_NOTICES.txt`.
 No marketplace-only, editorial-only, or testing-only models are included.
+
+### Living landscapes
+
+The landscape selector offers 20 shared scenery recipes. Trees sway, forest rain
+falls, clouds drift, and surf follows the sampled shoreline. Atlantis, Coral Reef,
+and Abyss treat the entire map as seafloor and start with one shark and seven koi.
+Atlantis includes treasure chests, ruins, tridents, kelp, coral, and sea knolls.
+Volcanic terrain erupts when an interior peak exceeds 78% normalized elevation
+and rises prominently above its neighbors; lowering the peak stops the eruption.
+In the sandbox, select **Volcanic**, choose **Raise**, and hold on the terrain.
+**Landscape elements** controls scenery visibility; **Weather & motion** freezes
+scenery animation independently of animal movement.
+
+Extend `src/catalog/landscapes.js` for theme recipes, `src/environment/props.js`
+for reusable original procedural models, `src/environment/layout.js` for pure
+terrain placement rules, and `src/environment/landscape-layer.js` for animation.
+All procedural scenery and generated particle textures are original project
+assets and require no external downloads. They share the wildlife renderer and
+its disposal lifecycle. Run `node scripts/verify-landscapes.mjs` from this folder
+with the demo running on port 5174 to check all themes and mountain events.
+
+Scenery performance check (September 2026, local M3 Pro, Chrome, 1018 × 764):
+59.7 average FPS across a 10-second Earth scene with 20 props, clouds, shoreline
+surf, and a randomized eight-animal population (one capture during the sample).
+Physical projector readability and performance still require testing on the rig.
