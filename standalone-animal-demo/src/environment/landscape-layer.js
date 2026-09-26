@@ -83,7 +83,7 @@ export function createLandscapeLayer(
     glowTexture = texture("glow"),
     cloudTexture = texture("cloud");
   const rng = seededRandom(839),
-    particles = Array.from({ length: 170 }, () => ({
+    particles = Array.from({ length: 340 }, () => ({
       x: rng(),
       z: rng(),
       phase: rng(),
@@ -523,6 +523,7 @@ export function createLandscapeLayer(
           : 5;
     points.visible =
       weather !== "clouds" && weather !== "rain" && weather !== "fog";
+    particleGeometry.setDrawRange(0, weather === "snow" ? 340 : 170);
     const positions = particleGeometry.attributes.position.array;
     particles.forEach((p, i) => {
       let u = (p.x + time * 0.008 * p.speed) % 1,
@@ -555,6 +556,12 @@ export function createLandscapeLayer(
         v = (p.z + time * 0.08 * p.speed) % 1;
       }
       let y = 0.35;
+      if (weather === "snow") {
+        const age = (time * .19 * p.speed + p.phase) % 1;
+        y = .025 + (1 - age) * .48;
+        // Flakes descend to the surface instead of floating at a fixed height.
+        if (!Number.isFinite(sampleTerrain(u, v))) y = -5;
+      }
       if (recipe.underwater && sampleTerrain(u, v) > waterLevel) y = -5;
       positions.set([(u - 0.5) * 4, y, (v - 0.5) * 3], i * 3);
     });

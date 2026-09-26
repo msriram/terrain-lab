@@ -1,8 +1,10 @@
 import * as T from "three";
 import { LavaFlow } from "./flow.js";
+import { createDepositLayer } from "./deposit-layer.js";
 import { seededRandom } from "../simulation/world.js";
 
 export function createLivingEffects(root) {
+  const deposits = createDepositLayer(root);
   const flow = new LavaFlow(),
     canvas = document.createElement("canvas");
   canvas.width = flow.width;
@@ -148,6 +150,7 @@ export function createLivingEffects(root) {
         acc = 0;
       }
       underwater = !!recipe.underwater;
+      deposits.update(dt, world, recipe, sample, water, motion);
       const fish = underwater,
         birds = ["earth", "forest", "tropical", "sakura"].includes(world);
       lava.visible = !!recipe.eruption;
@@ -224,11 +227,13 @@ export function createLivingEffects(root) {
       }
     },
     stats: () => ({
+      ...deposits.stats(),
       lavaCells: flow.mass.reduce((n, v) => n + (v > 0.0001), 0),
       flockCount: flock.visible ? (underwater ? 96 : 32) : 0,
       clouds: clouds.visible,
     }),
     dispose() {
+      deposits.dispose();
       root.remove(lava, clouds, shadow, flock);
       plane.dispose();
       texture.dispose();

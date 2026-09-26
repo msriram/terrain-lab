@@ -215,6 +215,15 @@ try {
   assert.equal(await page.evaluate(() => animalDemo.getMetrics().landscape.time), stoppedTime);
   await page.getByLabel("Landscape & weather").check();
   await page.waitForFunction((time) => animalDemo.getMetrics().landscape.time > time, stoppedTime);
+  await page.locator("#landscape").selectOption("tundra");
+  await page.locator("#fixture").selectOption("4");
+  await page.waitForFunction(() => animalDemo.getMetrics().landscape.depositCoverage > .005);
+  await page.waitForTimeout(5000);
+  await page.locator("#stage").screenshot({ path: "screenshots/tundra-snow.png" });
+  await page.evaluate(() => animalDemo.layer.setTerrain(() => NaN, .43));
+  await page.waitForFunction(() => animalDemo.getMetrics().landscape.depositCoverage === 0);
+  await page.reload();
+  await page.waitForFunction(() => window.animalDemo);
   await page.locator('#pointer-mode').selectOption('move');
   await page.locator("#pause").click();
   const c = await page.evaluate(() =>

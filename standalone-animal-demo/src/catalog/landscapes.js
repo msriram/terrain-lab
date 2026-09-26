@@ -84,7 +84,7 @@ export const LANDSCAPES = {
     colors: ["#6d9380", "#dbe8d6", "#a7a494"],
     weather: "snow",
     waves: true,
-    caption: "A quiet treeline beneath wind-driven snow.",
+    caption: "Snow settles on high ground, building soft caps above the treeline.",
   },
   synthwave: {
     label: "Synthwave",
