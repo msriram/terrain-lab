@@ -89,15 +89,12 @@ try {
     setLandscape(e.target.value),
   );
   $("scenery").addEventListener("change", (e) =>
-    layer.setOptions({ scenery: e.target.checked }),
+    layer.setOptions({ scenery: e.target.checked, atmosphere: e.target.checked }),
   );
   $("randomize-landscape").addEventListener("click", () => {
     layer.randomizeLandscape();
     $("pack-note").textContent = "Fresh landscape elements placed.";
   });
-  $("atmosphere").addEventListener("change", (e) =>
-    layer.setOptions({ atmosphere: e.target.checked }),
-  );
   function rebuildRoster() {
     $("roster").replaceChildren();
     labels.replaceChildren();

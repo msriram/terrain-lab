@@ -33,7 +33,7 @@ if(host&&stage){
     if(data.type==='request'&&!projection){gridSent=-1;lastSent=0;}
     if(data.type==='state'&&projection){
      if(data.grid)host.applyGrid(data.grid);
-     layer.applySnapshot(data.snapshot);paused=data.paused;if(data.scenery!==undefined)$('scenery').checked=data.scenery;if(data.atmosphere!==undefined)$('atmosphere').checked=data.atmosphere;
+     layer.applySnapshot(data.snapshot);paused=data.paused;if(data.scenery!==undefined)$('scenery').checked=data.scenery;
     }
    };
    if(projection)channel.postMessage({type:'request'});
@@ -45,14 +45,14 @@ if(host&&stage){
    }
    canvas.style.transform=state.transform;
    canvas.style.pointerEvents=!projection&&!state.calibrating&&state.tool==='rescue'&&state.enabled?'auto':'none';
-   layer.setOptions({enabled:state.enabled&&!state.calibrating,paused,pack:LANDSCAPES[state.theme]?.underwater?'atlantis':'earth',theme:state.theme,scenery:$('scenery').checked&&!state.calibrating,atmosphere:$('atmosphere').checked});
+   layer.setOptions({enabled:state.enabled&&!state.calibrating,paused,pack:LANDSCAPES[state.theme]?.underwater?'atlantis':'earth',theme:state.theme,scenery:$('scenery').checked&&!state.calibrating,atmosphere:$('scenery').checked});
    if(lastRevision!==state.revision){layer.setTerrain(host.sampleTerrain,state.waterLevel);lastRevision=state.revision;}
    layer.update(dt);
    if(now-lastSent>100){
     lastSent=now;const stats=layer.getStats();
     $('wildlife-status').textContent=`${stats.active} WILDLIFE · ${stats.captures} EATEN · ${stats.waiting} REPOPULATING`;
     $('rescue-count').textContent=`${stats.rescues} RESCUED`;$('landscapeNote').textContent=stats.landscape.erupting?'Volcano active — lava and ash rising.':stats.landscape.caption+(WORLD_SIGNATURES[state.theme]?` Meet the ${SPECIES[WORLD_SIGNATURES[state.theme]].label}.`:'');
-    if(channel&&!projection){const message={type:'state',snapshot:layer.getSnapshot(),paused,scenery:$('scenery').checked,atmosphere:$('atmosphere').checked};if(gridSent!==state.revision&&!state.live){message.grid=host.getGrid();gridSent=state.revision;}channel.postMessage(message);}
+    if(channel&&!projection){const message={type:'state',snapshot:layer.getSnapshot(),paused,scenery:$('scenery').checked,atmosphere:$('scenery').checked};if(gridSent!==state.revision&&!state.live){message.grid=host.getGrid();gridSent=state.revision;}channel.postMessage(message);}
    }
    raf=requestAnimationFrame(frame);
   }

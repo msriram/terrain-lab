@@ -181,6 +181,10 @@ try {
   const projected = await projector.evaluate(() =>
     TerrainWildlife.layer.getSnapshot(),
   );
+  await page.locator("#scenery").uncheck();
+  await projector.waitForFunction(() => !document.querySelector("#scenery").checked);
+  await page.locator("#scenery").check();
+  await projector.waitForFunction(() => document.querySelector("#scenery").checked);
   assert.equal(projected.creatures.length, source.creatures.length);
   assert.ok(
     Math.abs(
@@ -204,6 +208,13 @@ try {
   // Public wildlife demo uses the same drag implementation.
   await page.goto(base + "wildlife/");
   await page.waitForFunction(() => window.animalDemo);
+  assert.equal(await page.locator("#atmosphere").count(), 0);
+  await page.getByLabel("Landscape & weather").uncheck();
+  const stoppedTime = await page.evaluate(() => animalDemo.getMetrics().landscape.time);
+  await page.waitForTimeout(300);
+  assert.equal(await page.evaluate(() => animalDemo.getMetrics().landscape.time), stoppedTime);
+  await page.getByLabel("Landscape & weather").check();
+  await page.waitForFunction((time) => animalDemo.getMetrics().landscape.time > time, stoppedTime);
   await page.locator('#pointer-mode').selectOption('move');
   await page.locator("#pause").click();
   const c = await page.evaluate(() =>

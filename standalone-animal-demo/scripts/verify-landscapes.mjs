@@ -82,7 +82,7 @@ try {
   await page.locator("#fixture").selectOption("1");
   await page.locator("#fixture").selectOption("0");
   await page.waitForTimeout(500);
-  await page.locator("#atmosphere").uncheck();
+  await page.locator("#scenery").uncheck();
   const frozen = await page.evaluate(
     () => animalDemo.getMetrics().landscape.time,
   );
@@ -91,7 +91,7 @@ try {
     await page.evaluate(() => animalDemo.getMetrics().landscape.time),
     frozen,
   );
-  await page.locator("#atmosphere").check();
+  await page.locator("#scenery").check();
   await page.waitForTimeout(500);
   assert.ok(
     (await page.evaluate(() => animalDemo.getMetrics().landscape.time)) >
