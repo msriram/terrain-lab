@@ -373,6 +373,8 @@ export function createLandscapeLayer(
       const scale =
         (["chest", "trident", "ruin"].includes(kind)
           ? 0.29
+          : kind === "crater" && theme === "moon"
+            ? 0.4
           : kind === "knoll"
             ? 0.48
             : 0.23) *
@@ -380,7 +382,7 @@ export function createLandscapeLayer(
         PROP_SCALE;
       object.scale.setScalar(scale);
       object.position.set((p.u - 0.5) * 4, 0.004, (p.v - 0.5) * 3);
-      object.rotation.y = p.phase;
+      object.rotation.y = kind === "crater" ? 0 : p.phase;
       propsRoot.add(object);
       props.push({ object, kind, p, scale });
     });

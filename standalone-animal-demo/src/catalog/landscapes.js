@@ -33,7 +33,7 @@ export const LANDSCAPES = {
   },
   moon: {
     label: "Moon",
-    props: ["crater", "rock", "antenna"],
+    props: ["crater", "antenna"],
     colors: ["#98a4ad", "#d0d7d7", "#596677"],
     weather: "meteors",
     caption: "Silent craters under a passing meteor shower.",

@@ -6,7 +6,7 @@ export function createPropFactory() {
   const cache = new Map(),
     resources = [];
   const windTime = { value: 0 };
-  function groundTexture(kind, colors) {
+  function groundTexture(kind, colors, variant = 0) {
     const canvas = document.createElement("canvas");
     canvas.width = canvas.height = 256;
     const context = canvas.getContext("2d");
@@ -23,18 +23,34 @@ export function createPropFactory() {
         const angle = Math.atan2(dy, dx);
         const irregular =
           1 +
-          0.045 * Math.sin(angle * 7 + 0.8) +
-          0.025 * Math.sin(angle * 13 - 0.7);
+          0.055 * Math.sin(angle * 7 + 0.8 + variant * 1.7) +
+          0.032 * Math.sin(angle * 13 - 0.7 + variant * 2.3) +
+          0.018 * Math.sin(angle * 23 + 1.9 + variant * 0.9);
         const r = Math.hypot(dx, dy) / irregular;
         let rgb, alpha;
         if (kind === "crater") {
-          const floor = 1 - smooth(0.31, 0.43, r);
-          const rim = smooth(0.35, 0.45, r) * (1 - smooth(0.56, 0.72, r));
-          const light = (dx - dy) * 0.5;
-          rgb = 62 + floor * 12 + rim * (light > 0 ? 106 : 17);
-          alpha =
-            (floor * 0.62 + rim * (light > 0 ? 0.63 : 0.42)) *
-            (1 - smooth(0.72, 0.91, r));
+          // Lunar impact basin: a broad excavated floor, sunlit left wall,
+          // jagged right-hand shadow, and a thin broken ejecta apron.
+          const grain =
+            Math.sin(x * 0.91 + y * 1.43 + variant) *
+              Math.sin(x * 1.73 - y * 0.67 + variant * 3) * 8 +
+            Math.sin(x * 0.15 + y * 0.39 + variant * 2) * 10;
+          const basin = 1 - smooth(0.52, 0.59, r);
+          const wall = smooth(0.39, 0.49, r) * (1 - smooth(0.61, 0.68, r));
+          const apron = smooth(0.6, 0.66, r) * (1 - smooth(0.79, 0.92, r));
+          const lit = 1 - smooth(-0.16, 0.22, dx + 0.04 * Math.sin(dy * 11));
+          const deepShadow = smooth(-0.08, 0.12, dx + 0.07 * Math.sin(dy * 8));
+          rgb = 117 + grain * 0.6;
+          if (basin > 0) rgb = 151 + grain - deepShadow * 121;
+          if (wall > 0)
+            rgb =
+              rgb * (1 - wall) + (lit * 213 + (1 - lit) * 42 + grain) * wall;
+          alpha = Math.max(
+            basin * 0.84,
+            wall * 0.87,
+            apron * (lit * 0.24 + 0.12),
+          );
+          alpha *= 1 - smooth(0.86, 0.96, r);
         } else if (kind === "vent") {
           const core = 1 - smooth(0.12, 0.42, r);
           const rim = smooth(0.29, 0.44, r) * (1 - smooth(0.56, 0.79, r));
@@ -78,7 +94,7 @@ export function createPropFactory() {
   }
   function build(kind, colors, seed = 0) {
     const tree = ["tree", "snowpine", "palm"].includes(kind);
-    const variant = tree ? Math.abs(Math.floor(seed)) % 16 : 0;
+    const variant = tree ? Math.abs(Math.floor(seed)) % 16 : kind === "crater" ? Math.abs(Math.floor(seed)) % 8 : 0;
     const rng = seededRandom(variant * 7919 + 83);
     const key = kind + colors.join() + ":" + variant;
     if (cache.has(key)) return cache.get(key).clone();
@@ -373,7 +389,7 @@ export function createPropFactory() {
       }
     } else if (kind === "crater" || kind === "vent") {
       const material = new T.MeshBasicMaterial({
-        map: groundTexture(kind, colors),
+        map: groundTexture(kind, colors, variant),
         transparent: true,
         depthWrite: false,
         side: T.DoubleSide,
