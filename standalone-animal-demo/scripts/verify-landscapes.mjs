@@ -64,17 +64,21 @@ try {
   await page.locator("#landscape").selectOption("volcanic");
   await page.evaluate(() => animalDemo.layer.setTerrain(() => 0.2, 0.43));
   await page.waitForFunction(() => !animalDemo.getMetrics().landscape.erupting);
-  await page.evaluate(() =>
-    animalDemo.layer.setTerrain(
-      (u, v) =>
-        0.2 + 0.75 * Math.exp(-((u - 0.5) ** 2 + (v - 0.5) ** 2) / 0.012),
-      0.43,
-    ),
-  );
+  await page.locator("#fixture").selectOption("4");
   await page.waitForFunction(() => animalDemo.getMetrics().landscape.erupting);
+  await page.waitForFunction(
+    () => animalDemo.getMetrics().landscape.lavaCells > 20,
+  );
+  await page.waitForTimeout(8000);
+  await page
+    .locator("#stage")
+    .screenshot({ path: "screenshots/volcano-flow.png" });
   await page.evaluate(() => animalDemo.layer.setTerrain(() => 0.2, 0.43));
   await page.waitForFunction(() => !animalDemo.getMetrics().landscape.erupting);
   await page.locator("#landscape").selectOption("earth");
+  await page.waitForFunction(
+    () => animalDemo.getMetrics().landscape.flockCount === 32,
+  );
   await page.locator("#fixture").selectOption("1");
   await page.locator("#fixture").selectOption("0");
   await page.waitForTimeout(500);

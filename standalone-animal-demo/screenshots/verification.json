@@ -1,11 +1,14 @@
 {
-  "testedAt": "2026-09-25T20:47:46.143Z",
+  "testedAt": "2026-09-26T17:10:10.271Z",
   "browser": "153.0.8010.53",
   "mode": "Headless Chrome, production build, external requests blocked",
   "hardware": "Apple M3 Pro MacBook Pro, 36 GB RAM",
   "measurement": {
-    "active": 8,
+    "active": 7,
     "landscape": {
+      "lavaCells": 0,
+      "flockCount": 32,
+      "clouds": true,
       "theme": "earth",
       "galaxies": 0,
       "signalLinks": 0,
@@ -22,13 +25,13 @@
       "weather": "clouds",
       "caption": "Wind in the trees. Waves finding the shore.",
       "underwater": false,
-      "time": 13.666199999999959
+      "time": 13.665899999999962
     },
-    "captures": 0,
+    "captures": 1,
     "rescues": 0,
-    "waiting": 0,
-    "drawCalls": 161,
-    "triangles": 22265,
+    "waiting": 1,
+    "drawCalls": 141,
+    "triangles": 20179,
     "pack": "earth",
     "behaviors": [
       {
@@ -52,41 +55,41 @@
       {
         "id": 3,
         "species": "shark",
-        "mode": "dive",
+        "mode": "chase",
         "active": true
       },
       {
         "id": 4,
         "species": "koi",
-        "mode": "flee",
+        "mode": "roam",
         "active": true
       },
       {
         "id": 5,
         "species": "koi",
-        "mode": "flee",
+        "mode": "dart",
         "active": true
       },
       {
         "id": 6,
         "species": "koi",
-        "mode": "flee",
+        "mode": "roam",
         "active": true
       },
       {
         "id": 7,
         "species": "koi",
-        "mode": "roam",
-        "active": true
+        "mode": "eaten",
+        "active": false
       }
     ],
-    "frames": 811,
-    "averageFPS": 60.10879692300389,
+    "frames": 812,
+    "averageFPS": 60.085321155611204,
     "resolution": [
       1024,
       768
     ],
-    "p95FrameMs": 16.799999999999272,
+    "p95FrameMs": 16.700000000000728,
     "benchmarkFrames": 600,
     "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M3 Pro, Unspecified Version)"
   },

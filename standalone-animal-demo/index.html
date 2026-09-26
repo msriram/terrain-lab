@@ -75,7 +75,14 @@
           </fieldset>
           <fieldset class="wildlife-controls">
             <legend>02 <span>Wildlife</span></legend>
-            <label for="preset">Interaction preset</label
+            <label for="pointer-mode">Pointer action</label
+            ><select id="pointer-mode">
+              <option value="sculpt">
+                Shape terrain · left carve / right add
+              </option>
+              <option value="move">Move wildlife · drag an animal</option>
+            </select>
+            <label for="preset">Population preset</label
             ><select id="preset">
               <option value="random">Balanced · random wildlife</option>
               <option value="reef">Shark & koi</option>
@@ -109,7 +116,8 @@
               <option value="0">River valley</option>
               <option value="1">Twin islands</option>
               <option value="2">Tidal lagoon</option>
-              <option value="3">Galaxy clusters</option></select
+              <option value="3">Galaxy clusters</option>
+              <option value="4">Volcanic ridge</option></select
             ><label class="range-label" for="water"
               >Water level <output id="water-value">43%</output></label
             ><input id="water" type="range" min="30" max="60" value="43" />

@@ -3,6 +3,7 @@ import { LANDSCAPES } from "../catalog/landscapes.js";
 import { analyzeLandscape } from "./layout.js";
 import { createPropFactory } from "./props.js";
 import { seededRandom } from "../simulation/world.js";
+import { createLivingEffects } from "./living-effects.js";
 
 const PROP_SCALE = 0.5;
 const LANDSCAPE_REBUILD_DELAY_SECONDS = 2.4;
@@ -15,6 +16,7 @@ export function createLandscapeLayer(
   const root = new T.Group();
   root.name = "Living landscape";
   scene.add(root);
+  const living = createLivingEffects(root);
   const propsRoot = new T.Group();
   root.add(propsRoot);
   const factory = createPropFactory();
@@ -180,7 +182,7 @@ export function createLandscapeLayer(
   );
   const eruptionMaterial = own(
     new T.PointsMaterial({
-      size: 10,
+      size: 4,
       sizeAttenuation: false,
       map: glowTexture,
       color: 0xff9a35,
@@ -387,12 +389,11 @@ export function createLandscapeLayer(
           3,
         ),
       );
-    for (const p of recipe.eruption ? layout.volcanoes : []) {
-      const vent = factory.build("vent", ["#42353a", "#8d4336", "#ff742b"]);
-      vent.scale.setScalar(0.48 * PROP_SCALE);
-      vent.position.set((p.u - 0.5) * 4, 0.01, (p.v - 0.5) * 3);
-      ventsRoot.add(vent);
-    }
+    living.terrain(
+      sampleTerrain,
+      waterLevel,
+      recipe.eruption ? layout.volcanoes : [],
+    );
     dirty = false;
     lastBuild = time;
   }
@@ -410,6 +411,7 @@ export function createLandscapeLayer(
       (time - lastBuild > LANDSCAPE_REBUILD_DELAY_SECONDS || !motion)
     )
       rebuild();
+    living.update(dt, theme, recipe, motion);
     for (const { object, kind, p, scale } of props) {
       if (
         ["tree", "palm", "flowers", "seaweed", "coral", "snowpine"].includes(
@@ -580,8 +582,7 @@ export function createLandscapeLayer(
       rainGeometry.attributes.position.needsUpdate = true;
     }
     clouds.forEach((cloud, i) => {
-      cloud.visible =
-        ["clouds", "rain", "fog"].includes(weather) || recipe.clouds;
+      cloud.visible = false; // Replaced by the evolving noise cloud field.
       cloud.position.set(
         (((i * 0.29 + time * 0.012) % 1.4) - 0.7) * 4,
         0,
@@ -678,6 +679,7 @@ export function createLandscapeLayer(
     },
     getStats() {
       return {
+        ...living.stats(),
         theme,
         galaxies: galaxies.length,
         signalLinks: links.length,
@@ -694,6 +696,7 @@ export function createLandscapeLayer(
       };
     },
     dispose() {
+      living.dispose();
       scene.remove(root);
       factory.dispose();
       resources.forEach((r) => r.dispose());

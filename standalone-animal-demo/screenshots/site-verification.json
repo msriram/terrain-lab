@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-09-25T14:56:15.639Z",
+  "testedAt": "2026-09-26T17:10:27.606Z",
   "checks": [
     "GitHub Pages subpath routing",
     "all internal links return 200",

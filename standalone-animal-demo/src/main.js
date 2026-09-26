@@ -4,9 +4,14 @@ import {
   WORLD_SIGNATURES,
   rosterForWorld,
 } from "./catalog/landscapes.js";
+import { bindAnimalInteraction } from "./interaction/drag.js";
 import { SPECIES, randomRoster, PRESETS } from "./catalog/species.js";
 import { createAnimalLayer } from "./rendering/animal-layer.js";
-import { createSculptableTerrain, paintTerrain, FIXTURES } from "./terrain/fixtures.js";
+import {
+  createSculptableTerrain,
+  paintTerrain,
+  FIXTURES,
+} from "./terrain/fixtures.js";
 const $ = (id) => document.getElementById(id);
 const state = {
   fixture: 0,
@@ -15,7 +20,8 @@ const state = {
   paused: false,
   roster: randomRoster(),
 };
-let terrainModel = createSculptableTerrain(), sample = terrainModel.sample;
+let terrainModel = createSculptableTerrain(),
+  sample = terrainModel.sample;
 const terrain = $("terrain"),
   stage = $("stage");
 const paint = () => paintTerrain(terrain, sample, state.water, state.pack);
@@ -29,9 +35,25 @@ try {
     assetBase: import.meta.env.BASE_URL + "assets/animals/",
   });
   $("loading").hidden = true;
-  // The landscape is the primary interaction surface. The animal canvas stays
-  // visual-only so a drag always sculpts, even when an animal crosses it.
-  $("animals").style.pointerEvents = "none";
+  let pointerMode = "sculpt";
+  const unbind = bindAnimalInteraction({
+    element: $("animals"),
+    layer,
+    enabled: () => pointerMode === "move" && $("enabled").checked,
+    onMessage: (text) => ($("rescue-message").textContent = text),
+  });
+  function setPointerMode(mode) {
+    pointerMode = mode;
+    $("animals").style.pointerEvents = mode === "move" ? "auto" : "none";
+    $("rescue-message").textContent =
+      mode === "move"
+        ? "Drag an animal to safe land or water."
+        : "Drag to carve a hollow. Right-drag to add sand.";
+  }
+  setPointerMode($("pointer-mode").value);
+  $("pointer-mode").addEventListener("change", (event) =>
+    setPointerMode(event.target.value),
+  );
   $("shuffle").addEventListener("click", () => {
     state.roster = rosterForWorld(state.pack, randomRoster());
     $("preset").value = "random";
@@ -144,25 +166,36 @@ try {
   let sculptPointer = null;
   const toUV = (event) => {
     const rect = stage.getBoundingClientRect();
-    return { u: Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width)), v: Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height)) };
+    return {
+      u: Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width)),
+      v: Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height)),
+    };
   };
   const sculpt = (event) => {
     if (sculptPointer !== event.pointerId) return;
-    const point = toUV(event), addSand = event.buttons === 2 || event.button === 2;
+    const point = toUV(event),
+      addSand = event.buttons === 2 || event.button === 2;
     terrainModel.sculpt(point.u, point.v, addSand ? 0.035 : -0.035);
     layer.setTerrain(sample, state.water);
     paint();
   };
-  stage.addEventListener("pointerdown", (event) => {
-    if (event.button !== 0 && event.button !== 2) return;
-    sculptPointer = event.pointerId;
-    stage.setPointerCapture(event.pointerId);
-    sculpt(event);
-    event.stopPropagation();
-    event.preventDefault();
-  }, { capture: true });
+  stage.addEventListener(
+    "pointerdown",
+    (event) => {
+      if (pointerMode !== "sculpt") return;
+      if (event.button !== 0 && event.button !== 2) return;
+      sculptPointer = event.pointerId;
+      stage.setPointerCapture(event.pointerId);
+      sculpt(event);
+      event.stopPropagation();
+      event.preventDefault();
+    },
+    { capture: true },
+  );
   stage.addEventListener("pointermove", sculpt);
-  stage.addEventListener("pointerup", (event) => { if (sculptPointer === event.pointerId) sculptPointer = null; });
+  stage.addEventListener("pointerup", (event) => {
+    if (sculptPointer === event.pointerId) sculptPointer = null;
+  });
   stage.addEventListener("pointercancel", () => (sculptPointer = null));
   stage.addEventListener("contextmenu", (event) => event.preventDefault());
   $("fixture").addEventListener("change", (e) => {
@@ -287,6 +320,7 @@ try {
     () => {
       cancelAnimationFrame(raf);
       resize.disconnect();
+      unbind();
       layer.dispose();
     },
     { once: true },

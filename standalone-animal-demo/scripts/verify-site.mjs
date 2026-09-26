@@ -204,6 +204,7 @@ try {
   // Public wildlife demo uses the same drag implementation.
   await page.goto(base + "wildlife/");
   await page.waitForFunction(() => window.animalDemo);
+  await page.locator('#pointer-mode').selectOption('move');
   await page.locator("#pause").click();
   const c = await page.evaluate(() =>
     animalDemo.layer.simulation.creatures.find((c) => c.active),

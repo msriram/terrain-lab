@@ -48,7 +48,7 @@ export const LANDSCAPES = {
   },
   volcanic: {
     label: "Volcanic",
-    props: ["rock", "spire", "vent"],
+    props: ["rock", "spire", "rock"],
     colors: ["#413c45", "#963c31", "#ff7934"],
     weather: "embers",
     eruption: true,
