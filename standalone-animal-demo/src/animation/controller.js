@@ -18,6 +18,12 @@ export function createAnimationController(model, animations, speciesId, phase) {
         look: "Alert",
       }[mode];
       const name =
+        (c.habitat === "amphibious" &&
+        c.surface === "water" &&
+        mode !== "held" &&
+        clips.Swim
+          ? "Swim"
+          : null) ||
         (specific && clips[specific] ? specific : null) ||
         species.actions[mode] ||
         (c.moving ? species.actions.move : species.actions.idle);
@@ -37,7 +43,7 @@ export function createAnimationController(model, animations, speciesId, phase) {
       root.rotation.x = 0;
       root.rotation.z = 0;
       const t = c.actionAge;
-      if (mode === "dive") {
+      if (mode === "dive" && c.surface === "water") {
         const depth = Math.sin(Math.min(1, t / c.actionDuration) * Math.PI);
         root.position.y -= depth * 0.08;
         root.scale.setScalar(1 - depth * 0.12);
@@ -64,13 +70,13 @@ export function createAnimationController(model, animations, speciesId, phase) {
         ripple.material.opacity = 0.6 * (1 - progress);
       } else {
         shadow.scale.setScalar(1);
-        shadow.material.opacity = c.habitat === "land" ? 0.5 : 0.3;
+        shadow.material.opacity = c.surface === "land" ? 0.5 : 0.3;
         // Subtle persistent wake for swimming, and bobbing with a separate ground shadow.
-        ripple.visible = c.active && c.habitat === "water" && mode === "chase";
+        ripple.visible = c.active && c.surface === "water" && mode === "chase";
         const r = 0.11 + ((time + phase) % 0.65) * 0.3;
         ripple.scale.set(r, 1, r);
         ripple.material.opacity = 0.24;
-        if (c.habitat === "water")
+        if (c.surface === "water")
           root.position.y += 0.008 * Math.sin(time * 3 + phase);
       }
       if (c.held || c.protection > 0) {

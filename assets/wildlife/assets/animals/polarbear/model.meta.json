@@ -1,5 +1,5 @@
 {
-  "name": "Snow owl",
+  "name": "Polar bear",
   "habitat": "land",
   "format": "glTF 2.0 binary",
   "forward": "+Z",
@@ -7,11 +7,12 @@
   "animations": [
     "Idle",
     "Move",
-    "Dash"
+    "Dash",
+    "Swim"
   ],
-  "bytes": 129548,
-  "sha256": "44f230f8aafd8e7ff963a4381807fe207b5bf107ae132ea384585e8097fbaeaf",
+  "bytes": 176528,
+  "sha256": "b47e7fff144356f67303da779159e5a68a4dff25b941ef53344aa508165567cf",
   "license": "CC0-1.0",
   "author": "Original procedural Terrain Lab artwork",
-  "source": "scripts/models/world-fauna.mjs"
+  "source": "scripts/models/polar-fauna.mjs"
 }

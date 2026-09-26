@@ -29,12 +29,37 @@ export const WORLD_FAUNA = {
     colors: ["#aebdce", "#dbe4db", "#8399c2"],
     length: 0.3,
   },
-  snowowl: {
-    label: "Snow owl",
+  narwhal: {
+    label: "Narwhal",
     world: "ice",
-    form: "owl",
-    colors: ["#eef6ed", "#95d0e6", "#4b7185"],
-    length: 0.34,
+    form: "narwhal",
+    habitat: "water",
+    colors: ["#7e949d", "#d8e7e2", "#f4ead2"],
+    length: 0.47,
+  },
+  polarbear: {
+    label: "Polar bear",
+    world: "ice",
+    form: "polarbear",
+    colors: ["#e8e8d8", "#f5f0db", "#404750"],
+    length: 0.42,
+    prey: ["penguin"],
+  },
+  penguin: {
+    label: "Penguin",
+    world: "ice",
+    form: "penguin",
+    habitat: "amphibious",
+    colors: ["#273743", "#f2f1e5", "#e6a25a"],
+    length: 0.24,
+  },
+  walrus: {
+    label: "Walrus",
+    world: "ice",
+    form: "walrus",
+    habitat: "amphibious",
+    colors: ["#8f7567", "#b6947f", "#eee0bd"],
+    length: 0.43,
   },
   lavafinch: {
     label: "Lava finch",
@@ -171,7 +196,12 @@ export function worldFaunaSpecies() {
         model: `${id}/model.glb`,
         length: animal.length,
         radius: animal.length * 0.12,
-        speed: animal.habitat === "water" ? 0.031 : 0.028,
+        speed:
+          animal.habitat === "water"
+            ? 0.031
+            : animal.habitat === "amphibious"
+              ? 0.027
+              : 0.028,
         prey: animal.prey || [],
         sight: 0.29,
         actions: {
@@ -184,7 +214,9 @@ export function worldFaunaSpecies() {
         idleBehaviors:
           animal.habitat === "water"
             ? ["cruise", "dive", "breach"]
-            : ["look", "dart", "shake"],
+            : animal.habitat === "amphibious"
+              ? ["look", "dive", "cruise"]
+              : ["look", "dart", "shake"],
         accent: animal.colors[1],
         world: animal.world,
       },

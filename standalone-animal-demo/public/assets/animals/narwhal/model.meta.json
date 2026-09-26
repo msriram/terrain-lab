@@ -1,0 +1,18 @@
+{
+  "name": "Narwhal",
+  "habitat": "water",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash",
+    "Swim"
+  ],
+  "bytes": 173008,
+  "sha256": "bc0d8689a7b3b8cb830e1baa4a7ad0973c86aef61319c49571c6706065ff9873",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/polar-fauna.mjs"
+}

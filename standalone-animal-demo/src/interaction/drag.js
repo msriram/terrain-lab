@@ -33,7 +33,7 @@ export function bindAnimalInteraction({
     element.style.cursor = "grabbing";
     event.preventDefault();
     onMessage(
-      `Move to safe ${c.habitat === "water" ? "water" : "land"}; release to rescue.`,
+      `Move to safe ${c.habitat === "amphibious" ? "land or water" : c.habitat}; release to rescue.`,
     );
   };
   const move = (event) => {

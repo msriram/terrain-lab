@@ -44,7 +44,7 @@ export const LANDSCAPES = {
     colors: ["#a0dceb", "#edf9ef", "#73aeca"],
     weather: "snow",
     waves: true,
-    caption: "Snow flurries, glacial crystals, and frozen shores.",
+    caption: "Narwhals beneath the ice; bears, penguins, and walruses along the floes.",
   },
   volcanic: {
     label: "Volcanic",
@@ -245,14 +245,14 @@ export const WORLD_ROSTERS = {
     "drone",
   ],
   ice: [
-    "wolf",
-    "snowowl",
-    "snowowl",
-    "snowowl",
-    "muskox",
-    "muskox",
-    "koi",
-    "koi",
+    "polarbear",
+    "penguin",
+    "penguin",
+    "penguin",
+    "walrus",
+    "walrus",
+    "narwhal",
+    "narwhal",
   ],
   volcanic: [
     "heatserpent",
@@ -300,8 +300,8 @@ export const WORLD_ROSTERS = {
     "muskox",
     "muskox",
     "muskox",
-    "snowowl",
-    "snowowl",
+    "mountaingoat",
+    "mountaingoat",
     "koi",
   ],
   synthwave: [
@@ -462,3 +462,4 @@ export function rosterForWorld(theme, fallback) {
 export const WORLD_SIGNATURES = Object.fromEntries(
   Object.entries(WORLD_FAUNA).map(([id, animal]) => [animal.world, id]),
 );
+WORLD_SIGNATURES.ice = "narwhal";

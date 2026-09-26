@@ -30,6 +30,7 @@ export class AnimalSimulation {
       id,
       species,
       habitat: SPECIES[species].habitat,
+      surface: SPECIES[species].habitat === "water" ? "water" : "land",
       radius: SPECIES[species].radius,
       u: 0.5,
       v: 0.5,
@@ -71,7 +72,11 @@ export class AnimalSimulation {
         !Number.isFinite(e) ||
         (c.habitat === "water"
           ? e >= this.waterLevel - 0.009
-          : e <= this.waterLevel + 0.017 || Math.abs(e - center) > 0.105)
+          : c.habitat === "amphibious"
+            ? center > this.waterLevel &&
+              e > this.waterLevel &&
+              Math.abs(e - center) > 0.16
+            : e <= this.waterLevel + 0.017 || Math.abs(e - center) > 0.105)
       )
         return false;
     }
@@ -91,12 +96,26 @@ export class AnimalSimulation {
         }
       }
     c.active = !!best;
-    if (best) Object.assign(c, best);
+    if (best) {
+      Object.assign(c, best);
+      this.updateSurface(c);
+    }
+  }
+  updateSurface(c) {
+    c.surface =
+      c.habitat === "amphibious"
+        ? this.sampleTerrain(c.u, c.v) <= this.waterLevel
+          ? "water"
+          : "land"
+        : c.habitat;
   }
   reconcile() {
     for (const c of this.creatures) {
       if (c.respawnAt !== null) continue;
-      if (c.active && this.valid(c, c.u, c.v)) continue;
+      if (c.active && this.valid(c, c.u, c.v)) {
+        this.updateSurface(c);
+        continue;
+      }
       if (c.active) {
         c.active = false;
         c.respawnAt = this.time + 5;
@@ -116,6 +135,7 @@ export class AnimalSimulation {
           )
         ) {
           Object.assign(c, { u, v, active: true });
+          this.updateSurface(c);
           found = true;
           break;
         }
@@ -228,6 +248,7 @@ export class AnimalSimulation {
       if (this.valid(c, u, v)) {
         c.u = u;
         c.v = v;
+        this.updateSurface(c);
         c.moving = true;
       }
     }
@@ -277,6 +298,7 @@ export class AnimalSimulation {
     if (!c || !this.valid(c, u, v)) return false;
     c.u = u;
     c.v = v;
+    this.updateSurface(c);
     return true;
   }
   release(id) {

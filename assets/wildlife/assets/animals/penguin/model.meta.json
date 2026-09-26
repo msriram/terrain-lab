@@ -1,0 +1,18 @@
+{
+  "name": "Penguin",
+  "habitat": "amphibious",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash",
+    "Swim"
+  ],
+  "bytes": 137844,
+  "sha256": "62ca31e463d551cb602f10ddca87d8c50f7a77bda616369e886ff76ee9737f38",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/polar-fauna.mjs"
+}

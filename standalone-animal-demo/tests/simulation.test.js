@@ -6,8 +6,43 @@ import {
   DEFAULT_ROSTER,
 } from "../src/catalog/species.js";
 import { AnimalSimulation } from "../src/simulation/world.js";
-import { createTerrain, createSculptableTerrain } from "../src/terrain/fixtures.js";
+import { rosterForWorld } from "../src/catalog/landscapes.js";
+import {
+  createTerrain,
+  createSculptableTerrain,
+} from "../src/terrain/fixtures.js";
 import { readFileSync } from "node:fs";
+
+test("Glacier has polar wildlife and amphibious residents cross the shoreline", () => {
+  const roster = rosterForWorld("ice", []);
+  assert.deepEqual(
+    new Set(roster),
+    new Set(["narwhal", "polarbear", "penguin", "walrus"]),
+  );
+  assert.equal(SPECIES.snowowl, undefined);
+  const sim = new AnimalSimulation({
+    sampleTerrain: (u) => u,
+    waterLevel: 0.5,
+    seed: 14,
+    roster,
+  });
+  const bySpecies = (id) => sim.creatures.find((c) => c.species === id);
+  assert.equal(sim.valid(bySpecies("narwhal"), 0.2, 0.5), true);
+  assert.equal(sim.valid(bySpecies("narwhal"), 0.8, 0.5), false);
+  assert.equal(sim.valid(bySpecies("polarbear"), 0.8, 0.5), true);
+  assert.equal(sim.valid(bySpecies("polarbear"), 0.2, 0.5), false);
+  for (const id of ["penguin", "walrus"]) {
+    const animal = bySpecies(id);
+    assert.equal(sim.valid(animal, 0.2, 0.5), true);
+    assert.equal(sim.valid(animal, 0.8, 0.5), true);
+    assert.equal(sim.grab(animal.id), true);
+    assert.equal(sim.move(animal.id, 0.2, 0.5), true);
+    assert.equal(animal.surface, "water");
+    assert.equal(sim.move(animal.id, 0.8, 0.5), true);
+    assert.equal(animal.surface, "land");
+    sim.release(animal.id);
+  }
+});
 
 test("eight animals stay inside habitat footprints through terrain and water changes", () => {
   const sim = new AnimalSimulation({
@@ -18,7 +53,7 @@ test("eight animals stay inside habitat footprints through terrain and water cha
   for (const fixture of [0, 1, 2])
     for (const water of [0.3, 0.43, 0.6]) {
       sim.setTerrain(createTerrain(fixture), water);
-      for (let i = 0; i < 102; i++) sim.update(.05);
+      for (let i = 0; i < 102; i++) sim.update(0.05);
       assert.ok(
         sim.creatures.filter((c) => c.active).length >= 7,
         `fixture ${fixture}, water ${water}`,
@@ -45,9 +80,9 @@ test("missing habitat hides residents and restoring terrain recovers them", () =
   sim.setTerrain(() => 1);
   assert.equal(sim.creatures.filter((c) => c.active).length, 3);
   sim.setTerrain(createTerrain());
-  for (let i = 0; i < 99; i++) sim.update(.05);
-  assert.ok(sim.creatures.filter(c => c.active).length < 8);
-  for (let i = 0; i < 3; i++) sim.update(.05);
+  for (let i = 0; i < 99; i++) sim.update(0.05);
+  assert.ok(sim.creatures.filter((c) => c.active).length < 8);
+  for (let i = 0; i < 3; i++) sim.update(0.05);
   assert.equal(sim.creatures.filter((c) => c.active).length, 8);
   sim.setTerrain(() => NaN);
   assert.equal(sim.creatures.filter((c) => c.active).length, 0);

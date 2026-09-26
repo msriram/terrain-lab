@@ -3,7 +3,9 @@ export const distance = (a, b) => Math.hypot(a.u - b.u, (a.v - b.v) * 0.75);
 const direction = (a, b) => Math.atan2(b.u - a.u, (b.v - a.v) * 0.75);
 const wrap = (a) => Math.atan2(Math.sin(a), Math.cos(a));
 export function chooseAction(sim, c) {
-  const choices = SPECIES[c.species].idleBehaviors;
+  const choices = SPECIES[c.species].idleBehaviors.filter(
+    (action) => c.surface === "water" || action !== "dive",
+  );
   c.mode = choices[Math.floor(sim.random() * choices.length)];
   c.actionAge = 0;
   c.actionDuration =

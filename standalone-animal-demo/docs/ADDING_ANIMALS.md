@@ -29,6 +29,10 @@ The per-model JSON is inventory metadata; the catalog controls runtime behavior.
 
 In `src/catalog/species.js`, add to `SPECIES`:
 
+Choose `habitat: 'land'`, `'water'`, or `'amphibious'`. Amphibious animals can
+cross shorelines; `creature.surface` reports whether they are currently on land
+or in water, and a `Swim` GLB clip is selected automatically while swimming.
+
 ```js
 otter: {
   label: 'Otter',

@@ -279,7 +279,7 @@ export async function createAnimalLayer({
           ) * blend;
         a.root.position.set(
           (u - 0.5) * 4,
-          c.habitat === "water" ? 0.012 : 0,
+          c.surface === "water" ? 0.012 : 0,
           (v - 0.5) * 3,
         );
         a.root.rotation.y = a.displayHeading;

@@ -23,7 +23,10 @@ they can be replaced independently through `src/catalog/species.js`.
 | `manta/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
 | `glowbug/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
 | `lunamoth/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
-| `snowowl/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `narwhal/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/polar-fauna.mjs` |
+| `polarbear/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/polar-fauna.mjs` |
+| `penguin/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/polar-fauna.mjs` |
+| `walrus/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/polar-fauna.mjs` |
 | `lavafinch/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
 | `sandscorpion/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
 | `stagbeetle/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |

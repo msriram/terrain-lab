@@ -139,11 +139,13 @@ try {
       tag.className = "behavior-tag";
       labels.append(tag);
     });
-    const land = state.roster.filter(
-      (id) => SPECIES[id].habitat === "land",
-    ).length;
+    updateHabitatCounts();
+  }
+  function updateHabitatCounts() {
+    const active = layer.simulation.creatures.filter((c) => c.active);
+    const land = active.filter((c) => c.surface === "land").length;
     $("population").innerHTML =
-      `<i class="key land"></i> ${land} LAND <i class="key water"></i> ${state.roster.length - land} WATER`;
+      `<i class="key land"></i> ${land} LAND <i class="key water"></i> ${active.length - land} WATER`;
   }
   rebuildRoster();
   $("preset").addEventListener("change", applyPopulation);
@@ -283,6 +285,7 @@ try {
       tag.dataset.mode = c.mode;
     });
     if (now - start > 750) {
+      updateHabitatCounts();
       const stats = layer.getStats();
       $("fps").textContent = Math.round(
         samples.length / samples.reduce((a, b) => a + b, 0),

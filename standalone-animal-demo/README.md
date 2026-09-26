@@ -1,7 +1,7 @@
 # Terrain Lab · Field Notes
 
-A standalone 3D wildlife viewer for a 4:3 AR sandbox. Thirty-three locally bundled,
-animated GLB species; up to eight creatures; habitat-safe wandering and
+A standalone 3D wildlife viewer for a 4:3 AR sandbox. Thirty-six locally bundled,
+animated GLB species; up to 64 creatures; habitat-safe wandering and
 predator/prey reactions. This module now also powers the integrated sandbox at
 `/sandbox/`, while the focused public demo is available at `/wildlife/`.
 
@@ -173,7 +173,7 @@ A large shark can legitimately have no safe footprint at the lowest river tide.
 ## Asset licenses
 
 The fox model is CC0 with CC-BY 4.0 rigging/animation/conversion credits. The
-five original procedural assets use CC0. Full provenance and source links are
+other original procedural assets use CC0. Full provenance and source links are
 in [`public/assets/animals/ATTRIBUTION.md`](public/assets/animals/ATTRIBUTION.md).
 Three.js is MIT; its notice is bundled as `public/THIRD_PARTY_NOTICES.txt`.
 No marketplace-only, editorial-only, or testing-only models are included.
@@ -183,6 +183,9 @@ No marketplace-only, editorial-only, or testing-only models are included.
 The landscape selector offers 26 shared scenery recipes. Trees sway, forest rain
 falls, clouds drift, and surf follows the sampled shoreline. Atlantis, Coral Reef,
 and Abyss treat the entire map as seafloor and start with one shark and seven koi.
+Glacier includes original narwhal, polar bear, penguin, and walrus models.
+Penguins and walruses cross between ice and water, switching between walking
+and swimming animation as they enter each habitat.
 Clouds are translucent wind-shaped wisps. Moon craters and volcanic vents use
 low-profile ground textures instead of raised rings, while Universe uses nebula
 haze and terrain-driven spiral star fields instead of spherical galaxy props.
