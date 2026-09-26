@@ -44,8 +44,8 @@ export const SPECIES = {
     label: "Rabbit",
     habitat: "land",
     model: "rabbit/model.glb",
-    length: 0.23,
-    radius: 0.033,
+    length: 0.115,
+    radius: 0.0165,
     speed: 0.025,
     prey: [],
     sight: 0.26,
@@ -57,8 +57,8 @@ export const SPECIES = {
     label: "Koi",
     habitat: "water",
     model: "koi/model.glb",
-    length: 0.26,
-    radius: 0.035,
+    length: 0.13,
+    radius: 0.0175,
     speed: 0.031,
     prey: [],
     sight: 0.27,
@@ -183,10 +183,10 @@ export const PRESETS = {
 export function validateRoster(roster) {
   if (
     !Array.isArray(roster) ||
-    roster.length > 8 ||
+    roster.length > 64 ||
     roster.some((id) => !SPECIES[id])
   )
-    throw new Error("Roster must contain up to eight known species IDs.");
+    throw new Error("Roster must contain up to 64 known species IDs.");
 }
 
 // A population contains six prey/herbivores and two predators. Species and

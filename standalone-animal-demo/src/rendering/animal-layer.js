@@ -203,7 +203,7 @@ export async function createAnimalLayer({
       if (
         !snapshot ||
         !Array.isArray(snapshot.creatures) ||
-        snapshot.creatures.length > 8
+        snapshot.creatures.length > 64
       )
         return;
       const ids = snapshot.creatures.map((c) => c.species);
@@ -225,6 +225,7 @@ export async function createAnimalLayer({
     randomizeLandscape() {
       landscape.randomize();
     },
+    editLandscape(u, v, remove) { landscape.edit(u, v, remove); },
     setOptions(options = {}) {
       if (options.scenery !== undefined) scenery = options.scenery;
       if (options.atmosphere !== undefined) atmosphere = options.atmosphere;

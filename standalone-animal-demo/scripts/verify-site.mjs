@@ -241,7 +241,18 @@ try {
   const first = await page.evaluate(() =>
     animalDemo.layer.simulation.creatures.map((c) => [c.species, c.u, c.v]),
   );
-  await page.locator("#shuffle").click();
+  await page.locator("#animal-count").fill("16");
+  await page.locator("#animal-count").dispatchEvent("change");
+  assert.equal(await page.evaluate(() => animalDemo.layer.simulation.creatures.length), 16);
+  assert.equal(await page.locator("#shuffle, #stir").count(), 0);
+  await page.locator("#landscape").selectOption("atlantis");
+  assert.equal(await page.locator('#preset option[value="rabbit"]').count(), 0);
+  await page.locator("#pointer-mode").selectOption("elements");
+  const beforeProps = await page.evaluate(() => animalDemo.getMetrics().landscape.props);
+  await page.locator("#stage").click({position:{x:300,y:300}});
+  await page.waitForFunction(n => animalDemo.getMetrics().landscape.props === n + 1, beforeProps);
+  await page.locator("#stage").click({position:{x:300,y:300},button:"right"});
+  await page.waitForFunction(n => animalDemo.getMetrics().landscape.props === n, beforeProps);
   assert.notDeepEqual(
     await page.evaluate(() =>
       animalDemo.layer.simulation.creatures.map((c) => [c.species, c.u, c.v]),

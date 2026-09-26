@@ -78,28 +78,21 @@
                 Shape terrain · left carve / right add
               </option>
               <option value="move">Move wildlife · drag an animal</option>
+              <option value="elements">Landscape · left add / right remove</option>
             </select>
             <label for="preset">Population preset</label
             ><select id="preset">
-              <option value="random">Balanced · random wildlife</option>
-              <option value="reef">Shark & koi</option>
-              <option value="meadow">Fox & rabbit</option>
-              <option value="woodland">Wolf & deer</option>
-              <option value="custom" disabled>Custom roster</option>
             </select>
             <details>
-              <summary>Choose each animal <span>8 slots</span></summary>
+              <summary>Choose each animal</summary>
               <div id="roster"></div>
             </details>
-            <button class="capture" id="shuffle">
-              New population <span>↻</span>
-            </button>
+            <label for="animal-count">Population size · 0–64</label>
+            <input id="animal-count" type="number" min="0" max="64" value="8">
             <p id="rescue-message" class="help" role="status">
               Drag to carve a hollow. Right-drag to add sand.
             </p>
-            <button class="capture" id="stir">
-              Stir wildlife <span>↝</span></button
-            ><label class="toggle behavior-toggle"
+            <label class="toggle behavior-toggle"
               >Show behavior labels<input id="labels" type="checkbox" checked
             /></label>
             <p id="encounter" class="help" aria-live="polite">

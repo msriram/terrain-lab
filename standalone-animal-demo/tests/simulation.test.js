@@ -18,6 +18,7 @@ test("eight animals stay inside habitat footprints through terrain and water cha
   for (const fixture of [0, 1, 2])
     for (const water of [0.3, 0.43, 0.6]) {
       sim.setTerrain(createTerrain(fixture), water);
+      for (let i = 0; i < 102; i++) sim.update(.05);
       assert.ok(
         sim.creatures.filter((c) => c.active).length >= 7,
         `fixture ${fixture}, water ${water}`,
@@ -44,6 +45,9 @@ test("missing habitat hides residents and restoring terrain recovers them", () =
   sim.setTerrain(() => 1);
   assert.equal(sim.creatures.filter((c) => c.active).length, 3);
   sim.setTerrain(createTerrain());
+  for (let i = 0; i < 99; i++) sim.update(.05);
+  assert.ok(sim.creatures.filter(c => c.active).length < 8);
+  for (let i = 0; i < 3; i++) sim.update(.05);
   assert.equal(sim.creatures.filter((c) => c.active).length, 8);
   sim.setTerrain(() => NaN);
   assert.equal(sim.creatures.filter((c) => c.active).length, 0);
@@ -141,7 +145,9 @@ test("roster supports eight of any species, safe empty state, and rejects unknow
   sim.setRoster(Array(8).fill("wolf"));
   assert.equal(sim.creatures.filter((c) => c.active).length, 8);
   assert.throws(() => sim.setRoster(["dragon"]));
-  assert.throws(() => sim.setRoster(Array(9).fill("wolf")));
+  sim.setRoster(Array(24).fill("wolf"));
+  assert.equal(sim.creatures.length, 24);
+  assert.throws(() => sim.setRoster(Array(65).fill("wolf")));
   sim.setRoster([]);
   sim.update(0.1);
   assert.equal(sim.creatures.length, 0);

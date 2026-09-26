@@ -30,6 +30,7 @@ export function createLandscapeLayer(
     props = [],
     layoutSeed = 31;
   const resources = [];
+  let addedElements = [], removedElements = [];
   const own = (value) => (resources.push(value), value);
   function texture(kind) {
     const canvas = document.createElement("canvas");
@@ -363,8 +364,11 @@ export function createLandscapeLayer(
       scatteredStars = 0;
     }
     const candidates = recipe.underwater ? layout.sea : layout.land;
-    candidates.slice(0, recipe.underwater ? 24 : 20).forEach((p, i) => {
-      const kind = recipe.props[i % recipe.props.length],
+    const placements = candidates.slice(0, recipe.underwater ? 24 : 20)
+      .filter(p => !removedElements.some(q => Math.hypot(p.u-q.u, p.v-q.v) < .05))
+      .concat(addedElements);
+    placements.forEach((p, i) => {
+      const kind = p.kind || recipe.props[i % recipe.props.length],
         object = factory.build(kind, recipe.colors, Math.floor(p.phase * 1000));
       const scale =
         (["chest", "trident", "ruin"].includes(kind)
@@ -672,6 +676,7 @@ export function createLandscapeLayer(
     },
     setOptions(options) {
       if (options.theme && options.theme !== theme) {
+        addedElements = []; removedElements = [];
         theme = options.theme;
         recipe = LANDSCAPES[theme] || LANDSCAPES.earth;
         dirty = true;
@@ -681,9 +686,25 @@ export function createLandscapeLayer(
       if (options.motion !== undefined) motion = options.motion;
     },
     randomize() {
+      addedElements = []; removedElements = [];
       layoutSeed = Math.floor(Math.random() * 2147483647);
       dirty = true;
       lastBuild = -Infinity;
+    },
+    edit(u, v, remove) {
+      if (remove) {
+        const nearest = props.reduce((best, p) => !best ||
+          Math.hypot(p.p.u-u,p.p.v-v) < Math.hypot(best.p.u-u,best.p.v-v) ? p : best, null);
+        if (!nearest || Math.hypot(nearest.p.u-u, nearest.p.v-v) > .08) return;
+        addedElements = addedElements.filter(p => p !== nearest.p);
+        removedElements.push({u:nearest.p.u, v:nearest.p.v});
+      } else {
+        const height = sampleTerrain(u, v);
+        if (!Number.isFinite(height) || (!recipe.underwater && height <= waterLevel)) return;
+        addedElements.push({u,v,phase:Math.random()*6.28,size:.8+Math.random()*.4,
+          kind:recipe.props[Math.floor(Math.random()*recipe.props.length)]});
+      }
+      dirty = true; lastBuild = -Infinity;
     },
     getStats() {
       return {

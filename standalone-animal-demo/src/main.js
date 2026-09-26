@@ -5,7 +5,7 @@ import {
   rosterForWorld,
 } from "./catalog/landscapes.js";
 import { bindAnimalInteraction } from "./interaction/drag.js";
-import { SPECIES, randomRoster, PRESETS } from "./catalog/species.js";
+import { SPECIES, randomRoster } from "./catalog/species.js";
 import { createAnimalLayer } from "./rendering/animal-layer.js";
 import {
   createSculptableTerrain,
@@ -18,7 +18,7 @@ const state = {
   water: 0.43,
   pack: "earth",
   paused: false,
-  roster: randomRoster(),
+  roster: rosterForWorld("earth", randomRoster()),
 };
 let terrainModel = createSculptableTerrain(),
   sample = terrainModel.sample;
@@ -48,26 +48,37 @@ try {
     $("rescue-message").textContent =
       mode === "move"
         ? "Drag an animal to safe land or water."
+        : mode === "elements" ? "Click to add a landscape element. Right-click near one to remove it."
         : "Drag to carve a hollow. Right-drag to add sand.";
   }
   setPointerMode($("pointer-mode").value);
   $("pointer-mode").addEventListener("change", (event) =>
     setPointerMode(event.target.value),
   );
-  $("shuffle").addEventListener("click", () => {
-    state.roster = rosterForWorld(state.pack, randomRoster());
-    $("preset").value = "random";
+  function themeOptions() {
+    const ids = [...new Set(rosterForWorld(state.pack, randomRoster()))];
+    $("preset").replaceChildren(new Option("Balanced · " + LANDSCAPES[state.pack].label, "random"));
+    ids.forEach(id => $("preset").add(new Option(SPECIES[id].label + " group", id)));
+    $("preset").add(new Option("Custom roster", "custom"));
+    return ids;
+  }
+  function applyPopulation() {
+    const count = Math.max(0, Math.min(64, Math.round(Number($("animal-count").value) || 0)));
+    $("animal-count").value = count;
+    const choice = $("preset").value;
+    const base = choice === "random" || choice === "custom" ? rosterForWorld(state.pack, randomRoster()) : [choice];
+    state.roster = Array.from({length: count}, (_, i) => base[i % base.length]);
     layer.setRoster(state.roster);
     rebuildRoster();
-  });
+  }
+  $("animal-count").addEventListener("change", applyPopulation);
   const labels = $("behavior-labels");
   function setLandscape(theme) {
     const was = state.pack;
     state.pack = theme;
     if (theme !== was) {
-      state.roster = rosterForWorld(theme, randomRoster());
-      layer.setRoster(state.roster);
-      rebuildRoster();
+      themeOptions();
+      applyPopulation();
     }
     const wet = !!LANDSCAPES[theme].underwater;
     layer.setOptions({ theme, pack: wet ? "atlantis" : "earth" });
@@ -82,6 +93,7 @@ try {
   Object.entries(LANDSCAPES).forEach(([id, recipe]) =>
     $("landscape").add(new Option(recipe.label, id)),
   );
+  themeOptions();
   const requestedWorld = new URLSearchParams(location.search).get("theme");
   if (requestedWorld && LANDSCAPES[requestedWorld])
     setLandscape(requestedWorld);
@@ -107,7 +119,8 @@ try {
       row.append(name);
       const select = document.createElement("select");
       select.setAttribute("aria-label", `Animal slot ${index + 1}`);
-      Object.entries(SPECIES).forEach(([key, species]) => {
+      [...new Set(rosterForWorld(state.pack, randomRoster()))].forEach((key) => {
+        const species = SPECIES[key];
         const option = document.createElement("option");
         option.value = key;
         option.textContent = `${species.label} · ${species.habitat}`;
@@ -133,18 +146,7 @@ try {
       `<i class="key land"></i> ${land} LAND <i class="key water"></i> ${state.roster.length - land} WATER`;
   }
   rebuildRoster();
-  $("preset").addEventListener("change", (e) => {
-    state.roster =
-      e.target.value === "random"
-        ? rosterForWorld(state.pack, randomRoster())
-        : [...PRESETS[e.target.value].roster];
-    layer.setRoster(state.roster);
-    rebuildRoster();
-  });
-  $("stir").addEventListener("click", () => {
-    if (state.paused) $("pause").click();
-    layer.stir();
-  });
+  $("preset").addEventListener("change", applyPopulation);
   $("labels").addEventListener(
     "change",
     (e) => (labels.hidden = !e.target.checked),
@@ -179,6 +181,12 @@ try {
   stage.addEventListener(
     "pointerdown",
     (event) => {
+      if (pointerMode === "elements" && (event.button === 0 || event.button === 2)) {
+        const {u, v} = toUV(event);
+        layer.editLandscape(u, v, event.button === 2);
+        event.preventDefault(); event.stopPropagation();
+        return;
+      }
       if (pointerMode !== "sculpt") return;
       if (event.button !== 0 && event.button !== 2) return;
       sculptPointer = event.pointerId;

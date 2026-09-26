@@ -97,6 +97,11 @@ export class AnimalSimulation {
     for (const c of this.creatures) {
       if (c.respawnAt !== null) continue;
       if (c.active && this.valid(c, c.u, c.v)) continue;
+      if (c.active) {
+        c.active = false;
+        c.respawnAt = this.time + 5;
+        continue;
+      }
       let found = false;
       for (let j = 0; j < 400; j++) {
         const u = 0.07 + this.random() * 0.86;
@@ -158,7 +163,8 @@ export class AnimalSimulation {
       }
       if (!c.active || c.held) continue;
       if (!this.valid(c, c.u, c.v)) {
-        this.relocate(c);
+        c.active = false;
+        c.respawnAt = this.time + 5;
         continue;
       }
       c.timer -= dt;
@@ -240,7 +246,7 @@ export class AnimalSimulation {
       prey.active = false;
       prey.mode = "eaten";
       prey.target = null;
-      prey.respawnAt = this.time + 10 + this.random() * 6;
+      prey.respawnAt = this.time + 5;
       predator.mode = "feed";
       predator.actionAge = 0;
       predator.actionDuration = 2.2;

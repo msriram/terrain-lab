@@ -93,7 +93,7 @@ try {
       throw new Error("No shared habitat for test encounter");
     });
   }
-  await page.selectOption("#preset", "woodland");
+  await page.evaluate(() => animalDemo.layer.setRoster(["wolf", "deer"]));
   await arrangeEncounter();
   await page.waitForFunction(() =>
     animalDemo.layer.simulation.events.some(
@@ -104,7 +104,7 @@ try {
     path: "screenshots/controller-woodland.png",
     fullPage: true,
   });
-  await page.selectOption("#preset", "meadow");
+  await page.evaluate(() => animalDemo.layer.setRoster(["fox", "rabbit"]));
   await arrangeEncounter();
   await page.waitForFunction(() =>
     animalDemo.layer.simulation.events.some(
@@ -118,14 +118,14 @@ try {
     "deer",
   );
   await page.locator("summary").click();
-  await page.selectOption("#preset", "reef");
+  await page.evaluate(() => animalDemo.layer.setRoster(["shark", "koi"]));
   await arrangeEncounter();
   await page.waitForFunction(() =>
     animalDemo.layer.simulation.events.some(
       (e) => e.predator === "shark" && e.prey === "koi",
     ),
   );
-  await page.getByRole("button", { name: "Stir wildlife" }).click();
+  await page.evaluate(() => animalDemo.layer.stir());
   assert.ok(
     await page.evaluate(() =>
       animalDemo.layer.simulation.creatures.some((c) => c.mode === "breach"),
@@ -244,7 +244,7 @@ try {
     hardware: "Apple M3 Pro MacBook Pro, 36 GB RAM",
     measurement,
     checks: [
-      "33 selectable animated species / 8 slots",
+      "theme-specific populations / up to 64 animals",
       "wolf/deer and fox/rabbit proximity pursuit",
       "shark/koi pursuit",
       "fish breaches",
