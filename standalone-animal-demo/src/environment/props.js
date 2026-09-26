@@ -1,9 +1,11 @@
 import * as T from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
+import { seededRandom } from "../simulation/world.js";
 /** Original low-poly scenery kits. Static parts merge by material for low draw cost. */
 export function createPropFactory() {
   const cache = new Map(),
     resources = [];
+  const windTime = { value: 0 };
   function groundTexture(kind, colors) {
     const canvas = document.createElement("canvas");
     canvas.width = canvas.height = 256;
@@ -74,8 +76,11 @@ export function createPropFactory() {
     resources.push(texture);
     return texture;
   }
-  function build(kind, colors) {
-    const key = kind + colors.join();
+  function build(kind, colors, seed = 0) {
+    const tree = ["tree", "snowpine", "palm"].includes(kind);
+    const variant = tree ? Math.abs(Math.floor(seed)) % 16 : 0;
+    const rng = seededRandom(variant * 7919 + 83);
+    const key = kind + colors.join() + ":" + variant;
     if (cache.has(key)) return cache.get(key).clone();
     const root = new T.Group();
     const mats = colors.map(
@@ -102,6 +107,24 @@ export function createPropFactory() {
       metalness: 0.5,
       roughness: 0.4,
     });
+    if (tree) {
+      for (const material of [...mats, wood]) {
+        material.onBeforeCompile = (shader) => {
+          shader.uniforms.windTime = windTime;
+          shader.vertexShader = "uniform float windTime;\n" + shader.vertexShader;
+          shader.vertexShader = shader.vertexShader.replace("#include <begin_vertex>", `
+            #include <begin_vertex>
+            float heightWeight = max(position.y, 0.);
+            float phase = ${(variant * .73).toFixed(3)};
+            float gust = sin(windTime * 1.1 + phase) + .35 * sin(windTime * 2.3 + phase);
+            transformed.x += gust * .065 * heightWeight * heightWeight;
+            transformed.z += sin(windTime * .83 + phase) * .045 * heightWeight * heightWeight;
+            transformed.x += sin(windTime * 3.6 + position.x * 8. + phase) * .018 * heightWeight;
+          `);
+        };
+        material.customProgramCacheKey = () => "tree-wind-" + variant;
+      }
+    }
     const put = (
       geometry,
       material,
@@ -140,19 +163,39 @@ export function createPropFactory() {
     const ring = (p, r, t, mat = mats[0], rotation = [Math.PI / 2, 0, 0]) =>
       put(new T.TorusGeometry(r, t, 6, 24), mat, p, [1, 1, 1], rotation);
     if (["tree", "snowpine"].includes(kind)) {
-      rod([0, 0, 0], [0, 0.95, 0], 0.1, wood);
+      const height = 1.05 + rng() * .65;
+      const lean = (rng() - .5) * .2;
+      rod([0, 0, 0], [lean, height, 0], .055 + rng() * .025, wood);
       if (kind === "snowpine") {
-        for (let i = 0; i < 3; i++)
-          cone(
-            [0, 0.5 + i * 0.32, 0],
-            0.55 - i * 0.1,
-            0.8,
-            i === 2 ? mats[1] : mats[0],
-          );
+        for (let tier = 0; tier < 6; tier++) {
+          const y = .32 + tier * height / 7;
+          const radius = (.48 - tier * .061) * (.8 + rng() * .4);
+          for (let j = 0; j < 5; j++) {
+            const a = j * Math.PI * 2 / 5 + tier * 1.3 + rng() * .4;
+            const tip = [lean * y / height + Math.cos(a) * radius, y - .08, Math.sin(a) * radius];
+            rod([lean * y / height, y, 0], tip, .018, wood);
+            cone(tip, radius * .42, .25 + rng() * .15, mats[j % 3 === 0 ? 1 : 0], 5);
+          }
+        }
+        cone([lean, height, 0], .14, .38);
       } else {
-        ball([0, 0.87, 0], [0.65, 0.6, 0.6]);
-        ball([-0.4, 0.68, 0.16], [0.4, 0.4, 0.4], mats[1]);
-        ball([0.35, 0.75, -0.2], [0.45, 0.43, 0.4], mats[1]);
+        const narrow = variant % 3 === 0;
+        const branches = 7 + Math.floor(rng() * 5);
+        for (let i = 0; i < branches; i++) {
+          const a = i * 2.399 + rng() * .65;
+          const y = height * (.35 + rng() * .5);
+          const reach = (narrow ? .22 : .37) + rng() * .24;
+          const tip = [lean + Math.cos(a) * reach, y + .18 + rng() * .2, Math.sin(a) * reach];
+          rod([lean * y / height, y, 0], tip, .025, wood);
+          for (let j = 0; j < 3; j++) {
+            const off = a + j * 2.1;
+            const leaf = [tip[0] + Math.cos(off) * .12, tip[1] + rng() * .16, tip[2] + Math.sin(off) * .12];
+            rod(tip, leaf, .01, wood);
+            const size = .10 + rng() * .1;
+            ball(leaf, [size, size * (narrow ? 1.8 : 1.2), size * .8], mats[(i + j) % 2]);
+          }
+        }
+        ball([lean, height + .12, 0], [.18, .3, .16]);
       }
     } else if (kind === "palm") {
       rod([0, 0, 0], [0.1, 0.9, 0.06], 0.075, wood);
@@ -422,6 +465,7 @@ export function createPropFactory() {
   }
   return {
     build,
+    setTime(time) { windTime.value = time; },
     dispose() {
       resources.forEach((r) => r.dispose());
       cache.clear();

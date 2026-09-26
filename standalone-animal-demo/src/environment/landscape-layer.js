@@ -365,7 +365,7 @@ export function createLandscapeLayer(
     const candidates = recipe.underwater ? layout.sea : layout.land;
     candidates.slice(0, recipe.underwater ? 24 : 20).forEach((p, i) => {
       const kind = recipe.props[i % recipe.props.length],
-        object = factory.build(kind, recipe.colors);
+        object = factory.build(kind, recipe.colors, Math.floor(p.phase * 1000));
       const scale =
         (["chest", "trident", "ruin"].includes(kind)
           ? 0.29
@@ -412,9 +412,10 @@ export function createLandscapeLayer(
     )
       rebuild();
     living.update(dt, theme, recipe, motion);
+    factory.setTime(time);
     for (const { object, kind, p, scale } of props) {
       if (
-        ["tree", "palm", "flowers", "seaweed", "coral", "snowpine"].includes(
+        ["flowers", "seaweed", "coral"].includes(
           kind,
         )
       ) {
