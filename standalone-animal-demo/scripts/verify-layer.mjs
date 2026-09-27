@@ -78,6 +78,9 @@ try {
     layer.setRoster([]);
     layer.update(0);
   });
+  assert.equal(await page.evaluate(() => layer.getStats().active), 0);
+  // Scenery can still render after the wildlife roster is emptied.
+  await page.evaluate(() => { layer.setOptions({ scenery: false }); layer.update(0); });
   assert.equal(await page.evaluate(() => layer.getStats().drawCalls), 0);
   await page.evaluate(() => layer.dispose());
   await writeFile(

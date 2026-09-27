@@ -66,3 +66,12 @@ test("each signature creature appears in its own world", async () => {
         world,
       );
 });
+
+test("Tundra has distinct local wildlife and height-based scenery", async () => {
+  const { WORLD_ROSTERS, LANDSCAPES } = await import("../src/catalog/landscapes.js");
+  const roster = WORLD_ROSTERS.tundra;
+  for (const id of ["brownbear", "dallsheep", "moose"])
+    assert.ok(roster.includes(id), `${id} missing from Tundra`);
+  assert.deepEqual(LANDSCAPES.tundra.props, ["meadow", "coniferstand", "rockpeak"]);
+  assert.equal(roster.length, 8);
+});

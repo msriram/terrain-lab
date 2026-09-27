@@ -369,15 +369,20 @@ export function createLandscapeLayer(
       scatteredStars = 0;
     }
     const candidates = recipe.underwater ? layout.sea : layout.land;
-    const placements = candidates.slice(0, theme === "coral" ? 10 : recipe.underwater ? 24 : 20)
+    const placements = candidates.slice(0, theme === "tundra" ? 30 : theme === "coral" ? 10 : recipe.underwater ? 24 : 20)
       .filter(p => !removedElements.some(q => Math.hypot(p.u-q.u, p.v-q.v) < .05))
       .concat(addedElements);
     placements.forEach((p, i) => {
-      const kind = p.kind || recipe.props[i % recipe.props.length],
+      const kind = p.kind || (theme === "tundra"
+        ? p.h > 0.76 ? "rockpeak" : p.h > 0.57 && i % 3 !== 0 ? "coniferstand" : "meadow"
+        : recipe.props[i % recipe.props.length]),
         object = factory.build(kind, recipe.colors, Math.floor(p.phase * 1000));
       const scale =
         (["chest", "trident", "ruin"].includes(kind)
           ? 0.29
+          : kind === "coniferstand" ? 0.56
+          : kind === "meadow" ? 0.48
+          : kind === "rockpeak" ? 0.45
           : kind === "crater" && theme === "moon"
             ? 0.4
           : kind === "knoll"

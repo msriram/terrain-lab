@@ -1,0 +1,17 @@
+{
+  "name": "Dall sheep",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 175856,
+  "sha256": "c46c7c13fc0b62ce421bb5bb8dc4b800947f8de598b2816bec518ca330ca3d8b",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/tundra-fauna.mjs"
+}

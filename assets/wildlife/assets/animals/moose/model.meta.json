@@ -1,0 +1,17 @@
+{
+  "name": "Moose",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 189680,
+  "sha256": "ce60e2a333ca94a57156af878bfca8f6069809a063e03da066d14b0bd3f011bb",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/tundra-fauna.mjs"
+}

@@ -7,6 +7,7 @@ import { mkdir } from "node:fs/promises";
 import { WORLD_FAUNA } from "../src/catalog/world-fauna.js";
 import { makeWorldFauna } from "./models/world-fauna.mjs";
 import { makePolarFauna } from "./models/polar-fauna.mjs";
+import { makeTundraFauna } from "./models/tundra-fauna.mjs";
 import { makeShark } from "./models/shark.mjs";
 // Registers FileReader and rebuilds the original animated koi.
 await import("./build-fish.mjs");
@@ -29,6 +30,8 @@ for (const species of [
         ? makeLandAnimal(species)
         : ["narwhal", "polarbear", "penguin", "walrus"].includes(species)
           ? makePolarFauna(species)
+          : ["brownbear", "dallsheep", "moose"].includes(species)
+            ? makeTundraFauna(species)
           : WORLD_FAUNA[species]
             ? makeWorldFauna(species)
             : makeOtherworld(species);

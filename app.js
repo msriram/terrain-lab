@@ -27,7 +27,7 @@
     desert:{name:"Sahara",accent:"#f2c46d",water:"#174f68",colors:["#302011","#684322","#a76c34","#d99b52","#f0c879","#ead89c","#c29c63","#fff1cc"]},
     forest:{name:"Ancient forest",accent:"#8cda70",water:"#083b42",colors:["#061713","#0c3325","#175936","#2e7941","#58964d","#87a95d","#b7b978","#e2d4a2"]},
     coral:{name:"Coral reef",accent:"#ff8ba0",water:"#04347d",colors:["#031340","#075b9b","#09a8ae","#4cd2b0","#f2c75c","#f37d62","#d84d80","#ffd6b3"]},
-    tundra:{name:"Tundra",accent:"#bad8cf",water:"#193d59",colors:["#15282d","#29494a","#526b59","#7c896c","#a7a58b","#c7c4ad","#e0ded1","#ffffff"]},
+    tundra:{name:"Tundra",accent:"#c7ba72",water:"#254b62",colors:["#263f4a","#586c56","#828148","#aaa05b","#ae9b65","#77766c","#b8b9b4","#f5f4ea"]},
     synthwave:{name:"Synthwave",accent:"#ff4edb",water:"#080b46",colors:["#05021c","#15106b","#2835b8","#7147d6","#c73dbd","#ff4b85","#ff8956","#ffe071"]},
     thermal:{name:"Thermal",accent:"#ffe66b",water:"#020024",colors:["#000004","#160b39","#4b0c6b","#781c6d","#a52c60","#cf4446","#ed6925","#fb9b06","#f7d13d","#fcffa4"]},
     topographic:{name:"Classic topo",accent:"#e7d06b",water:"#245994",colors:["#123663","#287ba1","#cdbb78","#75934b","#436c38","#765d3f","#a98f6c","#eee5d0"]},

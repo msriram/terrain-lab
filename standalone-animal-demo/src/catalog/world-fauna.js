@@ -98,6 +98,19 @@ export const WORLD_FAUNA = {
     colors: ["#6b5348", "#ccb995", "#f2e8c8"],
     length: 0.38,
   },
+  brownbear: {
+    label: "Brown bear", world: "tundra", form: "bear",
+    colors: ["#68452f", "#9a6b43", "#2c2625"], length: 0.43,
+    prey: ["dallsheep"],
+  },
+  dallsheep: {
+    label: "Dall sheep", world: "tundra", form: "sheep",
+    colors: ["#e5dfc7", "#c0ad87", "#514a42"], length: 0.32,
+  },
+  moose: {
+    label: "Moose", world: "tundra", form: "moose",
+    colors: ["#594735", "#a28a68", "#38342e"], length: 0.45,
+  },
   prismwing: {
     label: "Prism wing",
     world: "synthwave",

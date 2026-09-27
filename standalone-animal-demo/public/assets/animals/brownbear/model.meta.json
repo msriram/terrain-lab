@@ -1,0 +1,17 @@
+{
+  "name": "Brown bear",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 157128,
+  "sha256": "e8bf39daabb49822fd66c62ad101359b58efc35f73cf9b254a993f5dac8fea13",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/tundra-fauna.mjs"
+}

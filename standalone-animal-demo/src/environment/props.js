@@ -93,7 +93,7 @@ export function createPropFactory() {
     return texture;
   }
   function build(kind, colors, seed = 0) {
-    const tree = ["tree", "snowpine", "palm"].includes(kind);
+    const tree = ["tree", "snowpine", "coniferstand", "palm"].includes(kind);
     const variant = tree ? Math.abs(Math.floor(seed)) % 16 : ["crater", "reefcolony"].includes(kind) ? Math.abs(Math.floor(seed)) % 8 : 0;
     const rng = seededRandom(variant * 7919 + 83);
     const key = kind + colors.join() + ":" + variant;
@@ -178,7 +178,38 @@ export function createPropFactory() {
       put(new T.ConeGeometry(r, h, sides), mat, p);
     const ring = (p, r, t, mat = mats[0], rotation = [Math.PI / 2, 0, 0]) =>
       put(new T.TorusGeometry(r, t, 6, 24), mat, p, [1, 1, 1], rotation);
-    if (["tree", "snowpine"].includes(kind)) {
+    if (kind === "meadow") {
+      // Dense ochre/olive tussocks merge into three cheap material batches.
+      for (let tuft = 0; tuft < 13; tuft++) {
+        const x = (rng() - .5) * 1.75, z = (rng() - .5) * 1.4;
+        for (let blade = 0; blade < 5; blade++) {
+          const a = blade * 2.399 + tuft;
+          rod([x, .015, z], [x + Math.cos(a) * .14, .16 + rng() * .16, z + Math.sin(a) * .14], .012, mats[(tuft + blade) % 2]);
+        }
+      }
+    } else if (kind === "coniferstand") {
+      for (let i = 0; i < 7; i++) {
+        const x = (rng() - .5) * 1.7, z = (rng() - .5) * 1.4;
+        const height = .8 + rng() * .65;
+        rod([x,0,z],[x,height,z],.045,wood);
+        for (let tier = 0; tier < 5; tier++) {
+          const y = .24 + tier * height / 6;
+          cone([x,y,z],(.38-tier*.052)*(.8+rng()*.3),.43,mats[tier % 3 === 0 ? 1 : 0],7);
+        }
+      }
+    } else if (kind === "rockpeak") {
+      // Exposed dark pinnacles with small angled snow patches, never rounded boulders.
+      const bareRock = new T.MeshStandardMaterial({color:"#77746e",roughness:1,flatShading:true});
+      const snow = new T.MeshStandardMaterial({color:"#e8e9e4",roughness:1,flatShading:true});
+      for (let i = 0; i < 4; i++) {
+        const x = (rng()-.5)*1.1, z=(rng()-.5)*.9;
+        const height=.5+rng()*.75;
+        const crag = cone([x,height*.48,z],.18+rng()*.16,height,bareRock,5);
+        crag.rotation.z=(rng()-.5)*.35;
+        const cap=cone([x,height*.88,z],.1,height*.24,snow,5);
+        cap.rotation.z=crag.rotation.z;
+      }
+    } else if (["tree", "snowpine"].includes(kind)) {
       const height = 1.05 + rng() * .65;
       const lean = (rng() - .5) * .2;
       rod([0, 0, 0], [lean, height, 0], .055 + rng() * .025, wood);
