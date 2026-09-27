@@ -72,11 +72,11 @@ export const LANDSCAPES = {
   },
   coral: {
     label: "Coral reef",
-    props: ["coral", "seaweed", "shell", "knoll"],
+    props: ["seaweed", "shell"],
     colors: ["#ee947d", "#6bcbb2", "#dac188"],
     weather: "bubbles",
     underwater: true,
-    caption: "Branching coral, pearl shells, and sunlit currents.",
+    caption: "Branching colonies grow across raised sand; shape the seabed to grow a reef.",
   },
   tundra: {
     label: "Tundra",

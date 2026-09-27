@@ -4,6 +4,7 @@ import { analyzeLandscape } from "./layout.js";
 import { createPropFactory } from "./props.js";
 import { seededRandom } from "../simulation/world.js";
 import { createLivingEffects } from "./living-effects.js";
+import { reefGrowth } from "./reef-growth.js";
 
 const PROP_SCALE = 0.5;
 const LANDSCAPE_REBUILD_DELAY_SECONDS = 2.4;
@@ -19,6 +20,10 @@ export function createLandscapeLayer(
   const living = createLivingEffects(root);
   const propsRoot = new T.Group();
   root.add(propsRoot);
+  const reefRoot = new T.Group();
+  reefRoot.name = "Growing coral reef";
+  root.add(reefRoot);
+  let reefs = [];
   const factory = createPropFactory();
   let recipe = LANDSCAPES[theme] || LANDSCAPES.earth,
     dirty = true,
@@ -364,7 +369,7 @@ export function createLandscapeLayer(
       scatteredStars = 0;
     }
     const candidates = recipe.underwater ? layout.sea : layout.land;
-    const placements = candidates.slice(0, recipe.underwater ? 24 : 20)
+    const placements = candidates.slice(0, theme === "coral" ? 10 : recipe.underwater ? 24 : 20)
       .filter(p => !removedElements.some(q => Math.hypot(p.u-q.u, p.v-q.v) < .05))
       .concat(addedElements);
     placements.forEach((p, i) => {
@@ -386,6 +391,25 @@ export function createLandscapeLayer(
       propsRoot.add(object);
       props.push({ object, kind, p, scale });
     });
+    if (theme === "coral" && reefs.length === 0) {
+      const reefRandom = seededRandom(layoutSeed);
+      const palettes = [
+        ["#b85b62", "#d39958", "#845d9d"],
+        ["#ba6b91", "#bca769", "#4f9b8e"],
+        ["#c68b66", "#7667a4", "#b89851"],
+      ];
+      for (let y = 0; y < 4; y++) for (let x = 0; x < 6; x++) {
+        const u = (x + 0.5 + (reefRandom() - 0.5) * 0.36) / 6;
+        const v = (y + 0.5 + (reefRandom() - 0.5) * 0.36) / 4;
+        const phase = reefRandom() * Math.PI * 2;
+        const object = factory.build("reefcolony", palettes[(x + y) % palettes.length], Math.floor(phase * 1000));
+        object.position.set((u - 0.5) * 4, 0.004, (v - 0.5) * 3);
+        object.rotation.y = phase;
+        object.scale.setScalar(0.001);
+        reefRoot.add(object);
+        reefs.push({ u, v, phase, object, growth: 0 });
+      }
+    }
     rebuildNetwork();
     for (const wave of waves)
       wave.geometry.setAttribute(
@@ -419,6 +443,14 @@ export function createLandscapeLayer(
       rebuild();
     living.update(dt, theme, recipe, motion);
     factory.setTime(time);
+    reefRoot.visible = theme === "coral";
+    if (reefRoot.visible) for (const reef of reefs) {
+      const target = reefGrowth(sampleTerrain, reef.u, reef.v);
+      reef.growth += (target - reef.growth) * (motion ? 1 - Math.exp(-Math.min(dt, 0.05) * 1.65) : 1);
+      reef.object.visible = reef.growth > 0.04;
+      reef.object.scale.setScalar((0.1 + reef.growth * 0.39) * (1 + Math.sin(time * 0.7 + reef.phase) * 0.012));
+      reef.object.rotation.z = Math.sin(time * 0.85 + reef.phase) * 0.012;
+    }
     for (const { object, kind, p, scale } of props) {
       if (
         ["flowers", "seaweed", "coral"].includes(
@@ -689,6 +721,7 @@ export function createLandscapeLayer(
     },
     randomize() {
       addedElements = []; removedElements = [];
+      reefRoot.clear(); reefs = [];
       layoutSeed = Math.floor(Math.random() * 2147483647);
       dirty = true;
       lastBuild = -Infinity;
@@ -716,6 +749,8 @@ export function createLandscapeLayer(
         signalLinks: links.length,
         scatteredStars,
         props: props.length,
+        reefColonies: reefs.filter((reef) => reef.object.visible && reefRoot.visible).length,
+        reefGrowth: reefs.reduce((total, reef) => total + reef.growth, 0),
         propKinds: [...new Set(props.map((p) => p.kind))],
         shoreSegments: layout.shore.length,
         erupting: !!recipe.eruption && layout.volcanoes.length > 0,

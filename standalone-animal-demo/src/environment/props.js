@@ -94,7 +94,7 @@ export function createPropFactory() {
   }
   function build(kind, colors, seed = 0) {
     const tree = ["tree", "snowpine", "palm"].includes(kind);
-    const variant = tree ? Math.abs(Math.floor(seed)) % 16 : kind === "crater" ? Math.abs(Math.floor(seed)) % 8 : 0;
+    const variant = tree ? Math.abs(Math.floor(seed)) % 16 : ["crater", "reefcolony"].includes(kind) ? Math.abs(Math.floor(seed)) % 8 : 0;
     const rng = seededRandom(variant * 7919 + 83);
     const key = kind + colors.join() + ":" + variant;
     if (cache.has(key)) return cache.get(key).clone();
@@ -109,7 +109,7 @@ export function createPropFactory() {
             ? 0.4
             : 0,
           emissive: color,
-          emissiveIntensity: ["crystal", "jellyfish", "vent"].includes(kind)
+          emissiveIntensity: ["crystal", "jellyfish", "vent", "reefcolony"].includes(kind)
             ? 0.12
             : 0,
         }),
@@ -250,6 +250,47 @@ export function createPropFactory() {
         else {
           ball([x, 0.35, z], [0.1, 0.45, 0.035], mats[i % 2]);
         }
+      }
+    } else if (kind === "reefcolony") {
+      // One broad colony combines staggered staghorn crowns and fine sea fans.
+      // Every branch is merged by material below, so a large reef stays cheap.
+      const reefRock = new T.MeshStandardMaterial({ color: "#3d6570", roughness: 1, flatShading: true });
+      for (let shelf = 0; shelf < 5; shelf++) {
+        const angle = shelf * 2.39 + rng() * 0.4;
+        const distance = shelf === 0 ? 0 : 0.23 + rng() * 0.32;
+        const plate = put(
+          new T.IcosahedronGeometry(1, 0), reefRock,
+          [Math.cos(angle) * distance, 0.065, Math.sin(angle) * distance],
+          [0.46 + rng() * 0.22, 0.11 + rng() * 0.04, 0.34 + rng() * 0.23],
+        );
+        plate.rotation.y = angle;
+      }
+      for (let crown = 0; crown < 7; crown++) {
+        const a = crown * 2.4 + rng() * 0.4;
+        const spread = crown === 0 ? 0 : 0.2 + rng() * 0.38;
+        const cx = Math.cos(a) * spread, cz = Math.sin(a) * spread;
+        const top = 0.46 + rng() * 0.31;
+        rod([cx * 0.65, 0.01, cz * 0.65], [cx, top, cz], 0.075, mats[crown % 3]);
+        for (let arm = 0; arm < 6; arm++) {
+          const angle = a + (arm - 2.5) * 0.46 + (rng() - 0.5) * 0.48;
+          const reach = 0.22 + rng() * 0.38;
+          const start = [cx * (0.78 + rng() * 0.2), top * (0.55 + rng() * 0.28), cz * (0.78 + rng() * 0.2)];
+          const shoulder = [cx + Math.cos(angle) * reach * 0.44, top + (rng() - 0.5) * 0.16, cz + Math.sin(angle) * reach * 0.44];
+          const tip = [cx + Math.cos(angle) * reach, top + 0.07 + rng() * 0.27, cz + Math.sin(angle) * reach];
+          rod(start, shoulder, 0.055, mats[crown % 3]);
+          rod(shoulder, tip, 0.033, mats[crown % 3]);
+          for (const sign of [-1, 1]) {
+            const fork = [tip[0] + Math.cos(angle + sign * 0.72) * 0.12, tip[1] + 0.12, tip[2] + Math.sin(angle + sign * 0.72) * 0.12];
+            rod(tip, fork, 0.02, mats[crown % 3]);
+          }
+        }
+      }
+      for (let i = 0; i < 16; i++) {
+        const a = i * 2.4 + rng() * 0.18;
+        const end = [Math.cos(a) * (0.57 + rng() * 0.25), 0.06 + rng() * 0.08, Math.sin(a) * (0.48 + rng() * 0.25)];
+        rod([0, 0.015, 0], end, 0.032, mats[i % 3]);
+        const side = [end[0] * 1.13, end[1] + 0.11, end[2] * 1.13];
+        rod(end, side, 0.02, mats[(i + 1) % 3]);
       }
     } else if (kind === "coral") {
       for (let i = 0; i < 6; i++) {

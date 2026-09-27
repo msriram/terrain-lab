@@ -186,6 +186,9 @@ and Abyss treat the entire map as seafloor and start with one shark and seven ko
 Glacier includes original narwhal, polar bear, penguin, and walrus models.
 Penguins and walruses cross between ice and water, switching between walking
 and swimming animation as they enter each habitat.
+Coral Reef grows broad branching colonies where a contiguous sand mound rises;
+lowering that mound lets the colony recede. This growth responds continuously
+to sculpting or live sensor terrain and keeps the colony geometry batched.
 Clouds are translucent wind-shaped wisps. Moon craters and volcanic vents use
 low-profile ground textures instead of raised rings, while Universe uses nebula
 haze and terrain-driven spiral star fields instead of spherical galaxy props.
