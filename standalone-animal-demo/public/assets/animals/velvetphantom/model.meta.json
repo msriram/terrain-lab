@@ -1,0 +1,17 @@
+{
+  "name": "Velvet phantom",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Jump",
+    "Dash"
+  ],
+  "bytes": 91396,
+  "sha256": "069160d6ad72382908958c3e874a938c3f84f17737fe7b65f2c4c9a2ed2d0203",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/synthwave-fauna.mjs"
+}

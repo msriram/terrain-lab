@@ -31,7 +31,9 @@ for (const [id, species] of Object.entries(SPECIES)) {
           : id === "shark"
             ? "scripts/models/shark.mjs"
             : WORLD_FAUNA[id]
-              ? ["brownbear", "dallsheep", "moose"].includes(id)
+              ? ["neonbehemoth", "glitchimp", "velvetphantom"].includes(id)
+                ? "scripts/models/synthwave-fauna.mjs"
+                : ["brownbear", "dallsheep", "moose"].includes(id)
                 ? "scripts/models/tundra-fauna.mjs"
                 : ["narwhal", "polarbear", "penguin", "walrus"].includes(id)
                 ? "scripts/models/polar-fauna.mjs"

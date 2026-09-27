@@ -27527,6 +27527,31 @@ const rl = {
     colors: ["#f87dc9", "#76dce8", "#a980ee"],
     length: 0.32
   },
+  neonbehemoth: {
+    label: "Neon behemoth",
+    world: "synthwave",
+    form: "behemoth",
+    colors: ["#35245f", "#f345ac", "#7d52df"],
+    length: 0.52,
+    prey: ["glitchimp", "prismwing"],
+    locomotion: "bounce"
+  },
+  glitchimp: {
+    label: "Glitch imp",
+    world: "synthwave",
+    form: "imp",
+    colors: ["#512b88", "#ff70cb", "#60e9ee"],
+    length: 0.29,
+    locomotion: "bounce"
+  },
+  velvetphantom: {
+    label: "Velvet phantom",
+    world: "synthwave",
+    form: "phantom",
+    colors: ["#462b83", "#e46be9", "#a6f2ff"],
+    length: 0.34,
+    locomotion: "bounce"
+  },
   ventcrab: {
     label: "Vent crab",
     world: "thermal",
@@ -27618,19 +27643,20 @@ function Bm() {
         model: `${s}/model.glb`,
         length: e.length,
         radius: e.length * 0.12,
-        speed: e.habitat === "water" ? 0.031 : e.habitat === "amphibious" ? 0.027 : 0.028,
+        speed: e.locomotion === "bounce" ? 4e-3 : e.habitat === "water" ? 0.031 : e.habitat === "amphibious" ? 0.027 : 0.028,
         prey: e.prey || [],
         sight: 0.29,
         actions: {
           idle: "Idle",
-          move: "Move",
+          move: e.locomotion === "bounce" ? "Jump" : "Move",
           chase: "Dash",
           flee: "Dash",
-          breach: "Move"
+          breach: e.locomotion === "bounce" ? "Jump" : "Move"
         },
         idleBehaviors: e.habitat === "water" ? ["cruise", "dive", "breach"] : e.habitat === "amphibious" ? ["look", "dive", "cruise"] : ["look", "dart", "shake"],
         accent: e.colors[1],
-        world: e.world
+        world: e.world,
+        locomotion: e.locomotion
       }
     ])
   );
@@ -28142,7 +28168,7 @@ const mi = {
     props: ["pyramid", "crystal", "arch"],
     colors: ["#e67dca", "#75ceda", "#9975d9"],
     weather: "neon",
-    caption: "Neon monuments pulse across a digital landscape."
+    caption: "Neon beasts and strange spirits spring beneath a synthetic sunset."
   },
   thermal: {
     label: "Thermal",
@@ -28354,14 +28380,14 @@ const mi = {
     "muskox"
   ],
   synthwave: [
-    "voidray",
-    "prismwing",
-    "prismwing",
-    "prismwing",
-    "prismwing",
-    "prismwing",
-    "drone",
-    "drone"
+    "neonbehemoth",
+    "glitchimp",
+    "glitchimp",
+    "glitchimp",
+    "glitchimp",
+    "velvetphantom",
+    "velvetphantom",
+    "prismwing"
   ],
   thermal: [
     "heatserpent",
@@ -29736,6 +29762,10 @@ function sg(s, e, t, n) {
         d.scale.setScalar(1), d.material.opacity = l.surface === "land" ? 0.5 : 0.3, h.visible = l.active && l.surface === "water" && _ === "chase";
         const A = 0.11 + (f + n) % 0.65 * 0.3;
         h.scale.set(A, 1, A), h.material.opacity = 0.24, l.surface === "water" && (u.position.y += 8e-3 * Math.sin(f * 3 + n));
+      }
+      if (a.locomotion === "bounce" && !l.held && l.active) {
+        const v = Math.pow(Math.max(0, Math.sin(f * (t === "neonbehemoth" ? 4.8 : 7.2) + n * 3)), 1.4), E = v * (t === "neonbehemoth" ? 0.19 : 0.14);
+        u.position.y += E, u.rotation.x = -v * 0.11, d.scale.setScalar(1 + v * 0.55), d.material.opacity = 0.5 - v * 0.32;
       }
       l.held || l.protection > 0 ? (h.visible = l.active, h.scale.set(0.16, 1, 0.16), h.material.opacity = 0.7, h.material.color.set(l.held ? 15201445 : 9693097)) : h.material.color.set(12711399);
     },

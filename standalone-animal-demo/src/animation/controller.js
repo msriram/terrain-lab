@@ -79,6 +79,15 @@ export function createAnimationController(model, animations, speciesId, phase) {
         if (c.surface === "water")
           root.position.y += 0.008 * Math.sin(time * 3 + phase);
       }
+      if (species.locomotion === "bounce" && !c.held && c.active) {
+        const rhythm = speciesId === "neonbehemoth" ? 4.8 : 7.2;
+        const lift = Math.pow(Math.max(0, Math.sin(time * rhythm + phase * 3)), 1.4);
+        const height = lift * (speciesId === "neonbehemoth" ? 0.19 : 0.14);
+        root.position.y += height;
+        root.rotation.x = -lift * 0.11;
+        shadow.scale.setScalar(1 + lift * 0.55);
+        shadow.material.opacity = 0.5 - lift * 0.32;
+      }
       if (c.held || c.protection > 0) {
         ripple.visible = c.active;
         ripple.scale.set(0.16, 1, 0.16);

@@ -118,6 +118,21 @@ export const WORLD_FAUNA = {
     colors: ["#f87dc9", "#76dce8", "#a980ee"],
     length: 0.32,
   },
+  neonbehemoth: {
+    label: "Neon behemoth", world: "synthwave", form: "behemoth",
+    colors: ["#35245f", "#f345ac", "#7d52df"], length: 0.52,
+    prey: ["glitchimp", "prismwing"], locomotion: "bounce",
+  },
+  glitchimp: {
+    label: "Glitch imp", world: "synthwave", form: "imp",
+    colors: ["#512b88", "#ff70cb", "#60e9ee"], length: 0.29,
+    locomotion: "bounce",
+  },
+  velvetphantom: {
+    label: "Velvet phantom", world: "synthwave", form: "phantom",
+    colors: ["#462b83", "#e46be9", "#a6f2ff"], length: 0.34,
+    locomotion: "bounce",
+  },
   ventcrab: {
     label: "Vent crab",
     world: "thermal",
@@ -210,7 +225,9 @@ export function worldFaunaSpecies() {
         length: animal.length,
         radius: animal.length * 0.12,
         speed:
-          animal.habitat === "water"
+          animal.locomotion === "bounce"
+            ? 0.004
+            : animal.habitat === "water"
             ? 0.031
             : animal.habitat === "amphibious"
               ? 0.027
@@ -219,10 +236,10 @@ export function worldFaunaSpecies() {
         sight: 0.29,
         actions: {
           idle: "Idle",
-          move: "Move",
+          move: animal.locomotion === "bounce" ? "Jump" : "Move",
           chase: "Dash",
           flee: "Dash",
-          breach: "Move",
+          breach: animal.locomotion === "bounce" ? "Jump" : "Move",
         },
         idleBehaviors:
           animal.habitat === "water"
@@ -232,6 +249,7 @@ export function worldFaunaSpecies() {
               : ["look", "dart", "shake"],
         accent: animal.colors[1],
         world: animal.world,
+        locomotion: animal.locomotion,
       },
     ]),
   );

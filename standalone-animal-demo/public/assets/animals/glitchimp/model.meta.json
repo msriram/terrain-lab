@@ -1,0 +1,17 @@
+{
+  "name": "Glitch imp",
+  "habitat": "land",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Jump",
+    "Dash"
+  ],
+  "bytes": 118788,
+  "sha256": "5472de29c4997da047625166d6286c43f13333b56b4f16b42ae41bd191bed010",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/synthwave-fauna.mjs"
+}

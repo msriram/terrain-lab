@@ -36,6 +36,9 @@ they can be replaced independently through `src/catalog/species.js`.
 | `dallsheep/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/tundra-fauna.mjs` |
 | `moose/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/tundra-fauna.mjs` |
 | `prismwing/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `neonbehemoth/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/synthwave-fauna.mjs` |
+| `glitchimp/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/synthwave-fauna.mjs` |
+| `velvetphantom/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/synthwave-fauna.mjs` |
 | `ventcrab/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
 | `mountaingoat/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
 | `heatserpent/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |

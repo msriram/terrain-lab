@@ -75,3 +75,16 @@ test("Tundra has distinct local wildlife and height-based scenery", async () => 
   assert.deepEqual(LANDSCAPES.tundra.props, ["meadow", "coniferstand", "rockpeak"]);
   assert.equal(roster.length, 8);
 });
+
+test("Synthwave centers springing monsters and surreal creatures", async () => {
+  const { WORLD_ROSTERS } = await import("../src/catalog/landscapes.js");
+  const { SPECIES } = await import("../src/catalog/species.js");
+  const roster = WORLD_ROSTERS.synthwave;
+  for (const id of ["neonbehemoth", "glitchimp", "velvetphantom"])
+    assert.ok(roster.includes(id));
+  assert.ok(roster.filter((id) => SPECIES[id].locomotion === "bounce").length >= 7);
+  for (const id of ["neonbehemoth", "glitchimp", "velvetphantom"]) {
+    assert.equal(SPECIES[id].actions.move, "Jump");
+    assert.ok(SPECIES[id].speed < 0.01);
+  }
+});
