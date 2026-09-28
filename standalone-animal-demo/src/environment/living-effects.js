@@ -46,6 +46,18 @@ export function createLivingEffects(root) {
   const shadow = new T.Mesh(plane, shadowMaterial);
   shadow.position.set(0.1, 0.018, 0.1);
   root.add(shadow);
+  const hazeMaterial = new T.MeshBasicMaterial({
+    color: 0x0b4660,
+    transparent: true,
+    opacity: 0.26,
+    depthTest: false,
+    depthWrite: false,
+    side: T.DoubleSide,
+  });
+  const haze = new T.Mesh(plane, hazeMaterial);
+  haze.position.y = 2.4;
+  haze.renderOrder = 20;
+  root.add(haze);
   const rng = seededRandom(191),
     agents = Array.from({ length: 96 }, () => ({
       u: rng(),
@@ -170,6 +182,7 @@ export function createLivingEffects(root) {
         acc = 0;
       }
       underwater = !!recipe.underwater;
+      haze.visible = world === "atlantis";
       deposits.update(dt, world, recipe, sample, water, motion);
       const fish = underwater,
         whiteFlock = world === "earth",
@@ -260,12 +273,13 @@ export function createLivingEffects(root) {
     }),
     dispose() {
       deposits.dispose();
-      root.remove(lava, clouds, shadow, flock);
+      root.remove(lava, clouds, shadow, haze, flock);
       plane.dispose();
       texture.dispose();
       lavaMaterial.dispose();
       cloudMaterial.dispose();
       shadowMaterial.dispose();
+      hazeMaterial.dispose();
       geometry.dispose();
       material.dispose();
     },

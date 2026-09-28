@@ -1,5 +1,5 @@
 {
-  "name": "Atlantis manta",
+  "name": "Mermaid harpist",
   "habitat": "water",
   "format": "glTF 2.0 binary",
   "forward": "+Z",
@@ -9,9 +9,9 @@
     "Move",
     "Dash"
   ],
-  "bytes": 54460,
-  "sha256": "cf552b1c74049ca4434a0670bdc5015a668c7047830128a42f862113caa0694e",
+  "bytes": 239444,
+  "sha256": "26a8e31ff14f2e1aa9edcd8339018989d06a00003cf0f62aa18dc1b594c9c2df",
   "license": "CC0-1.0",
   "author": "Original procedural Terrain Lab artwork",
-  "source": "scripts/models/world-fauna.mjs"
+  "source": "scripts/models/atlanteans.mjs"
 }

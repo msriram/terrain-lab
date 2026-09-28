@@ -31,8 +31,18 @@ test("underwater recipes populate the whole seafloor without surface shores", ()
   assert.equal(a.sea.length, 28);
   assert.equal(a.shore.length, 0);
   assert.equal(Object.keys(LANDSCAPES).length, 26);
-  for (const kind of ["chest", "trident", "ruin", "knoll"])
+  for (const kind of ["chest", "trident", "ruin", "castle", "drownedtower", "brokenarch"])
     assert.ok(LANDSCAPES.atlantis.props.includes(kind));
+});
+
+test("Atlantis fields a lost kingdom and swimming merpeople", async () => {
+  const { AQUATIC_ROSTER } = await import("../src/catalog/landscapes.js");
+  const { SPECIES } = await import("../src/catalog/species.js");
+  for (const kind of ["castle", "drownedtower", "brokenarch", "ruin"])
+    assert.ok(LANDSCAPES.atlantis.props.includes(kind));
+  assert.equal(AQUATIC_ROSTER.filter((id) => id === "mermaid").length, 3);
+  assert.equal(AQUATIC_ROSTER.filter((id) => id === "merman").length, 2);
+  assert.ok(["mermaid", "merman"].every((id) => SPECIES[id].habitat === "water"));
 });
 
 test("new world rosters use original animated species and majority prey", async () => {

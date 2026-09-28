@@ -18,11 +18,11 @@ export const LANDSCAPES = {
   },
   atlantis: {
     label: "Atlantis",
-    props: ["seaweed", "coral", "knoll", "ruin", "chest", "trident"],
-    colors: ["#3bc1a0", "#c36ea6", "#b6ce9c"],
+    props: ["castle", "drownedtower", "brokenarch", "ruin", "seaweed", "seaweed", "seaweed", "chest", "trident", "coral"],
+    colors: ["#345b64", "#456f73", "#577972"],
     weather: "bubbles",
     underwater: true,
-    caption: "Sunken treasure, ancient tridents, and forests of kelp.",
+    caption: "Broken castles and moss-covered towers fade into blue water; merpeople patrol the lost kingdom.",
   },
   alien: {
     label: "Alien world",
@@ -204,11 +204,11 @@ export const LANDSCAPES = {
 export const AQUATIC_ROSTER = [
   "shark",
   "manta",
-  "manta",
-  "manta",
-  "koi",
-  "koi",
-  "koi",
+  "mermaid",
+  "mermaid",
+  "mermaid",
+  "merman",
+  "merman",
   "koi",
 ];
 export const WORLD_ROSTERS = {

@@ -9,6 +9,7 @@ import { makeWorldFauna } from "./models/world-fauna.mjs";
 import { makePolarFauna } from "./models/polar-fauna.mjs";
 import { makeTundraFauna } from "./models/tundra-fauna.mjs";
 import { makeSynthwaveFauna } from "./models/synthwave-fauna.mjs";
+import { makeAtlantean } from "./models/atlanteans.mjs";
 import { makeShark } from "./models/shark.mjs";
 // Registers FileReader and rebuilds the original animated koi.
 await import("./build-fish.mjs");
@@ -27,8 +28,10 @@ for (const species of [
   const { root, clips } =
     species === "shark"
       ? makeShark()
-      : ["deer", "wolf", "rabbit"].includes(species)
-        ? makeLandAnimal(species)
+        : ["deer", "wolf", "rabbit"].includes(species)
+          ? makeLandAnimal(species)
+        : ["mermaid", "merman"].includes(species)
+          ? makeAtlantean(species)
         : ["narwhal", "polarbear", "penguin", "walrus"].includes(species)
           ? makePolarFauna(species)
           : ["brownbear", "dallsheep", "moose"].includes(species)

@@ -9,8 +9,8 @@
     "Move",
     "Dash"
   ],
-  "bytes": 54456,
-  "sha256": "5439ceea33931de0c48e53e50912324e527c48e429fb5da4c274b9eb2a3a48ec",
+  "bytes": 54460,
+  "sha256": "cf552b1c74049ca4434a0670bdc5015a668c7047830128a42f862113caa0694e",
   "license": "CC0-1.0",
   "author": "Original procedural Terrain Lab artwork",
   "source": "scripts/models/world-fauna.mjs"

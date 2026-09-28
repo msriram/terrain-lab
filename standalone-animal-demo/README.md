@@ -1,6 +1,6 @@
 # Terrain Lab · Field Notes
 
-A standalone 3D wildlife viewer for a 4:3 AR sandbox. Forty-two locally bundled,
+A standalone 3D wildlife viewer for a 4:3 AR sandbox. Forty-four locally bundled,
 animated GLB species; up to 64 creatures; habitat-safe wandering and
 predator/prey reactions. This module now also powers the integrated sandbox at
 `/sandbox/`, while the focused public demo is available at `/wildlife/`.

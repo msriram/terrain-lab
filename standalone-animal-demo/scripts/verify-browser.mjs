@@ -203,6 +203,8 @@ try {
   const before = await positions();
   await page.waitForTimeout(150);
   assert.deepEqual(await positions(), before);
+  // Atlantis intentionally renders a full-frame blue water haze.
+  await page.selectOption("#landscape", "earth");
   await page.locator("#terrain-visible").uncheck();
   const alpha = () =>
     page.evaluate(() => {

@@ -21,6 +21,8 @@ they can be replaced independently through `src/catalog/species.js`.
 
 | `dusthopper/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
 | `manta/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
+| `mermaid/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/atlanteans.mjs` |
+| `merman/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/atlanteans.mjs` |
 | `glowbug/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
 | `lunamoth/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/world-fauna.mjs` |
 | `narwhal/model.glb` | Original procedural Terrain Lab artwork | CC0-1.0 | `scripts/models/polar-fauna.mjs` |

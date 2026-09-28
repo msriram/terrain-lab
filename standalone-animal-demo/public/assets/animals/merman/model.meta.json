@@ -1,5 +1,5 @@
 {
-  "name": "Atlantis manta",
+  "name": "Merman sentinel",
   "habitat": "water",
   "format": "glTF 2.0 binary",
   "forward": "+Z",
@@ -9,9 +9,9 @@
     "Move",
     "Dash"
   ],
-  "bytes": 54460,
-  "sha256": "cf552b1c74049ca4434a0670bdc5015a668c7047830128a42f862113caa0694e",
+  "bytes": 222564,
+  "sha256": "be2b3f04efc2b7442612f95959e8ed7e49a14d0197f425285a13d3cf9ed45279",
   "license": "CC0-1.0",
   "author": "Original procedural Terrain Lab artwork",
-  "source": "scripts/models/world-fauna.mjs"
+  "source": "scripts/models/atlanteans.mjs"
 }

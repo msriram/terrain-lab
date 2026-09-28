@@ -94,7 +94,7 @@ export function createPropFactory() {
   }
   function build(kind, colors, seed = 0) {
     const tree = ["tree", "snowpine", "coniferstand", "forestgrove", "palm"].includes(kind);
-    const variant = tree ? Math.abs(Math.floor(seed)) % 16 : ["crater", "reefcolony"].includes(kind) ? Math.abs(Math.floor(seed)) % 8 : 0;
+    const variant = tree ? Math.abs(Math.floor(seed)) % 16 : ["crater", "reefcolony", "castle", "drownedtower", "brokenarch"].includes(kind) ? Math.abs(Math.floor(seed)) % 8 : 0;
     const rng = seededRandom(variant * 7919 + 83);
     const key = kind + colors.join() + ":" + variant;
     if (cache.has(key)) return cache.get(key).clone();
@@ -115,13 +115,13 @@ export function createPropFactory() {
         }),
     );
     const wood = new T.MeshStandardMaterial({
-      color: "#6b5944",
+      color: kind === "chest" ? "#49646a" : "#6b5944",
       roughness: 0.9,
     });
     const gold = new T.MeshStandardMaterial({
-      color: "#e5bb58",
-      metalness: 0.5,
-      roughness: 0.4,
+      color: ["chest", "trident"].includes(kind) ? "#6c9192" : "#e5bb58",
+      metalness: ["chest", "trident"].includes(kind) ? 0.2 : 0.5,
+      roughness: ["chest", "trident"].includes(kind) ? 0.72 : 0.4,
     });
     if (tree) {
       for (const material of [...mats, wood]) {
@@ -420,6 +420,66 @@ export function createPropFactory() {
       ball([0, 0.18, 0], [0.65, 0.17, 0.4], mats[0]);
       ball([0, 0.35, 0], [0.24, 0.035, 0.23], mats[1]);
       ball([0, 0.39, 0], [0.12, 0.02, 0.11], mats[2]);
+    } else if (["castle", "drownedtower", "brokenarch"].includes(kind)) {
+      const deep = new T.MeshStandardMaterial({color:"#253f4b",roughness:1,flatShading:true});
+      const moss = new T.MeshStandardMaterial({color:"#315e57",roughness:1,flatShading:true});
+      const stone = new T.MeshStandardMaterial({color:"#3f6269",roughness:1,flatShading:true});
+      const rubble = (x,z,n=4) => {
+        for (let i=0;i<n;i++) {
+          const m=box([x+(rng()-.5)*.38,.035+rng()*.07,z+(rng()-.5)*.36],[.12+rng()*.18,.08+rng()*.13,.12+rng()*.18],i%3?stone:moss);
+          m.rotation.y=rng()*Math.PI;
+        }
+      };
+      const tower = (x,z,height,broken=false) => {
+        put(new T.CylinderGeometry(.29,.34,height,8),stone,[x,height*.5,z]);
+        put(new T.CylinderGeometry(.32,.35,.12,8),mats[2],[x,.15,z]);
+        if (broken) {
+          rubble(x+.36,z+.18,5);
+          for (let k=0;k<3;k++) box([x+Math.cos(k*2.1)*.23,height+.05,z+Math.sin(k*2.1)*.2],[.17,.16,.2],stone);
+        } else {
+          ball([x,height+.13,z],[.3,.17,.3],deep);
+          cone([x,height+.35,z],.16,.31,mats[1],8);
+        }
+        for (let i=0;i<5;i++) {
+          const a=i*2.4+variant;
+          ball([x+Math.cos(a)*.29,.21+rng()*height*.65,z+Math.sin(a)*.29],[.13,.08,.11],moss);
+        }
+      };
+      if (kind === "castle") {
+        box([0,.035,0],[2.8,.09,1.9],deep);
+        // The central hall is roofless, with collapsed stretches of wall.
+        for (const x of [-.65,.65]) {
+          box([x,.38,0],[.14,.65,1.05],stone);
+          for (const z of [-.42,.42]) box([x,.75,z],[.23,.12,.22],mats[2]);
+        }
+        box([0,.37,-.53],[1.45,.64,.13],stone);
+        box([-.47,.37,.53],[.45,.64,.13],stone);
+        box([.54,.22,.53],[.31,.34,.13],stone);
+        // One dome survives; the opposite side has collapsed into the hall.
+        ball([0,.79,-.24],[.43,.2,.36],mats[1]);
+        ring([0,.81,-.24],.33,.035,moss,[Math.PI/2,0,0]);
+        for (const x of [-1.05,1.05]) for (const z of [-.68,.68])
+          tower(x,z,.98+(x<0?.28:0)+(z<0?.12:0),x>0&&z<0);
+        rubble(.2,.47,7);
+        for (let i=0;i<10;i++) ball([(rng()-.5)*2.25,.12+rng()*.2,(rng()-.5)*1.45],[.12+rng()*.12,.055,.09+rng()*.1],moss);
+      } else if (kind === "drownedtower") {
+        box([0,.035,0],[1.15,.08,1.05],deep);
+        tower(0,0,1.45+variant*.035,variant%3===0);
+        for (const side of [-1,1]) {
+          box([side*.5,.31,.25],[.14,.55,.53],stone);
+          rubble(side*.56,-.38,3);
+        }
+      } else {
+        box([0,.035,0],[1.8,.08,.85],deep);
+        for (const x of [-.63,.63]) {
+          box([x,.45,0],[.19,.8,.24],stone);
+          ball([x,.85,0],[.22,.09,.19],moss);
+        }
+        box([-.23,.92,0],[.93,.17,.26],stone);
+        box([.53,.55,.02],[.17,.28,.23],stone);
+        rubble(.45,.24,6);
+        for (let i=0;i<8;i++) ball([(rng()-.5)*1.45,.08+rng()*.18,(rng()-.5)*.58],[.09,.045,.09],moss);
+      }
     } else if (kind === "chest") {
       box([0, 0.16, 0], [0.9, 0.3, 0.62], wood);
       box([0, 0.32, 0.04], [0.73, 0.04, 0.47], gold);
@@ -543,6 +603,8 @@ export function createPropFactory() {
       ball([0.35, 0.09, 0.28], [0.24, 0.21, 0.28], mats[1]);
       if (kind === "gumdrop") ball([0, 0.35, 0], [0.42, 0.5, 0.4], mats[2]);
     }
+    if (["castle", "drownedtower", "brokenarch"].includes(kind))
+      root.scale.setScalar(kind === "castle" ? 1.55 : 1.35);
     root.updateMatrixWorld(true);
     const batches = new Map();
     root.traverse((o) => {
