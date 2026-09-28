@@ -36,6 +36,7 @@ export function createLandscapeLayer(
     props = [],
     layoutSeed = 31;
   const resources = [];
+  let density = 1;
   let addedElements = [], removedElements = [];
   const own = (value) => (resources.push(value), value);
   function texture(kind) {
@@ -268,7 +269,7 @@ export function createLandscapeLayer(
     galaxies = [];
     for (const p of candidates)
       if (
-        galaxies.length < 4 &&
+        galaxies.length < Math.round(4 * density) &&
         galaxies.every((q) => Math.hypot(q.u - p.u, q.v - p.v) > 0.18)
       )
         galaxies.push(p);
@@ -359,6 +360,7 @@ export function createLandscapeLayer(
     layout = analyzeLandscape(sampleTerrain, waterLevel, {
       underwater: recipe.underwater,
       seed: layoutSeed,
+      capacity: 90,
     });
     propsRoot.clear();
     ventsRoot.clear();
@@ -370,7 +372,8 @@ export function createLandscapeLayer(
       scatteredStars = 0;
     }
     const candidates = recipe.underwater ? layout.sea : layout.land;
-    const placements = candidates.slice(0, theme === "forest" ? 24 : theme === "tundra" ? 30 : theme === "coral" ? 10 : recipe.underwater ? 24 : 20)
+    const baseCount = theme === "forest" ? 24 : theme === "tundra" ? 30 : theme === "coral" ? 10 : recipe.underwater ? 24 : 20;
+    const placements = candidates.slice(0, Math.round(baseCount * density))
       .filter(p => !removedElements.some(q => Math.hypot(p.u-q.u, p.v-q.v) < .05))
       .concat(addedElements);
     placements.forEach((p, i) => {
@@ -402,7 +405,8 @@ export function createLandscapeLayer(
       const viableLand = layout.land
         .map((p) => ({ ...p, growth: reefGrowth(sampleTerrain, p.u, p.v) }))
         .filter((p) => p.growth > .025);
-      const sites = clusteredReefSites(viableLand, layoutSeed);
+      const allSites = clusteredReefSites(viableLand, layoutSeed, 15);
+      const sites = allSites.slice(0, Math.round(25 * density));
       const palettes = [
         ["#b85b62", "#d39958", "#845d9d"],
         ["#ba6b91", "#bca769", "#4f9b8e"],
@@ -725,6 +729,10 @@ export function createLandscapeLayer(
       dirty = true;
     },
     setOptions(options) {
+      if (Number.isFinite(options.density)) {
+        const next = Math.max(0, Math.min(3, options.density));
+        if (next !== density) { density = next; dirty = true; lastBuild = -Infinity; }
+      }
       if (options.theme && options.theme !== theme) {
         addedElements = []; removedElements = [];
         theme = options.theme;
@@ -759,6 +767,7 @@ export function createLandscapeLayer(
     },
     getStats() {
       return {
+        density,
         ...living.stats(),
         theme,
         galaxies: galaxies.length,

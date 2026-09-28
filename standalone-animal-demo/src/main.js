@@ -103,6 +103,10 @@ try {
   $("scenery").addEventListener("change", (e) =>
     layer.setOptions({ scenery: e.target.checked, atmosphere: e.target.checked }),
   );
+  $("landscape-density").addEventListener("input", (e) => {
+    $("density-value").value = e.target.value + "%";
+    layer.setOptions({density: Number(e.target.value) / 100});
+  });
   $("randomize-landscape").addEventListener("click", () => {
     layer.randomizeLandscape();
     $("pack-note").textContent = "Fresh landscape elements placed.";

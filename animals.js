@@ -1,5 +1,5 @@
 // Terrain Lab adapter: same wildlife module as the public Field Notes demo.
-import { createAnimalLayer, bindAnimalInteraction, randomRoster, SPECIES, LANDSCAPES, WORLD_SIGNATURES, rosterForWorld } from './assets/wildlife/animal-layer.js?v=polar-20260926';
+import { createAnimalLayer, bindAnimalInteraction, randomRoster, SPECIES, LANDSCAPES, WORLD_SIGNATURES, rosterForWorld } from './assets/wildlife/animal-layer.js?v=density-20260928';
 
 const host=window.TerrainLab,stage=document.querySelector('.stage-card');
 const $=id=>document.getElementById(id);
@@ -11,6 +11,8 @@ if(host&&stage){
  const announce=text=>{$('rescueHelp').textContent=text;};
  try{
   layer=await createAnimalLayer({canvas,sampleTerrain:host.sampleTerrain,waterLevel:host.getState().waterLevel,roster,assetBase:new URL('./assets/wildlife/assets/animals/',import.meta.url).href});
+  function updateDensity(){$('density-value').value=$('landscape-density').value+'%';layer.setOptions({density:Number($('landscape-density').value)/100});}
+  $('landscape-density').addEventListener('input',updateDensity);
   function rosterControls(){
    $('animalRoster').replaceChildren();
    roster.forEach((id,index)=>{
@@ -34,6 +36,7 @@ if(host&&stage){
     if(data.type==='state'&&projection){
      if(data.grid)host.applyGrid(data.grid);
      layer.applySnapshot(data.snapshot);paused=data.paused;if(data.scenery!==undefined)$('scenery').checked=data.scenery;
+     if(Number.isFinite(data.density)){$('landscape-density').value=data.density;updateDensity();}
     }
    };
    if(projection)channel.postMessage({type:'request'});
@@ -52,7 +55,7 @@ if(host&&stage){
     lastSent=now;const stats=layer.getStats();
     $('wildlife-status').textContent=`${stats.active} WILDLIFE · ${stats.captures} EATEN · ${stats.waiting} REPOPULATING`;
     $('rescue-count').textContent=`${stats.rescues} RESCUED`;$('landscapeNote').textContent=stats.landscape.erupting?'Volcano active — lava and ash rising.':stats.landscape.caption+(WORLD_SIGNATURES[state.theme]?` Meet the ${SPECIES[WORLD_SIGNATURES[state.theme]].label}.`:'');
-    if(channel&&!projection){const message={type:'state',snapshot:layer.getSnapshot(),paused,scenery:$('scenery').checked,atmosphere:$('scenery').checked};if(gridSent!==state.revision&&!state.live){message.grid=host.getGrid();gridSent=state.revision;}channel.postMessage(message);}
+    if(channel&&!projection){const message={type:'state',snapshot:layer.getSnapshot(),paused,scenery:$('scenery').checked,atmosphere:$('scenery').checked,density:Number($('landscape-density').value)};if(gridSent!==state.revision&&!state.live){message.grid=host.getGrid();gridSent=state.revision;}channel.postMessage(message);}
    }
    raf=requestAnimationFrame(frame);
   }

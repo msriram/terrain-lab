@@ -1,7 +1,7 @@
 import { seededRandom } from "../simulation/world.js";
 
 /** Twenty-five small colonies form five irregular groups on raised sand. */
-export function clusteredReefSites(raisedLand, seed = 31) {
+export function clusteredReefSites(raisedLand, seed = 31, clusters = 5) {
   if (!raisedLand.length) return [];
   const rng = seededRandom(seed);
   const sorted = [...raisedLand].sort((a, b) => (b.growth ?? b.h) - (a.growth ?? a.h));
@@ -16,7 +16,7 @@ export function clusteredReefSites(raisedLand, seed = 31) {
     if (!centers.includes(p)) centers.push(p);
   }
   const sites = [];
-  for (let cluster = 0; cluster < 5; cluster++) {
+  for (let cluster = 0; cluster < clusters; cluster++) {
     const center = centers[cluster % centers.length];
     for (let member = 0; member < 5; member++) {
       const angle = member * 2.399 + cluster * 1.73 + (rng() - .5) * .8;

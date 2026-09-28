@@ -2,7 +2,7 @@
 export function analyzeLandscape(
   sample,
   water,
-  { underwater = false, seed = 31 } = {},
+  { underwater = false, seed = 31, capacity = 28 } = {},
 ) {
   const land = [],
     sea = [],
@@ -92,5 +92,5 @@ export function analyzeLandscape(
       volcanoes.every((q) => Math.hypot(q.u - p.u, q.v - p.v) > 0.22)
     )
       volcanoes.push(p);
-  return { land: select(land, 24), sea: select(sea, 28), shore, volcanoes };
+  return { land: select(land, Math.max(24, capacity)), sea: select(sea, Math.max(28, capacity)), shore, volcanoes };
 }
