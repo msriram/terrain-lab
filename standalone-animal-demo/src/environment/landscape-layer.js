@@ -6,6 +6,7 @@ import { seededRandom } from "../simulation/world.js";
 import { createLivingEffects } from "./living-effects.js";
 import { reefGrowth } from "./reef-growth.js";
 import { clusteredReefSites } from "./reef-layout.js";
+import { createCyberCity } from "./cyber-city.js";
 
 const PROP_SCALE = 0.5;
 const LANDSCAPE_REBUILD_DELAY_SECONDS = 2.4;
@@ -19,6 +20,7 @@ export function createLandscapeLayer(
   root.name = "Living landscape";
   scene.add(root);
   const living = createLivingEffects(root);
+  const city = createCyberCity(root);
   const propsRoot = new T.Group();
   root.add(propsRoot);
   const reefRoot = new T.Group();
@@ -340,7 +342,7 @@ export function createLandscapeLayer(
   let links = [];
   function rebuildNetwork() {
     links = [];
-    if (!["neuron", "cyberpunk"].includes(theme)) return;
+    if (!["neuron", "universe"].includes(theme)) return;
     for (let i = 0; i < props.length; i++) {
       const a = props[i].object.position;
       const neighbors = props
@@ -372,7 +374,7 @@ export function createLandscapeLayer(
       scatteredStars = 0;
     }
     const candidates = recipe.underwater ? layout.sea : layout.land;
-    const baseCount = theme === "forest" ? 24 : theme === "tundra" ? 30 : theme === "coral" ? 10 : theme === "deepsea" ? 32 : recipe.underwater ? 24 : 20;
+    const baseCount = theme === "forest" ? 24 : theme === "tundra" ? 30 : theme === "coral" ? 10 : theme === "deepsea" ? 32 : theme === "cyberpunk" ? 8 : recipe.underwater ? 24 : 20;
     const placements = candidates.slice(0, Math.round(baseCount * density))
       .filter(p => !removedElements.some(q => Math.hypot(p.u-q.u, p.v-q.v) < .05))
       .concat(addedElements);
@@ -434,6 +436,7 @@ export function createLandscapeLayer(
       while (reefs.length > sites.length) reefRoot.remove(reefs.pop().object);
     }
     rebuildNetwork();
+    city.rebuild(sampleTerrain, waterLevel, layoutSeed, theme === "cyberpunk" ? density : 0);
     for (const wave of waves)
       wave.geometry.setAttribute(
         "position",
@@ -451,7 +454,7 @@ export function createLandscapeLayer(
     lastBuild = time;
   }
   function weatherIsNeon() {
-    return recipe.weather === "neon";
+    return recipe.weather === "neon-rain";
   }
   function update(dt) {
     root.visible = enabled;
@@ -465,6 +468,7 @@ export function createLandscapeLayer(
     )
       rebuild();
     living.update(dt, theme, recipe, motion);
+    city.update(time);
     factory.setTime(time);
     reefRoot.visible = theme === "coral";
     if (reefRoot.visible) for (const reef of reefs) {
@@ -510,9 +514,11 @@ export function createLandscapeLayer(
     }
     networkLines.visible = signals.visible = [
       "neuron",
-      "cyberpunk",
+      "universe",
       "atomic",
     ].includes(theme);
+    networkMaterial.color.set(theme === "universe" ? 0xa68fda : 0x9dcfff);
+    signalMaterial.color.set(theme === "universe" ? 0xf4d5ff : 0xffe9a8);
     if (networkLines.visible) {
       const lineData = networkGeometry.attributes.position.array,
         pointData = signalGeometry.attributes.position.array;
@@ -584,7 +590,7 @@ export function createLandscapeLayer(
           ? 6
           : 5;
     points.visible =
-      weather !== "clouds" && weather !== "rain" && weather !== "fog";
+      weather !== "clouds" && weather !== "rain" && weather !== "fog" && weather !== "neon-rain";
     particleGeometry.setDrawRange(0, weather === "snow" ? 340 : 170);
     const positions = particleGeometry.attributes.position.array;
     particles.forEach((p, i) => {
@@ -773,6 +779,7 @@ export function createLandscapeLayer(
       return {
         density,
         ...living.stats(),
+        ...city.stats(),
         theme,
         galaxies: galaxies.length,
         signalLinks: links.length,
@@ -792,6 +799,7 @@ export function createLandscapeLayer(
     },
     dispose() {
       living.dispose();
+      city.dispose();
       scene.remove(root);
       factory.dispose();
       resources.forEach((r) => r.dispose());

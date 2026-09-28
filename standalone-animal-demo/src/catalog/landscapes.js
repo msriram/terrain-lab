@@ -179,11 +179,12 @@ export const LANDSCAPES = {
   },
   cyberpunk: {
     label: "Cyberpunk",
-    props: ["tower", "hologram", "circuit", "antenna"],
+    props: ["hologram", "antenna", "circuit"],
     colors: ["#ff6cc9", "#60f2df", "#8d83fb"],
-    weather: "neon",
+    weather: "neon-rain",
+    clouds: true,
     allLand: true,
-    caption: "Neon towers and scanning drones illuminate the grid.",
+    caption: "Raise connected city blocks: neon towers, wet streets, traffic, and crowds emerge from the sand.",
   },
   surreal: {
     label: "Dreamscape",

@@ -60,6 +60,14 @@ try {
   assert.ok((await page.evaluate(() => animalDemo.getMetrics().landscape.propKinds)).includes("forestgrove"));
   await page.selectOption("#landscape", "coral");
   await page.waitForFunction(() => animalDemo.getMetrics().landscape.reefColonies >= 20, undefined, { timeout: 10000 });
+  await page.selectOption("#landscape", "cyberpunk");
+  await page.waitForFunction(() => animalDemo.getMetrics().landscape.cityBlocks > 0);
+  assert.equal(await page.evaluate(() => animalDemo.getMetrics().landscape.signalLinks), 0);
+  assert.ok(await page.evaluate(() => animalDemo.getMetrics().landscape.cars > 0));
+  assert.ok(await page.evaluate(() => animalDemo.getMetrics().landscape.rainPatches > 0));
+  await page.selectOption("#landscape", "universe");
+  await page.waitForFunction(() => animalDemo.getMetrics().landscape.signalLinks > 0);
+  assert.equal(await page.evaluate(() => animalDemo.getMetrics().landscape.cityBlocks), 0);
   await page.selectOption("#landscape", "earth");
   await page.waitForFunction(() => animalDemo.getMetrics().landscape.flockCount === 40);
   await page.screenshot({

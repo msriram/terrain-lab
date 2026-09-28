@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { analyzeLandscape } from "../src/environment/layout.js";
 import { LANDSCAPES } from "../src/catalog/landscapes.js";
 import { clusteredReefSites } from "../src/environment/reef-layout.js";
+import { planCyberCity } from "../src/environment/cyber-city-layout.js";
 test("landscapes place props in valid habitats and trace shorelines", () => {
   const a = analyzeLandscape((u) => u, 0.43);
   assert.ok(a.land.length > 0 && a.sea.length > 0 && a.shore.length > 0);
@@ -94,6 +95,17 @@ test("Talokan builds a dark underwater city with its own fauna", async () => {
   for (const kind of ["talokan-temple", "talokan-district", "talokan-beacon"])
     assert.ok(LANDSCAPES.deepsea.props.includes(kind));
   assert.ok(WORLD_ROSTERS.deepsea.includes("anglerfish"));
+});
+
+test("Cyberpunk streets follow safe connected elevation", () => {
+  const flat = planCyberCity(() => .7, .4, 31);
+  assert.equal(flat.blocks.length, 35);
+  assert.equal(flat.roads.length, 58);
+  const flooded = planCyberCity((u) => u < .45 ? .2 : .7, .4, 31);
+  assert.ok(flooded.blocks.length < flat.blocks.length);
+  assert.ok(flooded.blocks.every((block) => block.u > .45));
+  assert.ok(flooded.roads.every((road) => road.u0 > .45 && road.u1 > .45));
+  assert.deepEqual(planCyberCity(() => .7, .4, 31, 0), { blocks: [], roads: [] });
 });
 
 test("Synthwave centers springing monsters and surreal creatures", async () => {
