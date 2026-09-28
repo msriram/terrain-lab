@@ -182,7 +182,9 @@ export function createLivingEffects(root) {
         acc = 0;
       }
       underwater = !!recipe.underwater;
-      haze.visible = world === "atlantis";
+      haze.visible = world === "atlantis" || world === "deepsea";
+      hazeMaterial.color.set(world === "deepsea" ? 0x010d14 : 0x0b4660);
+      hazeMaterial.opacity = world === "deepsea" ? .18 : .26;
       deposits.update(dt, world, recipe, sample, water, motion);
       const fish = underwater,
         whiteFlock = world === "earth",

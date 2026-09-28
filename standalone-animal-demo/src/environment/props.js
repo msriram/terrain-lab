@@ -94,7 +94,7 @@ export function createPropFactory() {
   }
   function build(kind, colors, seed = 0) {
     const tree = ["tree", "snowpine", "coniferstand", "forestgrove", "palm"].includes(kind);
-    const variant = tree ? Math.abs(Math.floor(seed)) % 16 : ["crater", "reefcolony", "castle", "drownedtower", "brokenarch"].includes(kind) ? Math.abs(Math.floor(seed)) % 8 : 0;
+    const variant = tree ? Math.abs(Math.floor(seed)) % 16 : ["crater", "reefcolony", "castle", "drownedtower", "brokenarch", "talokan-temple", "talokan-district", "talokan-beacon"].includes(kind) ? Math.abs(Math.floor(seed)) % 8 : 0;
     const rng = seededRandom(variant * 7919 + 83);
     const key = kind + colors.join() + ":" + variant;
     if (cache.has(key)) return cache.get(key).clone();
@@ -420,6 +420,60 @@ export function createPropFactory() {
       ball([0, 0.18, 0], [0.65, 0.17, 0.4], mats[0]);
       ball([0, 0.35, 0], [0.24, 0.035, 0.23], mats[1]);
       ball([0, 0.39, 0], [0.12, 0.02, 0.11], mats[2]);
+    } else if (["talokan-temple", "talokan-district", "talokan-beacon"].includes(kind)) {
+      // Original deep-water city kit: worn stepped stone, open courts, and
+      // pinpoints of bioluminescence. The palette stays dark at projector scale.
+      const stone = new T.MeshStandardMaterial({ color: "#18343a", roughness: 1, flatShading: true });
+      const edge = new T.MeshStandardMaterial({ color: "#326368", roughness: .9, flatShading: true });
+      const silt = new T.MeshStandardMaterial({ color: "#0a2028", roughness: 1, flatShading: true });
+      const light = new T.MeshStandardMaterial({ color: "#3fa2a8", emissive: "#12acbd", emissiveIntensity: 1.7, roughness: .45 });
+      const court = (x, z, radius) => {
+        put(new T.CylinderGeometry(radius, radius * 1.08, .08, 10), silt, [x, .04, z]);
+        ring([x, .09, z], radius * .8, .025, edge);
+        for (let i = 0; i < 8; i++) {
+          const a = i * Math.PI / 4;
+          ball([x + Math.cos(a) * radius * .87, .12, z + Math.sin(a) * radius * .87], [.045, .035, .045], i % 2 ? light : edge);
+        }
+      };
+      const stepped = (x, z, size, height, damaged = false) => {
+        for (let level = 0; level < 4; level++) {
+          const width = size * (1 - level * .17);
+          box([x, .09 + level * height / 4, z], [width, height / 4, width], level % 2 ? stone : edge);
+        }
+        if (!damaged) {
+          box([x, height + .12, z], [size * .38, .12, size * .38], silt);
+          ball([x, height + .22, z], [.08, .11, .08], light);
+        } else {
+          box([x + size * .24, height + .07, z - size * .13], [size * .25, .09, size * .22], stone, [0, .35, -.28]);
+        }
+        for (const side of [-1, 1]) box([x + side * size * .37, .12, z], [.035, .09, size * .28], light);
+      };
+      if (kind === "talokan-temple") {
+        court(0, 0, 1.25);
+        stepped(0, 0, 1.38, .9);
+        for (const side of [-1, 1]) {
+          stepped(side * 1.27, .12, .62, .54, side < 0);
+          rod([side * .68, .11, 0], [side * 1.02, .11, .08], .045, edge);
+        }
+        for (let i = 0; i < 10; i++) {
+          const a = i * 2.4 + variant;
+          box([Math.cos(a) * (1.2 + rng() * .35), .055, Math.sin(a) * (1.0 + rng() * .3)], [.12 + rng() * .11, .07, .1], i % 3 ? stone : edge, [0, a, 0]);
+        }
+      } else if (kind === "talokan-district") {
+        court(0, 0, .95);
+        for (let i = 0; i < 4; i++) {
+          const a = i * Math.PI / 2 + variant * .18;
+          stepped(Math.cos(a) * .69, Math.sin(a) * .69, .52 + rng() * .16, .37 + rng() * .22, i === variant % 4);
+        }
+        box([0, .12, 0], [.48, .13, .48], stone);
+        ball([0, .25, 0], [.08, .09, .08], light);
+      } else {
+        court(0, 0, .47);
+        for (const side of [-1, 1]) rod([side * .28, .1, 0], [side * .19, .71, 0], .055, edge);
+        ring([0, .73, 0], .26, .035, stone, [0, 0, 0]);
+        ball([0, .73, 0], [.12, .16, .12], light);
+        cone([0, .98, 0], .09, .2, edge, 6);
+      }
     } else if (["castle", "drownedtower", "brokenarch"].includes(kind)) {
       const deep = new T.MeshStandardMaterial({color:"#253f4b",roughness:1,flatShading:true});
       const moss = new T.MeshStandardMaterial({color:"#315e57",roughness:1,flatShading:true});

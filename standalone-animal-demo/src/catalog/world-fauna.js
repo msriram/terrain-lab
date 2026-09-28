@@ -193,7 +193,7 @@ export const WORLD_FAUNA = {
     length: 0.28,
   },
   anglerfish: {
-    label: "Abyss angler",
+    label: "Talokan angler",
     world: "deepsea",
     form: "angler",
     habitat: "water",

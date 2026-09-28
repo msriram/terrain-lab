@@ -138,12 +138,12 @@ export const LANDSCAPES = {
     caption: "Cotton-candy clouds and falling rainbow sprinkles.",
   },
   deepsea: {
-    label: "Abyss",
-    props: ["vent", "jellyfish", "ruin", "coral"],
-    colors: ["#3a878f", "#9a90c9", "#5cbbaa"],
+    label: "Talokan",
+    props: ["talokan-temple", "talokan-district", "talokan-district", "talokan-district", "talokan-beacon", "talokan-beacon", "seaweed", "vent"],
+    colors: ["#142b30", "#28505a", "#4b7775"],
     weather: "marine-snow",
     underwater: true,
-    caption: "Glowing jellyfish and vents in the deep ocean.",
+    caption: "A hidden deep-water city glows beneath the marine snow.",
   },
   universe: {
     label: "Universe",

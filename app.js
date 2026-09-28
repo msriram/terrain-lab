@@ -35,7 +35,7 @@
     copper:{name:"Copper",accent:"#e7a46b",water:"#12100f",colors:["#0d0b0a","#2a1a15","#513026","#794731","#a76643","#cc8b60","#e2b38a","#f2dac0"]},
     emerald:{name:"Emerald city",accent:"#4cf59a",water:"#031a17",colors:["#020b0a","#073227","#075c42","#07865b","#19b775","#5bdb93","#adecad","#efffd1"]},
     candy:{name:"Candy land",accent:"#ff9fdd",water:"#4d3d9a",colors:["#453078","#7258b5","#b36bc1","#ed75ad","#ff9293","#ffb76e","#ffe18a","#fff6cf"]},
-    deepsea:{name:"Abyss",accent:"#31d8d0",water:"#01030d",colors:["#000107","#020b24","#061d46","#073c62","#076b78","#169b91","#62c5a8","#caf5d7"]},
+    deepsea:{name:"Talokan",accent:"#48bfc4",water:"#01080d",colors:["#000608","#021117","#09212a","#10333a","#17474b","#245d61","#39777a","#68a5a2"]},
     universe:{name:"Universe",accent:"#cbb5ff",water:"#070a26",colors:["#020410","#070d26","#101738","#211c50","#382760","#554072","#7e5889","#c393aa"]},
     microscopic:{name:"Microscopic",accent:"#9bef9d",water:"#122d39",colors:["#0c2630","#135957","#278d71","#61bc8a","#b9e49b","#f5d58c","#e98eba","#fff3d6"]},
     neuron:{name:"Neuron network",accent:"#a79afa",water:"#101139",colors:["#0b102f","#242057","#4a398a","#8061ae","#bd84c4","#f0afd0","#ffd8b2","#fff1d9"]},

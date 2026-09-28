@@ -172,11 +172,11 @@ export function createLandscapeLayer(
       transparent: true,
       depthWrite: false,
       depthTest: false,
-      uniforms: { time: { value: 0 } },
+      uniforms: { time: { value: 0 }, strength: { value: .12 } },
       vertexShader:
         "varying vec2 uvScene;void main(){uvScene=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
       fragmentShader:
-        "varying vec2 uvScene;uniform float time;void main(){vec2 p=uvScene*25.;float a=sin(p.x+sin(p.y*.7+time*.3))+sin(p.y+cos(p.x*.6-time*.23));float b=pow(max(0.,1.-abs(a)),9.);gl_FragColor=vec4(.45,.94,.87,b*.12);}",
+        "varying vec2 uvScene;uniform float time;uniform float strength;void main(){vec2 p=uvScene*25.;float a=sin(p.x+sin(p.y*.7+time*.3))+sin(p.y+cos(p.x*.6-time*.23));float b=pow(max(0.,1.-abs(a)),9.);gl_FragColor=vec4(.45,.94,.87,b*strength);}",
     }),
   );
   const caustics = new T.Mesh(causticGeometry, causticMaterial);
@@ -372,7 +372,7 @@ export function createLandscapeLayer(
       scatteredStars = 0;
     }
     const candidates = recipe.underwater ? layout.sea : layout.land;
-    const baseCount = theme === "forest" ? 24 : theme === "tundra" ? 30 : theme === "coral" ? 10 : recipe.underwater ? 24 : 20;
+    const baseCount = theme === "forest" ? 24 : theme === "tundra" ? 30 : theme === "coral" ? 10 : theme === "deepsea" ? 32 : recipe.underwater ? 24 : 20;
     const placements = candidates.slice(0, Math.round(baseCount * density))
       .filter(p => !removedElements.some(q => Math.hypot(p.u-q.u, p.v-q.v) < .05))
       .concat(addedElements);
@@ -384,6 +384,9 @@ export function createLandscapeLayer(
       const scale =
         (["chest", "trident", "ruin"].includes(kind)
           ? 0.29
+          : kind === "talokan-temple" ? 0.38
+          : kind === "talokan-district" ? 0.30
+          : kind === "talokan-beacon" ? 0.24
           : kind === "forestgrove" ? 0.65
           : kind === "coniferstand" ? 0.56
           : kind === "meadow" ? 0.48
@@ -682,6 +685,7 @@ export function createLandscapeLayer(
     });
     caustics.visible = !!recipe.underwater;
     causticMaterial.uniforms.time.value = time;
+    causticMaterial.uniforms.strength.value = theme === "deepsea" ? .025 : .12;
     const erupting = recipe.eruption && layout.volcanoes.length > 0;
     eruption.visible = smoke.visible = !!erupting;
     if (erupting) {

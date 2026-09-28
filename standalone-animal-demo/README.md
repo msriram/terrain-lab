@@ -182,7 +182,7 @@ No marketplace-only, editorial-only, or testing-only models are included.
 
 The landscape selector offers 26 shared scenery recipes. Trees sway, forest rain
 falls, clouds drift, and surf follows the sampled shoreline. Atlantis, Coral Reef,
-and Abyss treat the entire map as seafloor and start with one shark and seven koi.
+and Talokan treat the entire map as seafloor and start with one shark and seven koi.
 Glacier includes original narwhal, polar bear, penguin, and walrus models.
 Penguins and walruses cross between ice and water, switching between walking
 and swimming animation as they enter each habitat.

@@ -87,6 +87,15 @@ test("Tundra has distinct local wildlife and height-based scenery", async () => 
   assert.equal(roster.length, 8);
 });
 
+test("Talokan builds a dark underwater city with its own fauna", async () => {
+  const { WORLD_ROSTERS } = await import("../src/catalog/landscapes.js");
+  assert.equal(LANDSCAPES.deepsea.label, "Talokan");
+  assert.equal(LANDSCAPES.deepsea.underwater, true);
+  for (const kind of ["talokan-temple", "talokan-district", "talokan-beacon"])
+    assert.ok(LANDSCAPES.deepsea.props.includes(kind));
+  assert.ok(WORLD_ROSTERS.deepsea.includes("anglerfish"));
+});
+
 test("Synthwave centers springing monsters and surreal creatures", async () => {
   const { WORLD_ROSTERS } = await import("../src/catalog/landscapes.js");
   const { SPECIES } = await import("../src/catalog/species.js");
