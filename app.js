@@ -25,7 +25,7 @@
     ice:{name:"Glacier",accent:"#c6f5ff",water:"#052a62",colors:["#020817","#07356e","#0877a4","#38b6cf","#8bdae6","#c9edf0","#e8f7f4","#ffffff"]},
     volcanic:{name:"Volcanic",accent:"#ffb33d",water:"#090509",colors:["#020202","#181012","#3f1714","#7c2015","#c23a18","#f27322","#ffc04b","#fff4b0"]},
     desert:{name:"Sahara",accent:"#f2c46d",water:"#174f68",colors:["#302011","#684322","#a76c34","#d99b52","#f0c879","#ead89c","#c29c63","#fff1cc"]},
-    forest:{name:"Ancient forest",accent:"#8cda70",water:"#083b42",colors:["#061713","#0c3325","#175936","#2e7941","#58964d","#87a95d","#b7b978","#e2d4a2"]},
+    forest:{name:"Ancient forest",accent:"#6cad7a",water:"#092d34",colors:["#061713","#0b2c23","#123c2c","#1c5035","#2b6240","#49734a","#66825a","#a0a881"]},
     coral:{name:"Coral reef",accent:"#ff8ba0",water:"#04347d",colors:["#031340","#075b9b","#09a8ae","#4cd2b0","#f2c75c","#f37d62","#d84d80","#ffd6b3"]},
     tundra:{name:"Tundra",accent:"#c7ba72",water:"#254b62",colors:["#263f4a","#586c56","#828148","#aaa05b","#ae9b65","#77766c","#b8b9b4","#f5f4ea"]},
     synthwave:{name:"Synthwave",accent:"#ff4edb",water:"#080b46",colors:["#05021c","#15106b","#2835b8","#7147d6","#c73dbd","#ff4b85","#ff8956","#ffe071"]},

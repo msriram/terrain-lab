@@ -146,6 +146,8 @@ export function paintTerrain(canvas, sample, water, pack) {
             );
       if (!night && pack !== "earth" && pack !== "forest" && !wet)
         c = mix(colors[0], colors[1], (e - water) / 0.55);
+      if (pack === "forest" && !wet)
+        c = mix([19, 58, 42], [61, 105, 63], (e - water) / 0.5);
       if (night) c = mix([5, 25, 53], [36, 120, 128], e * 0.85 + 0.1);
       if (pack === "universe") c = mix([5, 10, 30], [36, 25, 78], e);
       const slope = (sample(u + 0.002, v + 0.002) - e) * 100;

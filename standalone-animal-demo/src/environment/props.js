@@ -93,7 +93,7 @@ export function createPropFactory() {
     return texture;
   }
   function build(kind, colors, seed = 0) {
-    const tree = ["tree", "snowpine", "coniferstand", "palm"].includes(kind);
+    const tree = ["tree", "snowpine", "coniferstand", "forestgrove", "palm"].includes(kind);
     const variant = tree ? Math.abs(Math.floor(seed)) % 16 : ["crater", "reefcolony"].includes(kind) ? Math.abs(Math.floor(seed)) % 8 : 0;
     const rng = seededRandom(variant * 7919 + 83);
     const key = kind + colors.join() + ":" + variant;
@@ -185,6 +185,19 @@ export function createPropFactory() {
         for (let blade = 0; blade < 5; blade++) {
           const a = blade * 2.399 + tuft;
           rod([x, .015, z], [x + Math.cos(a) * .14, .16 + rng() * .16, z + Math.sin(a) * .14], .012, mats[(tuft + blade) % 2]);
+        }
+      }
+    } else if (kind === "forestgrove") {
+      // Each placement is a dense canopy stand, batched into a few materials.
+      for (let i = 0; i < 7; i++) {
+        const x = (rng() - .5) * 1.5, z = (rng() - .5) * 1.3;
+        const height = .85 + rng() * .65;
+        rod([x, 0, z], [x + .06, height, z], .045, wood);
+        for (let crown = 0; crown < 4; crown++) {
+          const a = crown * 2.4 + i;
+          const spread = crown === 0 ? 0 : .16 + rng() * .15;
+          ball([x + Math.cos(a) * spread, height + (rng() - .5) * .22, z + Math.sin(a) * spread],
+            [.25 + rng() * .11, .16 + rng() * .11, .23 + rng() * .1], mats[(i + crown) % 3]);
         }
       }
     } else if (kind === "coniferstand") {
@@ -283,45 +296,49 @@ export function createPropFactory() {
         }
       }
     } else if (kind === "reefcolony") {
-      // One broad colony combines staggered staghorn crowns and fine sea fans.
-      // Every branch is merged by material below, so a large reef stays cheap.
-      const reefRock = new T.MeshStandardMaterial({ color: "#3d6570", roughness: 1, flatShading: true });
-      for (let shelf = 0; shelf < 5; shelf++) {
+      // Translucent staghorn fragments, with open water visible between branches.
+      for (const mat of mats) {
+        mat.transparent = true;
+        mat.opacity = .62;
+        mat.depthWrite = false;
+      }
+      const reefRock = new T.MeshStandardMaterial({ color: "#3d6570", roughness: 1, flatShading: true, transparent: true, opacity: .48, depthWrite: false });
+      for (let shelf = 0; shelf < 2; shelf++) {
         const angle = shelf * 2.39 + rng() * 0.4;
-        const distance = shelf === 0 ? 0 : 0.23 + rng() * 0.32;
+        const distance = shelf === 0 ? 0 : 0.19 + rng() * 0.16;
         const plate = put(
           new T.IcosahedronGeometry(1, 0), reefRock,
-          [Math.cos(angle) * distance, 0.065, Math.sin(angle) * distance],
-          [0.46 + rng() * 0.22, 0.11 + rng() * 0.04, 0.34 + rng() * 0.23],
+          [Math.cos(angle) * distance, 0.04, Math.sin(angle) * distance],
+          [0.24 + rng() * 0.1, 0.065 + rng() * 0.02, 0.19 + rng() * 0.1],
         );
         plate.rotation.y = angle;
       }
-      for (let crown = 0; crown < 7; crown++) {
+      for (let crown = 0; crown < 4; crown++) {
         const a = crown * 2.4 + rng() * 0.4;
-        const spread = crown === 0 ? 0 : 0.2 + rng() * 0.38;
+        const spread = crown === 0 ? 0 : 0.12 + rng() * 0.23;
         const cx = Math.cos(a) * spread, cz = Math.sin(a) * spread;
-        const top = 0.46 + rng() * 0.31;
-        rod([cx * 0.65, 0.01, cz * 0.65], [cx, top, cz], 0.075, mats[crown % 3]);
-        for (let arm = 0; arm < 6; arm++) {
-          const angle = a + (arm - 2.5) * 0.46 + (rng() - 0.5) * 0.48;
-          const reach = 0.22 + rng() * 0.38;
+        const top = 0.35 + rng() * 0.25;
+        rod([cx * 0.65, 0.01, cz * 0.65], [cx, top, cz], 0.055, mats[crown % 3]);
+        for (let arm = 0; arm < 4; arm++) {
+          const angle = a + (arm - 1.5) * 0.63 + (rng() - 0.5) * 0.58;
+          const reach = 0.16 + rng() * 0.27;
           const start = [cx * (0.78 + rng() * 0.2), top * (0.55 + rng() * 0.28), cz * (0.78 + rng() * 0.2)];
           const shoulder = [cx + Math.cos(angle) * reach * 0.44, top + (rng() - 0.5) * 0.16, cz + Math.sin(angle) * reach * 0.44];
           const tip = [cx + Math.cos(angle) * reach, top + 0.07 + rng() * 0.27, cz + Math.sin(angle) * reach];
-          rod(start, shoulder, 0.055, mats[crown % 3]);
-          rod(shoulder, tip, 0.033, mats[crown % 3]);
+          rod(start, shoulder, 0.04, mats[crown % 3]);
+          rod(shoulder, tip, 0.024, mats[crown % 3]);
           for (const sign of [-1, 1]) {
-            const fork = [tip[0] + Math.cos(angle + sign * 0.72) * 0.12, tip[1] + 0.12, tip[2] + Math.sin(angle + sign * 0.72) * 0.12];
-            rod(tip, fork, 0.02, mats[crown % 3]);
+            const fork = [tip[0] + Math.cos(angle + sign * 0.72) * 0.085, tip[1] + 0.095, tip[2] + Math.sin(angle + sign * 0.72) * 0.085];
+            rod(tip, fork, 0.014, mats[crown % 3]);
           }
         }
       }
-      for (let i = 0; i < 16; i++) {
+      for (let i = 0; i < 7; i++) {
         const a = i * 2.4 + rng() * 0.18;
-        const end = [Math.cos(a) * (0.57 + rng() * 0.25), 0.06 + rng() * 0.08, Math.sin(a) * (0.48 + rng() * 0.25)];
-        rod([0, 0.015, 0], end, 0.032, mats[i % 3]);
+        const end = [Math.cos(a) * (0.32 + rng() * 0.17), 0.06 + rng() * 0.08, Math.sin(a) * (0.28 + rng() * 0.17)];
+        rod([0, 0.015, 0], end, 0.022, mats[i % 3]);
         const side = [end[0] * 1.13, end[1] + 0.11, end[2] * 1.13];
-        rod(end, side, 0.02, mats[(i + 1) % 3]);
+        rod(end, side, 0.014, mats[(i + 1) % 3]);
       }
     } else if (kind === "coral") {
       for (let i = 0; i < 6; i++) {

@@ -64,11 +64,11 @@ export const LANDSCAPES = {
   },
   forest: {
     label: "Ancient forest",
-    props: ["tree", "tree", "mushroom", "flowers"],
-    colors: ["#28664d", "#589153", "#dcaa62"],
+    props: ["forestgrove", "forestgrove", "forestgrove", "mushroom"],
+    colors: ["#123d30", "#1f533c", "#345b38"],
     weather: "rain",
     waves: true,
-    caption: "Drifting rainclouds above an ancient forest.",
+    caption: "Dark, layered rainforest canopy beneath rainclouds and circling black birds.",
   },
   coral: {
     label: "Coral reef",
@@ -76,7 +76,7 @@ export const LANDSCAPES = {
     colors: ["#ee947d", "#6bcbb2", "#dac188"],
     weather: "bubbles",
     underwater: true,
-    caption: "Branching colonies grow across raised sand; shape the seabed to grow a reef.",
+    caption: "Small translucent coral colonies gather in living clusters wherever sand rises.",
   },
   tundra: {
     label: "Tundra",

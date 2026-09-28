@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { analyzeLandscape } from "../src/environment/layout.js";
 import { LANDSCAPES } from "../src/catalog/landscapes.js";
+import { clusteredReefSites } from "../src/environment/reef-layout.js";
 test("landscapes place props in valid habitats and trace shorelines", () => {
   const a = analyzeLandscape((u) => u, 0.43);
   assert.ok(a.land.length > 0 && a.sea.length > 0 && a.shore.length > 0);
@@ -86,5 +87,20 @@ test("Synthwave centers springing monsters and surreal creatures", async () => {
   for (const id of ["neonbehemoth", "glitchimp", "velvetphantom"]) {
     assert.equal(SPECIES[id].actions.move, "Jump");
     assert.ok(SPECIES[id].speed < 0.01);
+  }
+});
+
+test("coral colonies form twenty-five small irregular clusters on raised sand", () => {
+  const land = Array.from({ length: 8 }, (_, i) => ({
+    u: .18 + (i % 4) * .2, v: .2 + Math.floor(i / 4) * .4, h: .55 + i * .03,
+  }));
+  const sites = clusteredReefSites(land, 17);
+  assert.equal(sites.length, 25);
+  assert.deepEqual(sites, clusteredReefSites(land, 17));
+  assert.deepEqual(clusteredReefSites([], 17), []);
+  for (let cluster = 0; cluster < 5; cluster++) {
+    const group = sites.filter((p) => p.cluster === cluster);
+    assert.equal(group.length, 5);
+    assert.ok(group.every((p) => Math.hypot(p.u - group[0].u, p.v - group[0].v) < .085));
   }
 });

@@ -5,6 +5,7 @@ import { createPropFactory } from "./props.js";
 import { seededRandom } from "../simulation/world.js";
 import { createLivingEffects } from "./living-effects.js";
 import { reefGrowth } from "./reef-growth.js";
+import { clusteredReefSites } from "./reef-layout.js";
 
 const PROP_SCALE = 0.5;
 const LANDSCAPE_REBUILD_DELAY_SECONDS = 2.4;
@@ -369,7 +370,7 @@ export function createLandscapeLayer(
       scatteredStars = 0;
     }
     const candidates = recipe.underwater ? layout.sea : layout.land;
-    const placements = candidates.slice(0, theme === "tundra" ? 30 : theme === "coral" ? 10 : recipe.underwater ? 24 : 20)
+    const placements = candidates.slice(0, theme === "forest" ? 24 : theme === "tundra" ? 30 : theme === "coral" ? 10 : recipe.underwater ? 24 : 20)
       .filter(p => !removedElements.some(q => Math.hypot(p.u-q.u, p.v-q.v) < .05))
       .concat(addedElements);
     placements.forEach((p, i) => {
@@ -380,6 +381,7 @@ export function createLandscapeLayer(
       const scale =
         (["chest", "trident", "ruin"].includes(kind)
           ? 0.29
+          : kind === "forestgrove" ? 0.65
           : kind === "coniferstand" ? 0.56
           : kind === "meadow" ? 0.48
           : kind === "rockpeak" ? 0.45
@@ -396,24 +398,33 @@ export function createLandscapeLayer(
       propsRoot.add(object);
       props.push({ object, kind, p, scale });
     });
-    if (theme === "coral" && reefs.length === 0) {
-      const reefRandom = seededRandom(layoutSeed);
+    if (theme === "coral") {
+      const viableLand = layout.land
+        .map((p) => ({ ...p, growth: reefGrowth(sampleTerrain, p.u, p.v) }))
+        .filter((p) => p.growth > .025);
+      const sites = clusteredReefSites(viableLand, layoutSeed);
       const palettes = [
         ["#b85b62", "#d39958", "#845d9d"],
         ["#ba6b91", "#bca769", "#4f9b8e"],
         ["#c68b66", "#7667a4", "#b89851"],
       ];
-      for (let y = 0; y < 4; y++) for (let x = 0; x < 6; x++) {
-        const u = (x + 0.5 + (reefRandom() - 0.5) * 0.36) / 6;
-        const v = (y + 0.5 + (reefRandom() - 0.5) * 0.36) / 4;
-        const phase = reefRandom() * Math.PI * 2;
-        const object = factory.build("reefcolony", palettes[(x + y) % palettes.length], Math.floor(phase * 1000));
-        object.position.set((u - 0.5) * 4, 0.004, (v - 0.5) * 3);
-        object.rotation.y = phase;
-        object.scale.setScalar(0.001);
-        reefRoot.add(object);
-        reefs.push({ u, v, phase, object, growth: 0 });
-      }
+      sites.forEach((site, i) => {
+        let reef = reefs[i];
+        if (!reef) {
+          const object = factory.build("reefcolony", palettes[(site.cluster + i) % palettes.length], Math.floor(site.phase * 1000));
+          object.rotation.y = site.phase;
+          object.scale.setScalar(0.001);
+          reefRoot.add(object);
+          reef = { ...site, object, growth: 0 };
+          reefs.push(reef);
+        }
+        reef.u = site.u;
+        reef.v = site.v;
+        reef.centerU = site.centerU;
+        reef.centerV = site.centerV;
+        reef.object.position.set((site.u - 0.5) * 4, 0.004, (site.v - 0.5) * 3);
+      });
+      while (reefs.length > sites.length) reefRoot.remove(reefs.pop().object);
     }
     rebuildNetwork();
     for (const wave of waves)
@@ -450,10 +461,10 @@ export function createLandscapeLayer(
     factory.setTime(time);
     reefRoot.visible = theme === "coral";
     if (reefRoot.visible) for (const reef of reefs) {
-      const target = reefGrowth(sampleTerrain, reef.u, reef.v);
+      const target = reefGrowth(sampleTerrain, reef.centerU, reef.centerV);
       reef.growth += (target - reef.growth) * (motion ? 1 - Math.exp(-Math.min(dt, 0.05) * 1.65) : 1);
       reef.object.visible = reef.growth > 0.04;
-      reef.object.scale.setScalar((0.1 + reef.growth * 0.39) * (1 + Math.sin(time * 0.7 + reef.phase) * 0.012));
+      reef.object.scale.setScalar((0.055 + reef.growth * 0.16) * (1 + Math.sin(time * 0.7 + reef.phase) * 0.012));
       reef.object.rotation.z = Math.sin(time * 0.85 + reef.phase) * 0.012;
     }
     for (const { object, kind, p, scale } of props) {
