@@ -1,6 +1,13 @@
 # Changelog
 
-## Unreleased — showcase and living wildlife
+## v0.2.0 — 2026-09-27 — Living Worlds
+
+- Half-size koi and rabbits, theme-specific populations up to 64 animals, and five-second respawn delays.
+- Three Wildlife pointer modes: sculpt terrain, move animals, and add/remove landscape elements.
+- Gradual high-elevation snow accumulation, shoreline greenery, sand/dust and seabed deposits.
+- Varied branching trees and layered pines with rooted wind animation.
+- Raised-terrain branching coral, polar wildlife and amphibious Glacier habitats, richer alpine Tundra scenery, lunar impact basins, and springing Synthwave monsters.
+- Combined landscape/weather control and a ready-built portable release ZIP.
 
 - Terrain-driven volcanic lava transport, accumulation and cooling, with ash and sparks above actual high terrain; removed decorative circular vents.
 - Animated translucent noise clouds and matching drifting shadows.

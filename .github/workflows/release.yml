@@ -1,0 +1,47 @@
+name: Publish release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to publish
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: standalone-animal-demo/package-lock.json
+      - run: npm ci --prefix standalone-animal-demo
+      - run: npm test --prefix standalone-animal-demo
+      - run: node scripts/build-site.mjs
+      - name: Package and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          test "v$(node -p "require('./standalone-animal-demo/package.json').version")" = "$RELEASE_TAG"
+          stage=$(mktemp -d)
+          package="terrain-lab-$RELEASE_TAG"
+          mkdir "$stage/$package"
+          git archive HEAD | tar -x -C "$stage/$package"
+          cp -R _site/. "$stage/$package/"
+          (cd "$stage" && zip -qr "$package.zip" "$package")
+          (cd "$stage" && sha256sum "$package.zip" > SHA256SUMS.txt)
+          gh release create "$RELEASE_TAG" "$stage/$package.zip" "$stage/SHA256SUMS.txt" --verify-tag --title "Terrain Lab $RELEASE_TAG — Living Worlds" --notes-file RELEASE_NOTES.md

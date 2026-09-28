@@ -1,4 +1,4 @@
-# Terrain Lab v0.1.0
+# Terrain Lab v0.2.0
 
 [**Terrain Lab showcase →**](https://msriram.github.io/terrain-lab/) ·
 [**Live sandbox →**](https://msriram.github.io/terrain-lab/sandbox/) ·
@@ -14,8 +14,10 @@ feeds a dependency-free browser display.
 
 ## Release package
 
-**v0.1.0** is the first portable Terrain Lab release. Download the
-[v0.1.0 source package](https://github.com/msriram/terrain-lab/archive/refs/tags/v0.1.0.zip),
+**v0.2.0 — Living Worlds** adds animated wildlife, terrain-aware scenery,
+snow accumulation, branching trees, volcanic flows, and interactive editing.
+Download the ready-built **terrain-lab-v0.2.0.zip** from the
+[v0.2.0 release](https://github.com/msriram/terrain-lab/releases/tag/v0.2.0),
 unzip it, then run `./scripts/install-kinect-service.sh` once on a fixed Mac
 or `./scripts/run.sh` for a portable session. The package includes the hosted
 web application, local Kinect bridge, calibration tools, and macOS launchers.
