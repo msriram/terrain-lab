@@ -76,6 +76,10 @@ export async function createAnimalLayer({
     for (const a of animals) {
       a.animation.dispose();
       a.materials.forEach((m) => m.material.dispose());
+      a.roleLightMeshes.forEach((mesh) => {
+        mesh.geometry.dispose();
+        mesh.material.dispose();
+      });
       a.shadow.material.dispose();
       a.ripple.material.dispose();
       scene.remove(a.root, a.shadow, a.ripple);
@@ -89,9 +93,9 @@ export async function createAnimalLayer({
         material.emissive.copy(emissive);
         material.emissiveIntensity = 1;
         const roleSpecies=SPECIES[simulation.creatures[i].species];
-        if(roleSpecies.tint && color.getHSL({}).l>.15){
-          material.color.lerp(new THREE.Color(roleSpecies.tint),.8);
-          material.emissive.set(roleSpecies.tint).multiplyScalar(.22);
+        if(roleSpecies.tint && roleSpecies.visual!=="speedboat" && color.getHSL({}).l>.07){
+          material.color.lerp(new THREE.Color(roleSpecies.tint),.9);
+          material.emissive.set(roleSpecies.tint).multiplyScalar(.42);
         }
         if (
           pack === "atlantis" &&
@@ -150,6 +154,26 @@ export async function createAnimalLayer({
           });
         }
       });
+      const roleLightMeshes=[];
+      const sirenRed=[],sirenBlue=[];
+      for(const [name,collection] of [["police-red",sirenRed],["police-blue",sirenBlue]]){
+        const light=model.getObjectByName(name);
+        if(light)collection.push(light);
+      }
+      if(species.role){
+        const addLight=(name,hex,x,z,radius=.009)=>{
+          const mesh=new THREE.Mesh(
+            new THREE.SphereGeometry(radius,10,8),
+            new THREE.MeshBasicMaterial({color:hex,transparent:true,opacity:1}),
+          );
+          mesh.name=name;mesh.position.set(x,.05,z);
+          root.add(mesh);roleLightMeshes.push(mesh);return mesh;
+        };
+        if(species.role==="police"){
+          sirenRed.push(addLight("police-red-glow",0xff304d,-.021,-.012,.012));
+          sirenBlue.push(addLight("police-blue-glow",0x2a9dff,.021,-.012,.012));
+        }else if(species.visual!=="speedboat")addLight("thief-amber",0xffbb46,0,-.022);
+      }
       const { shadow, ripple } = effects.create(species.length);
       scene.add(shadow, ripple);
       return {
@@ -161,6 +185,9 @@ export async function createAnimalLayer({
         shadow,
         ripple,
         materials,
+        roleLightMeshes,
+        sirenRed,
+        sirenBlue,
         animation: createAnimationController(
           model,
           gltf.animations,
@@ -265,6 +292,15 @@ export async function createAnimalLayer({
       if (step && !remote) simulation.update(step);
       simulation.creatures.forEach((c, i) => {
         const a = animals[i];
+        if(a.sirenRed.length&&a.sirenBlue.length){
+          const redOn=Math.floor(simulation.time*6)%2===0;
+          for(const [lights,on] of [[a.sirenRed,redOn],[a.sirenBlue,!redOn]]){
+            for(const mesh of lights){
+              if(mesh.material.isMeshBasicMaterial)mesh.material.opacity=on?1:.45;
+              else mesh.material.emissiveIntensity=on?3:.7;
+            }
+          }
+        }
         a.root.visible = a.shadow.visible = enabled && c.active;
         a.ripple.visible = false;
         if (!c.active || !enabled) return;

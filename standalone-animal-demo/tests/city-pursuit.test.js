@@ -37,5 +37,9 @@ test("speedboats have original hull geometry and police lightbars",()=>{
   const police=createSpeedboat(true),thief=createSpeedboat(false);
   assert.ok(police.scene.children.length>thief.scene.children.length);
   assert.equal(police.scene.children[0].geometry.type,"ExtrudeGeometry");
+  assert.equal(police.scene.children[0].material.color.getHex(),0x1879e8);
+  assert.equal(thief.scene.children[0].material.color.getHex(),0xec329b);
+  assert.equal(police.scene.getObjectByName("police-red").material.color.getHex(),0xff3455);
+  assert.equal(police.scene.getObjectByName("police-blue").material.color.getHex(),0x329dff);
   police.dispose();thief.dispose();
 });
