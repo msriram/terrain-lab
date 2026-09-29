@@ -1,0 +1,31 @@
+name: Bug report
+description: Report a reproducible Terrain Lab issue
+title: "Bug: "
+labels: [bug]
+body:
+  - type: textarea
+    id: behavior
+    attributes:
+      label: What happened?
+      description: Include the selected world and expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. Open…\n2. Choose…\n3. Move…"
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Browser or physical rig
+      description: Browser and OS; for a physical rig, Kinect, projector, and calibration details.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshot, recording, or console error
+      description: Please remove private footage or personal information.

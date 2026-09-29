@@ -63,7 +63,7 @@ try {
   });
   const page = await context.newPage();
   const checkedLinks = new Set();
-  for (const route of ["", "guide/", "wildlife/", "sandbox/"]) {
+  for (const route of ["", "guide/", "contribute/", "wildlife/", "sandbox/"]) {
     await page.goto(base + route);
     if (route === "wildlife/")
       await page.waitForFunction(() => window.animalDemo);

@@ -3,7 +3,8 @@
 [**Terrain Lab showcase →**](https://msriram.github.io/terrain-lab/) ·
 [**Live sandbox →**](https://msriram.github.io/terrain-lab/sandbox/) ·
 [**Wildlife demo →**](https://msriram.github.io/terrain-lab/wildlife/) ·
-[**Field guide →**](https://msriram.github.io/terrain-lab/guide/)
+[**Field guide →**](https://msriram.github.io/terrain-lab/guide/) ·
+[**Contribute →**](https://msriram.github.io/terrain-lab/contribute/)
 
 ![Terrain Lab rendering live Kinect depth as colored topographic contours](assets/terrain-lab-kinect.png)
 
@@ -165,7 +166,7 @@ python3 -m http.server 5180 --directory _site
 ```
 
 Open `http://localhost:5180/`. Routes: `/` showcase, `/sandbox/` integrated app,
-`/wildlife/` focused demo, `/guide/` documentation. GitHub Actions builds this
+`/wildlife/` focused demo, `/guide/` documentation, `/contribute/` community process. GitHub Actions builds this
 same `_site/` directory and deploys it beneath `/terrain-lab/`. The macOS
 launcher opens the sandbox path; old `?autoconnect=1` and `?projection=1`
 bookmarks at the site root redirect to it.
@@ -177,3 +178,4 @@ Kinect capture and on-sand alignment still require a hardware check.
 
 See [the animal extension guide](standalone-animal-demo/docs/ADDING_ANIMALS.md)
 and [model attribution](standalone-animal-demo/public/assets/animals/ATTRIBUTION.md).
+For issues, branches, review, and merging, see [CONTRIBUTING.md](CONTRIBUTING.md).

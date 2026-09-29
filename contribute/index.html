@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101e22">
+  <meta name="description" content="Help build Terrain Lab: contribute worlds, wildlife, interaction, accessibility, documentation, and physical sandbox improvements.">
+  <title>Contribute — Terrain Lab</title>
+  <link rel="stylesheet" href="../website/site.css">
+</head>
+<body><div class="site-shell">
+  <header class="site-nav"><a class="wordmark" href="../"><span>≋</span> TERRAIN LAB</a><nav aria-label="Main navigation"><a href="../">Showcase</a><a href="../guide/">Field guide</a><a href="../wildlife/">Wildlife</a><a class="nav-cta" href="../sandbox/">Open sandbox ↗</a></nav></header>
+  <main>
+    <div class="guide-heading"><p class="eyebrow">OPEN TO BUILDERS, ARTISTS &amp; EXPLORERS</p><h1>Make the world<br><em>more alive.</em></h1><p>Terrain Lab grows through small, reviewable contributions. Bring a species to life, shape a new world, improve the projector workflow, or make the guide clearer.</p><div class="button-row"><a class="button solid" href="https://github.com/msriram/terrain-lab/issues/new/choose">Find a starting point <span>↗</span></a><a class="button" href="https://github.com/msriram/terrain-lab/pulls">See open pull requests <span>↗</span></a></div></div>
+    <div class="guide-layout"><nav class="guide-toc" aria-label="Contribution sections"><a href="#ideas">Where to help</a><a href="#process">Contribution process</a><a href="#local">Run locally</a><a href="#review">Review &amp; merge</a><a href="#assets">Models &amp; credit</a></nav><div class="guide-content">
+      <section id="ideas"><h2>There is room for every kind of maker.</h2><p>Open an issue for a world, creature, motion, terrain reaction, performance fix, accessibility improvement, bug, documentation change, or physical rig finding. A screenshot or short recording helps others understand visual issues. For a larger feature, discuss the approach in an issue before building it so contributors can coordinate.</p><p>Useful entry points: <a href="../documentation/ADDING_ANIMALS.md">animal extension guide</a>, <a href="../documentation/INTEGRATION.md">sandbox integration contract</a>, and <a href="../guide/">field guide</a>.</p></section>
+      <section id="process"><h2>From idea to pull request.</h2><ol><li><a href="https://github.com/msriram/terrain-lab/issues">Search existing issues</a>; open a new one if the idea or bug has not been discussed.</li><li>Fork the repository, create a focused branch from current <code>main</code>, and make one coherent change. Keep generated screenshots and local model downloads out of your commit unless they are part of the contribution.</li><li>Run the checks below. Test visual work in the browser, including the integrated sandbox. For projector or Kinect changes, describe the rig and calibration used.</li><li>Open a <a href="https://github.com/msriram/terrain-lab/compare">pull request</a> against <code>main</code>. GitLab calls the same review step a <em>merge request</em>. Link the issue, explain behavior before and after, and include screenshots or a short recording for visual changes.</li></ol><div class="callout"><p>A draft pull request is welcome for early feedback. Mark it ready when the change and checks are complete.</p></div></section>
+      <section id="local"><h2>Try it on your machine.</h2><pre><code>git clone https://github.com/YOUR-USERNAME/terrain-lab.git
+cd terrain-lab
+npm ci --prefix standalone-animal-demo
+npm test --prefix standalone-animal-demo
+node scripts/build-site.mjs
+python3 -m http.server 5180 --directory _site</code></pre><p>Open <code>http://localhost:5180/</code>, <code>/sandbox/</code>, and <code>/wildlife/</code>. The sample landscape and projector preview work without a Kinect. If Chrome is installed, <code>npm run test:site --prefix standalone-animal-demo</code> checks site links and browser interactions. A live sensor or projector change also needs a physical rig check; document what you could verify.</p></section>
+      <section id="review"><h2>How a change lands.</h2><p>The pull request template asks for the behavior, test evidence, visuals, and asset credits. Automated checks build the site and run simulation tests. A maintainer reviews scope, integration with the sandbox and projector, readability, performance, and provenance, then may request changes. After approval, a maintainer merges into <code>main</code>; GitHub Pages publishes from that branch through the deployment workflow. Contributors can follow the pull request and deployment status on GitHub.</p><p>Prefer small branches. If another pull request changes the same area, update your branch from <code>main</code> and resolve conflicts before merge.</p></section>
+      <section id="assets"><h2>Keep every asset traceable.</h2><p>Only submit models, sprites, textures, sounds, or reference-derived work that you have the right to share. Record creator, source URL, license, required credit, and modifications alongside each new asset. Avoid bundling downloaded libraries or unlicensed movie/game artwork. For wildlife, follow the <a href="../documentation/ADDING_ANIMALS.md">asset and animation layout</a> and update <a href="../wildlife/assets/animals/ATTRIBUTION.md">attribution</a>.</p><p>The repository also has a <a href="https://github.com/msriram/terrain-lab/blob/main/CONTRIBUTING.md">contributor checklist</a> and <a href="https://github.com/msriram/terrain-lab/issues/new/choose">issue forms</a> for proposing work.</p></section>
+    </div></div>
+  </main>
+  <footer class="site-footer"><a class="wordmark" href="../"><span>≋</span> TERRAIN LAB</a><p>An experiment in projected nature.</p><div><a href="../guide/">Documentation</a><a href="https://github.com/msriram/terrain-lab">GitHub ↗</a></div></footer>
+</div></body></html>

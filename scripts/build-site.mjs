@@ -14,11 +14,11 @@ await rm(out,{recursive:true,force:true});await mkdir(out,{recursive:true});
 // Commit this generated local runtime so Kinect rigs still run without npm.
 await mkdir(path.join(root,'assets/wildlife'),{recursive:true});
 await cp(path.join(demo,'dist-layer'),path.join(root,'assets/wildlife'),{recursive:true});
-for(const name of ['index.html','app.js','animals.js','styles.css','control-icon.css','sandbox','guide','website'])await cp(path.join(root,name),path.join(out,name),{recursive:true});
+for(const name of ['index.html','app.js','animals.js','styles.css','control-icon.css','sandbox','guide','contribute','website'])await cp(path.join(root,name),path.join(out,name),{recursive:true});
 await mkdir(path.join(out,'assets'),{recursive:true});
 await cp(path.join(root,'assets/wildlife'),path.join(out,'assets/wildlife'),{recursive:true});
 await cp(path.join(demo,'dist'),path.join(out,'wildlife'),{recursive:true});
 await mkdir(path.join(out,'documentation'),{recursive:true});
 await cp(path.join(demo,'docs'),path.join(out,'documentation'),{recursive:true});
 await writeFile(path.join(out,'.nojekyll'),'');
-console.log('Site ready in _site/: showcase / sandbox/ / wildlife/ / guide/');
+console.log('Site ready in _site/: showcase / sandbox/ / wildlife/ / guide/ / contribute/');
