@@ -154,16 +154,16 @@ try {
       TerrainWildlife.layer.getStats().active === 0,
   );
   await page.locator("#cancelCalibration").click();
-  await page.getByRole("button", { name: "Raise", exact: true }).click();
+  await page.locator("#pointer-mode").selectOption("sculpt");
   await page.waitForFunction(
     () => TerrainWildlife.canvas.style.pointerEvents === "none",
   );
   const height = await page.evaluate(() => TerrainLab.sampleTerrain(0.2, 0.5));
-  await page.mouse.click(box.x + box.width * 0.2, box.y + box.height * 0.5);
+  await page.mouse.click(box.x + box.width * 0.2, box.y + box.height * 0.5, {button:"right"});
   assert.ok(
     await page.evaluate((h) => TerrainLab.sampleTerrain(0.2, 0.5) > h, height),
   );
-  await page.getByRole("button", { name: "Rescue", exact: true }).click();
+  await page.locator("#pointer-mode").selectOption("rescue");
   await page.locator("#theme").selectOption("atlantis");
   await page.waitForFunction(
     () => TerrainWildlife.layer.getStats().pack === "atlantis",

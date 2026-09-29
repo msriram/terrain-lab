@@ -43,10 +43,7 @@ if(host&&stage){
   const applyFixture=()=>host.setSample(createTerrain(Number($('fixture').value)));
   $('fixture').addEventListener('change',()=>{if(!host.getState().live)applyFixture();});
   $('resetTerrain').addEventListener('click',applyFixture);
-  $('pointer-mode').addEventListener('change',()=>{host.setTool($('pointer-mode').value);document.querySelectorAll('[data-terrain-tool]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.terrainTool===($('pointer-mode').value==='rescue'?'rescue':$('pointer-mode').value==='sculpt'?'raise':''))));});
-  document.querySelectorAll('[data-terrain-tool]').forEach(button=>button.addEventListener('click',()=>{
-   $('pointer-mode').value=button.dataset.terrainTool==='rescue'?'rescue':'sculpt';
-  }));
+  $('pointer-mode').addEventListener('change',()=>host.setTool($('pointer-mode').value));
   $('randomize-landscape').addEventListener('click',()=>{layer.randomizeLandscape();announce('Fresh landscape elements placed.');});
   stage.addEventListener('contextmenu',event=>event.preventDefault());
   stage.addEventListener('pointerdown',event=>{
