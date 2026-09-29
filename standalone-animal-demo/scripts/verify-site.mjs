@@ -225,6 +225,17 @@ try {
   await page.getByLabel("Landscape & weather").check();
   await page.waitForFunction((time) => animalDemo.getMetrics().landscape.time > time, stoppedTime);
   await page.locator("#landscape").selectOption("tundra");
+  await page.locator("#landscape").selectOption("cyberpunk");
+  await page.waitForFunction(() => animalDemo.getMetrics().landscape.helipads > 0 &&
+    animalDemo.getMetrics().landscape.zipLines > 0 && animalDemo.getMetrics().landscape.pedestrians > 0);
+  await page.waitForTimeout(1500);
+  await page.locator("#stage").screenshot({path:"screenshots/cyber-city.png"});
+  await page.evaluate(() => animalDemo.layer.setTerrain(()=>.15,.43));
+  await page.waitForFunction(() => animalDemo.getMetrics().landscape.towers === 0 &&
+    animalDemo.getMetrics().landscape.pedestrians === 0 && animalDemo.getMetrics().landscape.helicopters === 0);
+  await page.evaluate(() => animalDemo.layer.setTerrain(()=>NaN,.43));
+  await page.waitForFunction(() => animalDemo.getMetrics().landscape.cityBlocks === 0);
+  await page.locator("#landscape").selectOption("tundra");
   await page.locator("#fixture").selectOption("4");
   await page.waitForFunction(() => animalDemo.getMetrics().landscape.depositCoverage > .005);
   await page.waitForTimeout(5000);

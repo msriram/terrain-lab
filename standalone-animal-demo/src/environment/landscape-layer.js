@@ -374,7 +374,7 @@ export function createLandscapeLayer(
       scatteredStars = 0;
     }
     const candidates = recipe.underwater ? layout.sea : layout.land;
-    const baseCount = theme === "forest" ? 24 : theme === "tundra" ? 30 : theme === "coral" ? 10 : theme === "deepsea" ? 32 : theme === "cyberpunk" ? 8 : recipe.underwater ? 24 : 20;
+    const baseCount = theme === "forest" ? 24 : theme === "tundra" ? 30 : theme === "coral" ? 10 : theme === "deepsea" ? 32 : theme === "cyberpunk" ? 0 : recipe.underwater ? 24 : 20;
     const placements = candidates.slice(0, Math.round(baseCount * density))
       .filter(p => !removedElements.some(q => Math.hypot(p.u-q.u, p.v-q.v) < .05))
       .concat(addedElements);

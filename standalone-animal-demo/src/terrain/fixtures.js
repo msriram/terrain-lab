@@ -151,6 +151,7 @@ export function paintTerrain(canvas, sample, water, pack) {
       if (night) c = mix([5, 25, 53], [36, 120, 128], e * 0.85 + 0.1);
       if (pack === "deepsea") c = mix([1, 9, 15], [11, 45, 51], e * 0.85 + 0.1);
       if (pack === "universe") c = mix([5, 10, 30], [36, 25, 78], e);
+      if (pack === "cyberpunk") c = mix([7, 12, 23], [22, 27, 43], e);
       const slope = (sample(u + 0.002, v + 0.002) - e) * 100;
       const contour = Math.abs(((e * 26) % 1) - 0.5) < 0.035;
       const light =

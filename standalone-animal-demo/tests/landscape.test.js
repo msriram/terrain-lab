@@ -99,12 +99,13 @@ test("Talokan builds a dark underwater city with its own fauna", async () => {
 
 test("Cyberpunk streets follow safe connected elevation", () => {
   const flat = planCyberCity(() => .7, .4, 31);
-  assert.equal(flat.blocks.length, 35);
-  assert.equal(flat.roads.length, 58);
+  assert.equal(flat.blocks.length, 108);
+  assert.ok(flat.roads.length > 80 && flat.roads.length < 195);
   const flooded = planCyberCity((u) => u < .45 ? .2 : .7, .4, 31);
-  assert.ok(flooded.blocks.length < flat.blocks.length);
-  assert.ok(flooded.blocks.every((block) => block.u > .45));
-  assert.ok(flooded.roads.every((road) => road.u0 > .45 && road.u1 > .45));
+  assert.equal(flooded.blocks.length, flat.blocks.length);
+  assert.ok(flooded.blocks.filter(b=>b.u<.45).every(b=>b.floors===0));
+  assert.ok(flooded.blocks.filter(b=>b.u>.45).every(b=>b.floors>=4));
+  assert.ok(flooded.roads.some(r=>r.low));
   assert.deepEqual(planCyberCity(() => .7, .4, 31, 0), { blocks: [], roads: [] });
 });
 

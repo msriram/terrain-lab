@@ -184,7 +184,7 @@ export const LANDSCAPES = {
     weather: "neon-rain",
     clouds: true,
     allLand: true,
-    caption: "Raise connected city blocks: neon towers, wet streets, traffic, and crowds emerge from the sand.",
+    caption: "Carve streets for crowds. Raise skyscrapers, rooftop helipads and zip-line connections above the city.",
   },
   surreal: {
     label: "Dreamscape",

@@ -2,6 +2,7 @@ import * as T from "three";
 import { LavaFlow } from "./flow.js";
 import { createDepositLayer } from "./deposit-layer.js";
 import { seededRandom } from "../simulation/world.js";
+import { BirdFlight } from "./bird-flight.js";
 
 export function createLivingEffects(root) {
   const deposits = createDepositLayer(root);
@@ -65,17 +66,11 @@ export function createLivingEffects(root) {
       a: rng() * 6.28,
       s: 0.025 + rng() * 0.018,
     }));
-  const whiteBirds = Array.from({ length: 40 }, (_, i) => ({
-    u: 0.5, v: 0.5, a: 0,
-    phase: rng() * Math.PI * 2,
-    jitter: (rng() - 0.5) * 0.016,
-    rank: Math.floor(i / 2),
-    side: i % 2 ? 1 : -1,
-  }));
+  const birdFlight = new BirdFlight();
   const geometry = new T.BufferGeometry();
   geometry.setAttribute(
     "position",
-    new T.BufferAttribute(new Float32Array(96 * 18), 3),
+    new T.BufferAttribute(new Float32Array(113 * 18), 3),
   );
   const material = new T.MeshBasicMaterial({
     color: 0xd8f4ed,
@@ -155,19 +150,6 @@ export function createLivingEffects(root) {
     });
     agents.splice(0, agents.length, ...next);
   }
-  function stepWhiteFlock() {
-    const heading = clock * 0.24 + 0.5;
-    const cx = 0.5 + Math.cos(heading) * 0.18;
-    const cy = 0.5 + Math.sin(heading) * 0.14;
-    for (const bird of whiteBirds) {
-      const wing = (bird.rank + 1) * 0.0095 + bird.jitter;
-      const back = bird.rank * 0.008;
-      const sway = Math.sin(clock * 1.4 + bird.phase) * 0.004;
-      bird.u = cx - Math.sin(heading) * back + Math.cos(heading) * (bird.side * wing + sway);
-      bird.v = cy - Math.cos(heading) * back - Math.sin(heading) * (bird.side * wing + sway);
-      bird.a = heading;
-    }
-  }
   return {
     terrain(fn, level, vents) {
       sample = fn;
@@ -187,7 +169,6 @@ export function createLivingEffects(root) {
       hazeMaterial.opacity = world === "deepsea" ? .18 : .26;
       deposits.update(dt, world, recipe, sample, water, motion);
       const fish = underwater,
-        whiteFlock = world === "earth",
         birds = ["earth", "forest", "tropical", "sakura"].includes(world);
       lava.visible = !!recipe.eruption;
       clouds.visible =
@@ -199,7 +180,7 @@ export function createLivingEffects(root) {
         while (acc >= 1 / 30) {
           if (lava.visible) flow.step(1 / 30);
           if (flock.visible) {
-            if (whiteFlock) stepWhiteFlock();
+            if (birds) birdFlight.step(1 / 30);
             else stepSchool(1 / 30, fish);
           }
           acc -= 1 / 30;
@@ -225,15 +206,14 @@ export function createLivingEffects(root) {
         texture.needsUpdate = true;
       }
       if (flock.visible) {
-        material.color.set(fish ? 0xb6ede1 : whiteFlock ? 0xf3f5e9 : 0x24313a);
+        material.color.set(fish ? 0xb6ede1 : 0xffffff);
         const arr = geometry.attributes.position.array;
-        const flockAgents = whiteFlock ? whiteBirds : agents;
+        const flockAgents = fish ? agents : [...birdFlight.birds, ...birdFlight.formation];
         flockAgents.forEach((a, i) => {
-          if (i >= (fish ? 96 : whiteFlock ? 40 : 32)) return;
-          const x = (a.u - 0.5) * 4,
-            z = (a.v - 0.5) * 3,
-            y = fish ? 0.09 : whiteFlock ? 0.45 : 0.4,
-            sz = fish ? 0.018 : whiteFlock ? 0.035 : 0.028,
+          const x = fish ? (a.u - 0.5) * 4 : a.x,
+            z = fish ? (a.v - 0.5) * 3 : a.z,
+            y = fish ? 0.09 : 0.45,
+            sz = fish ? 0.018 : i < 100 ? 0.009 : 0.028,
             flap = Math.sin(clock * (fish ? 13 : 9) + i) * sz * 0.6;
           const shape = fish
             ? [
@@ -263,14 +243,15 @@ export function createLivingEffects(root) {
             ),
           );
         });
-        geometry.setDrawRange(0, (fish ? 96 : whiteFlock ? 40 : 32) * 6);
+        geometry.setDrawRange(0, (fish ? 96 : 113) * 6);
         geometry.attributes.position.needsUpdate = true;
       }
     },
     stats: () => ({
       ...deposits.stats(),
       lavaCells: flow.mass.reduce((n, v) => n + (v > 0.0001), 0),
-      flockCount: flock.visible ? (underwater ? 96 : theme === "earth" ? 40 : 32) : 0,
+      flockCount: flock.visible ? (underwater ? 96 : 100) : 0,
+      formationCount: flock.visible && !underwater ? 13 : 0,
       clouds: clouds.visible,
     }),
     dispose() {

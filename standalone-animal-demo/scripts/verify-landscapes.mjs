@@ -77,7 +77,7 @@ try {
   await page.waitForFunction(() => !animalDemo.getMetrics().landscape.erupting);
   await page.locator("#landscape").selectOption("earth");
   await page.waitForFunction(
-    () => animalDemo.getMetrics().landscape.flockCount === 32,
+    () => animalDemo.getMetrics().landscape.flockCount === 100,
   );
   await page.locator("#fixture").selectOption("1");
   await page.locator("#fixture").selectOption("0");
