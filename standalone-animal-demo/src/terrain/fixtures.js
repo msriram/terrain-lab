@@ -114,7 +114,7 @@ export function createSculptableTerrain(
 }
 const mix = (a, b, t) =>
   a.map((x, i) => Math.round(x + (b[i] - x) * Math.max(0, Math.min(1, t))));
-export function paintTerrain(canvas, sample, water, pack) {
+export function paintTerrain(canvas, sample, water, pack, showContours = true) {
   const w = (canvas.width = 1024),
     h = (canvas.height = 768),
     ctx = canvas.getContext("2d");
@@ -157,7 +157,7 @@ export function paintTerrain(canvas, sample, water, pack) {
       const light =
         1 +
         Math.max(-0.12, Math.min(0.12, slope * 0.14)) -
-        (contour ? 0.075 : 0);
+        (showContours && contour ? 0.075 : 0);
       const i = (y * w + x) * 4;
       for (let k = 0; k < 3; k++) img.data[i + k] = c[k] * light;
       img.data[i + 3] = 255;

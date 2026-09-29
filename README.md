@@ -1,8 +1,8 @@
 # Terrain Lab v0.2.0
 
 [**Terrain Lab showcase →**](https://msriram.github.io/terrain-lab/) ·
-[**Live sandbox →**](https://msriram.github.io/terrain-lab/sandbox/) ·
-[**Wildlife demo →**](https://msriram.github.io/terrain-lab/wildlife/) ·
+[**Live sandbox mode →**](https://msriram.github.io/terrain-lab/sandbox/) ·
+[**Browser mode →**](https://msriram.github.io/terrain-lab/wildlife/) ·
 [**Field guide →**](https://msriram.github.io/terrain-lab/guide/) ·
 [**Contribute →**](https://msriram.github.io/terrain-lab/contribute/)
 
@@ -64,7 +64,7 @@ If port 8080 is already occupied, the launcher automatically tries 8081 through
 
 Controls:
 
-- Choose from 26 living worlds and 33 animated species in the in-scene control panel. Each world starts with signature fauna; all eight animal slots remain editable.
+- Choose from 26 living worlds and 48 animated species in the in-scene control panel. Each world starts with signature fauna; all eight animal slots remain editable.
 - Press **Auto fit** to map the visible surface to the full color range.
 - Move **Position** to shift the color band nearer/farther and adjust **Range**
   for shallow or deep terrain. A 50 mm minimum supports shallow terrain; use
@@ -167,8 +167,9 @@ node scripts/build-site.mjs
 python3 -m http.server 5180 --directory _site
 ```
 
-Open `http://localhost:5180/`. Routes: `/` showcase, `/sandbox/` integrated app,
-`/wildlife/` focused demo, `/guide/` documentation, `/contribute/` community process. GitHub Actions builds this
+Open `http://localhost:5180/`. Routes: `/` showcase, `/sandbox/` live sandbox mode
+with Kinect and projector setup, `/wildlife/` sensor-free browser mode with fullscreen,
+`/guide/` documentation, `/contribute/` community process. GitHub Actions builds this
 same `_site/` directory and deploys it beneath `/terrain-lab/`. The macOS
 launcher opens the sandbox path; old `?autoconnect=1` and `?projection=1`
 bookmarks at the site root redirect to it.

@@ -4,16 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#101e22" />
-    <title>Field Notes — Terrain Lab Wildlife</title>
+    <title>Browser Mode — Terrain Lab</title>
   </head>
   <body>
     <main class="shell">
       <header>
         <a class="wordmark" href="./"
           ><span class="brand-mark">≋</span> TERRAIN LAB
-          <span class="divider">/</span> FIELD NOTES</a
+          <span class="divider">/</span> BROWSER MODE</a
         ><span class="edition"><a href="../">SHOWCASE ↗</a> · <a href="../contribute/">CONTRIBUTE ↗</a></span>
       </header>
+      <nav class="mode-switch" aria-label="Experience mode"><a id="live-mode-link" href="../sandbox/">01 / Live sandbox <span>Kinect &amp; projector setup</span></a><a class="active" href="./" aria-current="page">02 / Browser mode <span>No sensor needed</span></a></nav>
       <section class="intro">
         <div>
           <p class="eyebrow">
@@ -21,14 +22,13 @@
           </p>
           <h1>A little world, <br /><em>alive.</em></h1>
           <p class="subtitle">
-            Animated wildlife that follows the land. <br />Built for the
-            sandbox. Ready to explore.
+            Test the same living worlds and scene controls in your browser. <br />No Kinect or projector needed.
           </p>
         </div>
         <div class="intro-note">
           <span>01 — 26 LIVING WORLDS</span>
           <p>
-            Forty-four species.<br />Eight creatures.<br />Endless worlds.
+            Forty-eight species.<br />Eight creatures.<br />Endless worlds.
           </p>
         </div>
       </section>
@@ -91,6 +91,7 @@
             </details>
             <label for="animal-count">Population size · 0–64</label>
             <input id="animal-count" type="number" min="0" max="64" value="8">
+            <button class="capture" id="refresh-population">Refresh population <span>↻</span></button>
             <p id="rescue-message" class="help" role="status">
               Drag to carve a hollow. Right-drag to add sand.
             </p>
@@ -110,12 +111,13 @@
               <option value="2">Tidal lagoon</option>
               <option value="3">Galaxy clusters</option>
               <option value="4">Volcanic ridge</option></select
-            ><label class="range-label" for="water"
+            ><button class="capture" id="reset-terrain">Reset sample terrain <span>↻</span></button><label class="range-label" for="water"
               >Water level <output id="water-value">43%</output></label
             ><input id="water" type="range" min="30" max="60" value="43" />
             <div class="range-ends">
               <span>LOW TIDE</span><span>HIGH TIDE</span>
             </div>
+            <label class="toggle">Contour lines<input id="contours" type="checkbox" checked /></label>
           </fieldset>
           <fieldset>
             <legend>04 <span>Display</span></legend>
@@ -136,6 +138,7 @@
               <button id="pause">Pause motion</button
               ><button id="project">Projection ↗</button>
             </div>
+            <button class="capture" id="fullscreen">Fullscreen browser view <span>⛶</span></button>
             <button class="capture" id="capture">
               Save 1024 × 768 capture <span>↓</span>
             </button>
@@ -157,7 +160,7 @@
       </section>
       <footer>
         <span>AN EXPERIMENT IN PROJECTED NATURE</span
-        ><span>LOCAL PROTOTYPE / NO SENSOR REQUIRED</span>
+        ><span>BROWSER MODE / NO SENSOR REQUIRED</span>
       </footer>
     </main>
     <button id="exit-projection">← Back to controls</button>

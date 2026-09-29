@@ -24,7 +24,7 @@ let terrainModel = createSculptableTerrain(),
   sample = terrainModel.sample;
 const terrain = $("terrain"),
   stage = $("stage");
-const paint = () => paintTerrain(terrain, sample, state.water, state.pack);
+const paint = () => paintTerrain(terrain, sample, state.water, state.pack, $("contours").checked);
 paint();
 try {
   const layer = await createAnimalLayer({
@@ -66,7 +66,7 @@ try {
     const count = Math.max(0, Math.min(64, Math.round(Number($("animal-count").value) || 0)));
     $("animal-count").value = count;
     const choice = $("preset").value;
-    const base = choice === "random" || choice === "custom" ? rosterForWorld(state.pack, randomRoster()) : [choice];
+    const base = choice === "custom" && state.roster.length ? state.roster : choice === "random" || choice === "custom" ? rosterForWorld(state.pack, randomRoster()) : [choice];
     state.roster = Array.from({length: count}, (_, i) => base[i % base.length]);
     layer.setRoster(state.roster);
     rebuildRoster();
@@ -84,6 +84,7 @@ try {
     layer.setOptions({ theme, pack: wet ? "atlantis" : "earth" });
     paint();
     $("landscape").value = theme;
+    $("live-mode-link").href = `../sandbox/?theme=${encodeURIComponent(theme)}`;
     $("pack-note").textContent =
       LANDSCAPES[theme].caption +
       (WORLD_SIGNATURES[theme]
@@ -94,6 +95,7 @@ try {
     $("landscape").add(new Option(recipe.label, id)),
   );
   themeOptions();
+  $("live-mode-link").href = "../sandbox/?theme=earth";
   const requestedWorld = new URLSearchParams(location.search).get("theme");
   if (requestedWorld && LANDSCAPES[requestedWorld])
     setLandscape(requestedWorld);
@@ -153,6 +155,7 @@ try {
   }
   rebuildRoster();
   $("preset").addEventListener("change", applyPopulation);
+  $("refresh-population").addEventListener("click", applyPopulation);
   $("labels").addEventListener(
     "change",
     (e) => (labels.hidden = !e.target.checked),
@@ -214,12 +217,14 @@ try {
     $("map-title").textContent = FIXTURES[state.fixture].toUpperCase();
     refresh();
   });
+  $("reset-terrain").addEventListener("click", refresh);
   $("water").addEventListener("input", (e) => {
     state.water = Number(e.target.value) / 100;
     $("water-value").value = e.target.value + "%";
     layer.setTerrain(sample, state.water);
     paint();
   });
+  $("contours").addEventListener("change", paint);
   $("transparent").addEventListener("change", (e) =>
     layer.setOptions({ transparent: e.target.checked }),
   );
@@ -239,14 +244,29 @@ try {
     document.body.classList.toggle("projection", on);
   }
   $("project").addEventListener("click", () => projection(true));
-  $("exit-projection").addEventListener("click", () => projection(false));
+  async function fullscreen() {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+      return;
+    }
+    projection(true);
+    try { await document.documentElement.requestFullscreen(); } catch { /* Projection remains available when fullscreen is blocked. */ }
+  }
+  $("fullscreen").addEventListener("click", fullscreen);
+  $("exit-projection").addEventListener("click", async () => {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    projection(false);
+  });
+  document.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement) projection(false);
+  });
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") projection(false);
+    if (e.key === "Escape" && !document.fullscreenElement) projection(false);
     if (
       e.key.toLowerCase() === "f" &&
       !["INPUT", "SELECT"].includes(e.target.tagName)
     )
-      projection(!document.body.classList.contains("projection"));
+      fullscreen();
   });
   if (new URLSearchParams(location.search).has("projection")) projection(true);
   $("capture").addEventListener("click", () => {

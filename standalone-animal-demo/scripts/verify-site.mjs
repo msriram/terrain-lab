@@ -165,6 +165,7 @@ try {
   );
   await page.locator("#pointer-mode").selectOption("rescue");
   await page.locator("#theme").selectOption("atlantis");
+  assert.equal(await page.locator('#browserModeLink').getAttribute('href'), '../wildlife/?theme=atlantis');
   await page.waitForFunction(
     () => TerrainWildlife.layer.getStats().pack === "atlantis",
   );
@@ -219,6 +220,12 @@ try {
   // Public wildlife demo uses the same drag implementation.
   await page.goto(base + "wildlife/");
   await page.waitForFunction(() => window.animalDemo);
+  assert.match(await page.title(), /Browser Mode/);
+  assert.equal(await page.locator('#live-mode-link').getAttribute('href'), '../sandbox/?theme=earth');
+  await page.locator('#fullscreen').click();
+  await page.waitForFunction(() => document.fullscreenElement === document.documentElement);
+  await page.evaluate(() => document.exitFullscreen());
+  await page.waitForFunction(() => !document.body.classList.contains('projection'));
   const defaultProps = await page.evaluate(() => animalDemo.getMetrics().landscape.props);
   await page.locator("#landscape-density").fill("0");
   await page.waitForFunction(() => animalDemo.getMetrics().landscape.props === 0);
@@ -233,6 +240,7 @@ try {
   await page.getByLabel("Landscape & weather").check();
   await page.waitForFunction((time) => animalDemo.getMetrics().landscape.time > time, stoppedTime);
   await page.locator("#landscape").selectOption("tundra");
+  assert.equal(await page.locator('#live-mode-link').getAttribute('href'), '../sandbox/?theme=tundra');
   await page.locator("#landscape").selectOption("cyberpunk");
   await page.waitForFunction(() => animalDemo.layer.simulation.creatures.every(c =>
     ["patrolDrone","thiefDrone","policeBoat","thiefBoat"].includes(c.species)));
@@ -305,6 +313,8 @@ try {
       "GitHub Pages subpath routing",
       "all internal links return 200",
       "desktop and mobile layouts",
+      "mode switching preserves the selected world",
+      "browser fullscreen enters and exits cleanly",
       "integrated wildlife loading",
       "drag rescue in both demos",
       "3-second protection",
