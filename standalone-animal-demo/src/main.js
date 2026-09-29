@@ -217,7 +217,8 @@ try {
   $("water").addEventListener("input", (e) => {
     state.water = Number(e.target.value) / 100;
     $("water-value").value = e.target.value + "%";
-    refresh();
+    layer.setTerrain(sample, state.water);
+    paint();
   });
   $("transparent").addEventListener("change", (e) =>
     layer.setOptions({ transparent: e.target.checked }),
@@ -285,7 +286,8 @@ try {
       tag.style.left = `${c.u * 100}%`;
       tag.style.top = `${c.v * 100}%`;
       tag.hidden = !c.active || !$("enabled").checked;
-      tag.textContent = `${SPECIES[c.species].label} · ${c.mode}`;
+      const mode=state.pack==="cyberpunk"?({roam:"patrol",cruise:"patrol",chase:"pursuit",flee:"evading",processing:"arrest",look:"scanning"}[c.mode]||c.mode):c.mode;
+      tag.textContent = `${SPECIES[c.species].label} · ${mode}`;
       tag.dataset.mode = c.mode;
     });
     if (now - start > 750) {
@@ -309,7 +311,7 @@ try {
           : "HABITATS IN BALANCE";
       const event = layer.simulation.events[0];
       $("encounter").textContent = event
-        ? `${SPECIES[event.predator].label} → ${SPECIES[event.prey].label} · ${event.type === "capture" ? "eaten; repopulating soon" : "pursuit"}`
+        ? `${SPECIES[event.predator].label} → ${SPECIES[event.prey].label} · ${event.type === "arrest" ? "detained; returns in 5 seconds" : event.type === "capture" ? "eaten; repopulating soon" : "pursuit"}`
         : "Watching for nearby encounters…";
       start = now;
     }

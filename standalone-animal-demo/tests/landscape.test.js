@@ -105,7 +105,7 @@ test("Cyberpunk streets follow safe connected elevation", () => {
   assert.equal(flooded.blocks.length, flat.blocks.length);
   assert.ok(flooded.blocks.filter(b=>b.u<.45).every(b=>b.floors===0));
   assert.ok(flooded.blocks.filter(b=>b.u>.45).every(b=>b.floors>=4));
-  assert.ok(flooded.roads.some(r=>r.low));
+  assert.ok(flooded.roads.every(r=>r.u0>=.45&&r.u1>=.45));
   assert.deepEqual(planCyberCity(() => .7, .4, 31, 0), { blocks: [], roads: [] });
 });
 

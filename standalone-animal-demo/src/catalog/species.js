@@ -141,7 +141,31 @@ export const SPECIES = {
     idleBehaviors: ["look", "cruise"],
     accent: "#64e8d6",
   },
+  patrolDrone: {
+    label: "Police drone", habitat: "land", model: "drone/model.glb",
+    length: .20, radius: .027, speed: .038, prey: ["thiefDrone"], sight: .36,
+    role: "police", airborne: true, tint: "#559dff",
+    actions: {idle:"Float",move:"Glide",chase:"Dash"},
+    idleBehaviors:["look","cruise"], accent:"#559dff",
+  },
+  thiefDrone: {
+    label: "Thief drone", habitat: "land", model: "drone/model.glb",
+    length: .17, radius: .023, speed: .027, prey: [], sight: .30,
+    role: "thief", airborne: true, tint: "#ffad48",
+    actions: {idle:"Float",move:"Glide",flee:"Dash"},
+    idleBehaviors:["look","dart","cruise"], accent:"#ffad48",
+  },
   ...worldFaunaSpecies(),
+  policeBoat: {
+    label:"Police speedboat",habitat:"water",model:"drone/model.glb",visual:"speedboat",
+    length:.23,radius:.02,speed:.039,prey:["thiefBoat"],sight:.35,role:"police",tint:"#559dff",
+    actions:{idle:"Float",move:"Glide",chase:"Dash"},idleBehaviors:["cruise","look"],accent:"#559dff",
+  },
+  thiefBoat: {
+    label:"Thief speedboat",habitat:"water",model:"drone/model.glb",visual:"speedboat",
+    length:.21,radius:.018,speed:.028,prey:[],sight:.3,role:"thief",tint:"#ffad48",
+    actions:{idle:"Float",move:"Glide",flee:"Dash"},idleBehaviors:["cruise","dart"],accent:"#ffad48",
+  },
   shark: {
     label: "Shark",
     habitat: "water",

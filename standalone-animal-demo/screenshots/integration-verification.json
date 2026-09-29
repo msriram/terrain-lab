@@ -1,22 +1,61 @@
 {
-  "testedAt": "2026-09-25T00:39:43.766Z",
+  "testedAt": "2026-09-29T05:41:36.943Z",
   "mode": "Portable ES module on plain HTTP server; eight animated deer",
   "result": {
     "active": 8,
-    "drawCalls": 184,
-    "triangles": 22608,
+    "landscape": {
+      "density": 1,
+      "depositCoverage": 0.03631554016038973,
+      "lavaCells": 0,
+      "flockCount": 100,
+      "formationCount": 13,
+      "clouds": true,
+      "cityBlocks": 0,
+      "roadSegments": 0,
+      "towers": 0,
+      "helipads": 0,
+      "helicopters": 0,
+      "zipLines": 0,
+      "cars": 0,
+      "pedestrians": 0,
+      "rainPatches": 0,
+      "theme": "earth",
+      "galaxies": 0,
+      "signalLinks": 0,
+      "scatteredStars": 0,
+      "props": 20,
+      "reefColonies": 0,
+      "reefGrowth": 0,
+      "propKinds": [
+        "tree",
+        "flowers",
+        "rock"
+      ],
+      "shoreSegments": 0,
+      "erupting": false,
+      "volcanoes": 0,
+      "weather": "clouds",
+      "caption": "Wind in the trees. Waves finding the shore.",
+      "underwater": false,
+      "time": 6.033100000000019
+    },
+    "captures": 0,
+    "rescues": 0,
+    "waiting": 0,
+    "drawCalls": 246,
+    "triangles": 58044,
     "pack": "earth",
     "behaviors": [
       {
         "id": 0,
         "species": "deer",
-        "mode": "look",
+        "mode": "roam",
         "active": true
       },
       {
         "id": 1,
         "species": "deer",
-        "mode": "graze",
+        "mode": "roam",
         "active": true
       },
       {
@@ -46,18 +85,18 @@
       {
         "id": 6,
         "species": "deer",
-        "mode": "graze",
+        "mode": "roam",
         "active": true
       },
       {
         "id": 7,
         "species": "deer",
-        "mode": "look",
+        "mode": "roam",
         "active": true
       }
     ],
     "frames": 300,
-    "averageFPS": 60.00240009600385
+    "averageFPS": 60.00360021601296
   },
   "errors": []
 }

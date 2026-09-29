@@ -18,3 +18,4 @@ export {
 } from "./catalog/landscapes.js";
 
 export { WORLD_FAUNA } from "./catalog/world-fauna.js";
+export { FIXTURES, createTerrain } from "./terrain/fixtures.js";

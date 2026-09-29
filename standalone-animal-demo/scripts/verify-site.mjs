@@ -100,7 +100,7 @@ try {
     assert.equal(response.status(), 200, href);
   }
   await page
-    .getByRole("button", { name: "Pause wildlife", exact: true })
+    .getByRole("button", { name: "Pause motion", exact: true })
     .click();
   // Actual pointer drag from an animal to a legal spot in the host's terrain UVs.
   const candidate = await page.evaluate(() => {
@@ -169,6 +169,11 @@ try {
     () => TerrainWildlife.layer.getStats().pack === "atlantis",
   );
   await page.locator("#theme").selectOption("earth");
+  await page.locator("#theme").selectOption("coral");
+  await page.evaluate(() => TerrainLab.setSample((u,v) =>
+    Math.hypot(u - .73, v - .48) < .14 ? .8 : .24));
+  await page.waitForFunction(() => TerrainWildlife.layer.getStats().landscape.reefColonies >= 20);
+  await page.locator("#theme").selectOption("earth");
   // Projector consumes controller state, including edited terrain, instead of spawning its own world.
   const popupPromise = page.waitForEvent("popup");
   await page.locator("#projector").click();
@@ -184,6 +189,9 @@ try {
   await page.locator("#landscape-density").fill("200");
   await projector.waitForFunction(() => TerrainWildlife.layer.getStats().landscape.density === 2);
   await page.locator("#landscape-density").fill("100");
+  await page.locator("#randomize-landscape").click();
+  await projector.waitForFunction(seed => TerrainWildlife.layer.getSnapshot().landscape.seed === seed,
+    await page.evaluate(() => TerrainWildlife.layer.getSnapshot().landscape.seed));
   await page.locator("#scenery").uncheck();
   await projector.waitForFunction(() => !document.querySelector("#scenery").checked);
   await page.locator("#scenery").check();
@@ -201,7 +209,7 @@ try {
   await projector.close();
   await page.bringToFront();
   await page
-    .getByRole("button", { name: "Resume wildlife", exact: true })
+    .getByRole("button", { name: "Resume motion", exact: true })
     .click();
   await page.waitForTimeout(2000);
   await page.screenshot({ path: "screenshots/sandbox.png", fullPage: true });
@@ -226,13 +234,22 @@ try {
   await page.waitForFunction((time) => animalDemo.getMetrics().landscape.time > time, stoppedTime);
   await page.locator("#landscape").selectOption("tundra");
   await page.locator("#landscape").selectOption("cyberpunk");
+  await page.waitForFunction(() => animalDemo.layer.simulation.creatures.every(c =>
+    ["patrolDrone","thiefDrone","policeBoat","thiefBoat"].includes(c.species)));
+  assert.equal(await page.locator('#preset option[value="prismwing"]').count(),0);
   await page.waitForFunction(() => animalDemo.getMetrics().landscape.helipads > 0 &&
     animalDemo.getMetrics().landscape.zipLines > 0 && animalDemo.getMetrics().landscape.pedestrians > 0);
   await page.waitForTimeout(1500);
+  const traffic=await page.evaluate(()=>animalDemo.getMetrics().landscape);
+  assert.equal(traffic.cars,traffic.roadSegments*2);
   await page.locator("#stage").screenshot({path:"screenshots/cyber-city.png"});
   await page.evaluate(() => animalDemo.layer.setTerrain(()=>.15,.43));
   await page.waitForFunction(() => animalDemo.getMetrics().landscape.towers === 0 &&
     animalDemo.getMetrics().landscape.pedestrians === 0 && animalDemo.getMetrics().landscape.helicopters === 0);
+  await page.evaluate(() => animalDemo.layer.setTerrain(u=>u>.46&&u<.54?.2:.65,.43));
+  await page.waitForFunction(() => animalDemo.getMetrics().landscape.bridges > 0);
+  await page.evaluate(() => animalDemo.layer.setTerrain(()=>.65,.43));
+  await page.waitForFunction(() => animalDemo.getMetrics().landscape.bridges === 0);
   await page.evaluate(() => animalDemo.layer.setTerrain(()=>NaN,.43));
   await page.waitForFunction(() => animalDemo.getMetrics().landscape.cityBlocks === 0);
   await page.locator("#landscape").selectOption("tundra");

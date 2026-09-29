@@ -5,7 +5,7 @@ import { createPropFactory } from "./props.js";
 import { seededRandom } from "../simulation/world.js";
 import { createLivingEffects } from "./living-effects.js";
 import { reefGrowth } from "./reef-growth.js";
-import { clusteredReefSites } from "./reef-layout.js";
+import { findReefSites } from "./reef-layout.js";
 import { createCyberCity } from "./cyber-city.js";
 
 const PROP_SCALE = 0.5;
@@ -407,11 +407,7 @@ export function createLandscapeLayer(
       props.push({ object, kind, p, scale });
     });
     if (theme === "coral") {
-      const viableLand = layout.land
-        .map((p) => ({ ...p, growth: reefGrowth(sampleTerrain, p.u, p.v) }))
-        .filter((p) => p.growth > .025);
-      const allSites = clusteredReefSites(viableLand, layoutSeed, 15);
-      const sites = allSites.slice(0, Math.round(25 * density));
+      const sites = findReefSites(sampleTerrain, layoutSeed, Math.round(25 * density));
       const palettes = [
         ["#b85b62", "#d39958", "#845d9d"],
         ["#ba6b91", "#bca769", "#4f9b8e"],
@@ -464,7 +460,7 @@ export function createLandscapeLayer(
     // the world rather than popping in almost immediately after a change.
     if (
       dirty &&
-      (time - lastBuild > LANDSCAPE_REBUILD_DELAY_SECONDS || !motion)
+      (time - lastBuild > (["cyberpunk", "coral"].includes(theme) ? .4 : LANDSCAPE_REBUILD_DELAY_SECONDS) || !motion)
     )
       rebuild();
     living.update(dt, theme, recipe, motion);
@@ -752,6 +748,18 @@ export function createLandscapeLayer(
       }
       if (options.enabled !== undefined) enabled = options.enabled;
       if (options.motion !== undefined) motion = options.motion;
+    },
+    getState: () => ({ seed: layoutSeed, addedElements, removedElements }),
+    applyState(state) {
+      if (!state || !Number.isInteger(state.seed) ||
+          !Array.isArray(state.addedElements) || !Array.isArray(state.removedElements)) return;
+      if (state.seed === layoutSeed && JSON.stringify(state.addedElements) === JSON.stringify(addedElements) &&
+          JSON.stringify(state.removedElements) === JSON.stringify(removedElements)) return;
+      layoutSeed = state.seed;
+      addedElements = state.addedElements.slice(0, 90);
+      removedElements = state.removedElements.slice(0, 90);
+      dirty = true;
+      lastBuild = -Infinity;
     },
     randomize() {
       addedElements = []; removedElements = [];

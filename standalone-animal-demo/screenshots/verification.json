@@ -1,19 +1,34 @@
 {
-  "testedAt": "2026-09-26T17:10:10.271Z",
-  "browser": "153.0.8010.53",
+  "testedAt": "2026-09-29T14:03:55.992Z",
+  "browser": "154.0.8037.58",
   "mode": "Headless Chrome, production build, external requests blocked",
   "hardware": "Apple M3 Pro MacBook Pro, 36 GB RAM",
   "measurement": {
-    "active": 7,
+    "active": 2,
     "landscape": {
+      "density": 1,
+      "depositCoverage": 0.05549754225043623,
       "lavaCells": 0,
-      "flockCount": 32,
+      "flockCount": 100,
+      "formationCount": 13,
       "clouds": true,
+      "cityBlocks": 0,
+      "roadSegments": 0,
+      "towers": 0,
+      "bridges": 0,
+      "helipads": 0,
+      "helicopters": 0,
+      "zipLines": 0,
+      "cars": 0,
+      "pedestrians": 0,
+      "rainPatches": 0,
       "theme": "earth",
       "galaxies": 0,
       "signalLinks": 0,
       "scatteredStars": 0,
       "props": 20,
+      "reefColonies": 0,
+      "reefGrowth": 3.2140378377188115,
       "propKinds": [
         "tree",
         "flowers",
@@ -25,66 +40,30 @@
       "weather": "clouds",
       "caption": "Wind in the trees. Waves finding the shore.",
       "underwater": false,
-      "time": 13.665899999999962
+      "time": 12.566099999999961
     },
-    "captures": 1,
+    "captures": 0,
     "rescues": 0,
-    "waiting": 1,
-    "drawCalls": 141,
-    "triangles": 20179,
+    "waiting": 0,
+    "drawCalls": 77,
+    "triangles": 40509,
     "pack": "earth",
     "behaviors": [
       {
         "id": 0,
-        "species": "fox",
-        "mode": "roam",
+        "species": "shark",
+        "mode": "dive",
         "active": true
       },
       {
         "id": 1,
-        "species": "deer",
-        "mode": "roam",
-        "active": true
-      },
-      {
-        "id": 2,
-        "species": "rabbit",
-        "mode": "roam",
-        "active": true
-      },
-      {
-        "id": 3,
-        "species": "shark",
-        "mode": "chase",
-        "active": true
-      },
-      {
-        "id": 4,
         "species": "koi",
-        "mode": "roam",
+        "mode": "flee",
         "active": true
-      },
-      {
-        "id": 5,
-        "species": "koi",
-        "mode": "dart",
-        "active": true
-      },
-      {
-        "id": 6,
-        "species": "koi",
-        "mode": "roam",
-        "active": true
-      },
-      {
-        "id": 7,
-        "species": "koi",
-        "mode": "eaten",
-        "active": false
       }
     ],
-    "frames": 812,
-    "averageFPS": 60.085321155611204,
+    "frames": 733,
+    "averageFPS": 60.06306621951259,
     "resolution": [
       1024,
       768
@@ -94,7 +73,7 @@
     "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M3 Pro, Unspecified Version)"
   },
   "checks": [
-    "33 selectable animated species / 8 slots",
+    "theme-specific populations / up to 64 animals",
     "wolf/deer and fox/rabbit proximity pursuit",
     "shark/koi pursuit",
     "fish breaches",

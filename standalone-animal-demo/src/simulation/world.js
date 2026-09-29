@@ -70,7 +70,7 @@ export class AnimalSimulation {
               );
       if (
         !Number.isFinite(e) ||
-        (c.habitat === "water"
+        (SPECIES[c.species].airborne ? false : c.habitat === "water"
           ? e >= this.waterLevel - 0.009
           : c.habitat === "amphibious"
             ? center > this.waterLevel &&
@@ -265,10 +265,11 @@ export class AnimalSimulation {
       if (gap > (predator.radius + prey.radius) * 0.4) continue;
       if (!this.valid(predator, prey.u, prey.v)) continue;
       prey.active = false;
-      prey.mode = "eaten";
+      const arrest = SPECIES[predator.species].role === "police";
+      prey.mode = arrest ? "detained" : "eaten";
       prey.target = null;
       prey.respawnAt = this.time + 5;
-      predator.mode = "feed";
+      predator.mode = arrest ? "processing" : "feed";
       predator.actionAge = 0;
       predator.actionDuration = 2.2;
       predator.cooldown = 5;
@@ -276,7 +277,7 @@ export class AnimalSimulation {
       predator.speedMultiplier = 0;
       this.captures++;
       this.events.unshift({
-        type: "capture",
+        type: arrest ? "arrest" : "capture",
         time: this.time,
         predator: predator.species,
         prey: prey.species,

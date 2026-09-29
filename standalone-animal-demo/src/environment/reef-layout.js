@@ -1,4 +1,18 @@
 import { seededRandom } from "../simulation/world.js";
+import { reefGrowth } from "./reef-growth.js";
+
+// Reefs need their own full-field scan: generic prop sites omit tall peaks
+// and can miss a newly sculpted mound between their randomly selected points.
+export function findReefSites(sample, seed = 31, count = 25) {
+  const raised = [];
+  for (let y = 1; y < 40; y++) for (let x = 1; x < 52; x++) {
+    const u = x / 52, v = y / 40, growth = reefGrowth(sample, u, v);
+    if (growth > .025) raised.push({u, v, growth});
+  }
+  return clusteredReefSites(raised, seed, Math.ceil(count / 5)).slice(0, count)
+    .map(site => reefGrowth(sample, site.u, site.v) > .025 ? site :
+      {...site, u: site.centerU, v: site.centerV});
+}
 
 /** Twenty-five small colonies form five irregular groups on raised sand. */
 export function clusteredReefSites(raisedLand, seed = 31, clusters = 5) {

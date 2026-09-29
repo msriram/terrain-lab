@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { createSpeedboat } from "./speedboat.js";
 import { clone } from "three/addons/utils/SkeletonUtils.js";
 import { AnimalSimulation } from "../simulation/world.js";
 import { SPECIES, validateRoster } from "../catalog/species.js";
@@ -52,7 +53,7 @@ export async function createAnimalLayer({
   try {
     await Promise.all(
       Object.entries(SPECIES).map(async ([id, s]) => {
-        models[id] = await loader.loadAsync(assetBase + s.model);
+        models[id] = s.visual === "speedboat" ? createSpeedboat(s.role === "police") : await loader.loadAsync(assetBase + s.model);
       }),
     );
   } catch (error) {
@@ -87,6 +88,11 @@ export async function createAnimalLayer({
         material.color.copy(color);
         material.emissive.copy(emissive);
         material.emissiveIntensity = 1;
+        const roleSpecies=SPECIES[simulation.creatures[i].species];
+        if(roleSpecies.tint && color.getHSL({}).l>.15){
+          material.color.lerp(new THREE.Color(roleSpecies.tint),.8);
+          material.emissive.set(roleSpecies.tint).multiplyScalar(.22);
+        }
         if (
           pack === "atlantis" &&
           simulation.creatures[i].habitat === "water" &&
@@ -178,7 +184,7 @@ export async function createAnimalLayer({
             const h = sample(u, v);
             return Number.isFinite(h) ? Math.min(0.97, h) : NaN;
           }
-        : allLand
+        : allLand && landscapeTheme !== "cyberpunk"
           ? (u, v) => (Number.isFinite(sample(u, v)) ? 0.7 : NaN)
           : sample;
       simulation.setTerrain(terrain, underwater ? 1 : level);
@@ -197,6 +203,7 @@ export async function createAnimalLayer({
         events: simulation.events.map((e) => ({ ...e })),
         captures: simulation.captures,
         rescues: simulation.rescues,
+        landscape: landscape.getState(),
       };
     },
     applySnapshot(snapshot) {
@@ -217,6 +224,7 @@ export async function createAnimalLayer({
       simulation.events = snapshot.events;
       simulation.captures = snapshot.captures;
       simulation.rescues = snapshot.rescues;
+      if (snapshot.landscape) landscape.applyState(snapshot.landscape);
       remote = true;
     },
     stir() {
@@ -280,7 +288,7 @@ export async function createAnimalLayer({
           ) * blend;
         a.root.position.set(
           (u - 0.5) * 4,
-          c.surface === "water" ? 0.012 : 0,
+          SPECIES[c.species].airborne ? 1.05 : c.surface === "water" ? 0.012 : 0,
           (v - 0.5) * 3,
         );
         a.root.rotation.y = a.displayHeading;

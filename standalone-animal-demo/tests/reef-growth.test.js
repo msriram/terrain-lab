@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { reefGrowth } from "../src/environment/reef-growth.js";
+import { findReefSites } from "../src/environment/reef-layout.js";
 
 test("reef colonies grow with broad raised sand, not an isolated spike", () => {
   const low = () => 0.3;
@@ -10,4 +11,16 @@ test("reef colonies grow with broad raised sand, not an isolated spike", () => {
   assert.ok(reefGrowth(spike, 0.5, 0.5) < 0.05);
   assert.ok(reefGrowth(mound, 0.5, 0.5) > 0.7);
   assert.equal(reefGrowth(mound, 0.15, 0.15), 0);
+});
+
+test("reef colonies follow a newly piled mound even when generic prop sites miss it", () => {
+  const mound = (cx) => (u, v) =>
+    Math.hypot(u - cx, v - 0.52) < 0.12 ? 0.78 : 0.25;
+  const left = findReefSites(mound(0.23));
+  const right = findReefSites(mound(0.77));
+  assert.equal(left.length, 25);
+  assert.equal(right.length, 25);
+  assert.ok(left.every(site => site.u < 0.4));
+  assert.ok(right.every(site => site.u > 0.6));
+  assert.deepEqual(findReefSites(() => 0.25), []);
 });

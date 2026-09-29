@@ -1,19 +1,31 @@
 import * as T from "three";
-import {planCyberCity,roofPosition,cityLinks,cablePoint,roadPoint} from "./cyber-city-layout.js";
+import {planCyberCity,roofPosition,cityLinks,cablePoint,roadPoint,helicopterHeading} from "./cyber-city-layout.js";
 
 export function createCyberCity(root){
   const group=new T.Group();group.name="Layered cyberpunk metropolis";root.add(group);
   const box=new T.BoxGeometry(1,1,1),sphere=new T.SphereGeometry(1,7,5);
+  const cylinder=new T.CylinderGeometry(.5,.5,1,12);
   const dark=new T.MeshStandardMaterial({color:0x202a42,roughness:.6,metalness:.45});
   const glow=new T.MeshBasicMaterial({color:0xffffff});
   const lines=new T.LineBasicMaterial({color:0x72c6df,transparent:true,opacity:.75});
   const rainMat=new T.LineBasicMaterial({color:0x72a3b8,transparent:true,opacity:.22});
+  const signGeometry=new T.PlaneGeometry(1,1);signGeometry.rotateX(-Math.PI/2);
+  const signMaterials=["NEX","24H","ION","KAI","HOTEL","88"].map((label,i)=>{
+    const c=document.createElement("canvas");c.width=256;c.height=96;
+    const ctx=c.getContext("2d");
+    ctx.fillStyle=["#12283b","#412338","#19383e"][i%3];ctx.fillRect(0,0,256,96);
+    ctx.strokeStyle=["#5ce8fa","#ff79c9","#ffc968"][i%3];ctx.lineWidth=5;ctx.strokeRect(3,3,250,90);
+    ctx.fillStyle=ctx.strokeStyle;ctx.font="bold 53px sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(label,128,50);
+    const map=new T.CanvasTexture(c);map.colorSpace=T.SRGBColorSpace;
+    return new T.MeshBasicMaterial({map,transparent:true});
+  });
   const matrix=new T.Matrix4(),scaleVector=new T.Vector3(),color=new T.Color(),hues=[0x40ddeb,0xf15cba,0xf6bc69,0x849bff];
-  let blocks=[],roads=[],links=[],pads=[],batches=[],cars,people,riders,heads,helis=[],rain,rainSites=[];
+  let blocks=[],roads=[],links=[],pads=[],batches=[],cars,people,riders,heads,helis=[],rain,rainSites=[],signs=[];
   function clear(){
     for(const m of batches)m.dispose();batches=[];
     for(const child of group.children)if(child.isLineSegments)child.geometry.dispose();
-    group.clear();helis=[];rain=null;
+    for(const child of group.children)if(child.userData.citySurface){child.geometry.dispose();child.material.map.dispose();child.material.dispose();}
+    group.clear();helis=[];rain=null;signs=[];
   }
   const put=(mesh,i,x,y,z,sx,sy,sz,tint,yaw=0)=>{
     matrix.makeRotationY(yaw).scale(scaleVector.set(sx,sy,sz)).setPosition(x,y,z);mesh.setMatrixAt(i,matrix);
@@ -45,44 +57,66 @@ export function createCyberCity(root){
     if(!group.visible){links=[];pads=[];cars=people=riders=heads=null;return;}
     links=cityLinks(blocks);
     pads=blocks.filter(b=>b.tower&&b.floors>=7&&b.width>.105).sort((a,b)=>b.floors-a.floors).slice(0,4);
-    const tiles=batch(box,glow,72*54);
-    const groundColor=new T.Color(),waterColor=new T.Color();
-    for(let y=0;y<54;y++)for(let x=0;x<72;x++){
-      const u=(x+.5)/72,v=(y+.5)/54,h=sample(u,v),i=y*72+x;
-      if(!Number.isFinite(h)){put(tiles,i,0,0,0,0,0,0);continue;}
-      if(h<water){
-        waterColor.set(0x0b4977).lerp(new T.Color(0x218eb6),Math.max(0,1-(water-h)/.24));
-        groundColor.copy(waterColor);
-      }else{
-        const district=(Math.sin(u*11+Math.cos(v*7))*.5+.5);
-        groundColor.set(0x304f60).lerp(new T.Color(0x685076),district);
-        groundColor.lerp(new T.Color(0x6a6959),Math.max(0,Math.sin(u*8-v*10))*.4);
-        if(h-water<.025)groundColor.lerp(new T.Color(0x55aca5),.65);
-      }
-      put(tiles,i,(u-.5)*4,.002,(v-.5)*3,4/72+.001,.008,3/54+.001,groundColor);
+    const canvas=document.createElement("canvas");canvas.width=768;canvas.height=576;
+    const ctx=canvas.getContext("2d"),pixels=ctx.createImageData(canvas.width,canvas.height);
+    const groundColor=new T.Color(),waterColor=new T.Color(),landColor=new T.Color();
+    const deepWater=new T.Color(0x0b4977),shallowWater=new T.Color(0x218eb6);
+    const districtA=new T.Color(0x304f60),districtB=new T.Color(0x685076);
+    const warmStone=new T.Color(0x6a6959),shoreStone=new T.Color(0x55aca5);
+    for(let y=0;y<canvas.height;y++)for(let x=0;x<canvas.width;x++){
+      const u=(x+.5)/canvas.width,v=(y+.5)/canvas.height,h=sample(u,v),i=(y*canvas.width+x)*4;
+      if(!Number.isFinite(h))continue;
+      waterColor.copy(deepWater).lerp(shallowWater,Math.max(0,Math.min(1,1-(water-h)/.24)));
+      const district=(Math.sin(u*11+Math.cos(v*7))*.5+.5);
+      landColor.copy(districtA).lerp(districtB,district);
+      landColor.lerp(warmStone,Math.max(0,Math.sin(u*8-v*10))*.4);
+      if(h-water<.025)landColor.lerp(shoreStone,.65);
+      const shore=Math.max(0,Math.min(1,(h-water+.009)/.018));
+      groundColor.copy(waterColor).lerp(landColor,shore*shore*(3-2*shore));
+      const rgb=groundColor.getHex();
+      pixels.data.set([rgb>>16,(rgb>>8)&255,rgb&255,255],i);
     }
-    const floors=batch(box,dark,blocks.reduce((n,b)=>n+(b.tower?b.floors:0),0));
-    const windows=batch(box,glow,floors.count*4);
+    ctx.putImageData(pixels,0,0);
+    const texture=new T.CanvasTexture(canvas);texture.colorSpace=T.SRGBColorSpace;
+    texture.minFilter=T.LinearFilter;texture.magFilter=T.LinearFilter;
+    const groundGeometry=new T.PlaneGeometry(4,3);groundGeometry.rotateX(-Math.PI/2);
+    const surface=new T.Mesh(groundGeometry,new T.MeshBasicMaterial({map:texture,transparent:true}));
+    surface.position.y=.002;surface.userData.citySurface=true;group.add(surface);
+    const towers=blocks.filter(b=>b.tower);
+    const floors=batch(box,dark,towers.length);
+    const roundTowers=batch(cylinder,dark,towers.length);
+    const windows=batch(box,glow,towers.length*4);
     const roofs=batch(box,glow,blocks.filter(b=>b.tower).length);
     const trim=batch(box,glow,roofs.count*4),padMesh=batch(box,glow,pads.length*7);
     const equipment=batch(box,dark,roofs.count*2),beacons=batch(sphere,glow,roofs.count);
+    const podiums=batch(box,glow,roofs.count),shadows=batch(box,glow,roofs.count);
+    const access=batch(box,glow,roofs.count),accessLights=batch(box,glow,roofs.count*2);
     let fi=0,wi=0,ri=0,ti=0;
     blocks.forEach((b,i)=>{
       const x=(b.u-.5)*4,z=(b.v-.5)*3;
       if(!b.tower)return;
       const width=b.width,depth=width*b.aspect;
-      for(let f=0;f<b.floors;f++){
-        const px=x+f*.004,pz=z-f*.0035,y=.018+f*.043;
-        const setback=b.variation>.5?1-.2*Math.floor(f/4)/4:1;
-        put(floors,fi++,px,y,pz,width*setback,.042,depth*setback);
-        for(let side=0;side<4;side++){
-          const a=side*Math.PI/2;
-          put(windows,wi++,px+Math.cos(a)*width*setback*.505,y+.017,pz+Math.sin(a)*depth*setback*.505,
-            side%2?width*setback*.62:.002,.006,side%2?.002:depth*setback*.62,(f+side)%3===0?0x243249:hues[i%4]);
-        }
+      const round=b.variation<.24;
+      put(floors,fi,x,b.roof/2,z,round?0:width,round?0:b.roof,round?0:depth);
+      put(roundTowers,fi,x,b.roof/2,z,round?width:0,round?b.roof:0,round?depth:0);
+      put(podiums,fi,x,.022,z,width*1.12,.032,depth*1.12,[0x344d61,0x594664,0x31595c][i%3]);
+      put(shadows,fi,x+b.roof*.13,.009,z+b.roof*.10,width*1.15,.003,depth*1.15,0x182638);
+      const start=b.access.start,end=b.access.end;
+      const dx=(end.u-start.u)*4,dz=(end.v-start.v)*3,len=Math.hypot(dx,dz),yaw=-Math.atan2(dz,dx);
+      const ax=(start.u+end.u-1)*2,az=(start.v+end.v-1)*1.5;
+      put(access,fi,ax,.021,az,len,.012,.028,0x85939d,yaw);
+      for(let s=0;s<2;s++){
+        const sign=s?1:-1;
+        put(accessLights,fi*2+s,ax-sign*Math.sin(-yaw)*.012,.03,az+sign*Math.cos(yaw)*.012,len,.003,.002,hues[i%4],yaw);
+      }
+      fi++;
+      for(let side=0;side<4;side++){
+        const a=side*Math.PI/2;
+        put(windows,wi++,x+Math.cos(a)*width*.505,b.roof*.52,z+Math.sin(a)*depth*.505,
+          side%2?width*.06:.003,b.roof*.82,side%2?.003:depth*.06,hues[i%4]);
       }
       const p=roofPosition(b);
-      const roofScale=b.variation>.5?1-.2*Math.floor((b.floors-1)/4)/4:1;
+      const roofScale=round?.72:1;
       put(equipment,ri*2,p.x-width*.18,p.y+.012,p.z+depth*.12,width*.28,.02,depth*.24);
       put(equipment,ri*2+1,p.x+width*.28,p.y+.025,p.z-depth*.25,.004,.055,.004);
       put(beacons,ri,p.x+width*.28,p.y+.055,p.z-depth*.25,.004,.004,.004,hues[i%4]);
@@ -91,6 +125,11 @@ export function createCyberCity(root){
         const a=side*Math.PI/2;
         put(trim,ti++,p.x+Math.cos(a)*width*roofScale*.5,p.y+.009,p.z+Math.sin(a)*depth*roofScale*.5,
           side%2?width*roofScale:.002,.003,side%2?.002:depth*roofScale,hues[i%4]);
+      }
+      if(i%3===0&&!pads.includes(b)){
+        const sign=new T.Mesh(signGeometry,signMaterials[i%signMaterials.length]);
+        sign.position.set(x,b.roof+.023,z-depth*.12);sign.scale.set(width*.88,1,depth*.48);
+        group.add(sign);signs.push(sign);
       }
     });
     pads.forEach((b,i)=>{
@@ -118,7 +157,7 @@ export function createCyberCity(root){
     links.forEach(l=>{for(let j=0;j<16;j++){const a=cablePoint(l,j/16),b=cablePoint(l,(j+1)/16);vertices.push(a.x,a.y,a.z,b.x,b.y,b.z);}});
     const geometry=new T.BufferGeometry();geometry.setAttribute("position",new T.Float32BufferAttribute(vertices,3));
     group.add(new T.LineSegments(geometry,lines));
-    cars=batch(box,glow,Math.min(roads.length,60));
+    cars=batch(box,glow,roads.length*2);
     people=batch(box,glow,Math.min(roads.filter(r=>r.low).length*3,160));
     heads=batch(sphere,glow,people.count);riders=batch(box,glow,links.length);
     for(let i=0;i<Math.min(3,pads.length);i++)helis.push(helicopter());
@@ -128,10 +167,13 @@ export function createCyberCity(root){
   }
   function update(time){
     if(!group.visible)return;
+    signs.forEach((s,i)=>{s.visible=Math.sin(time*.7+i*1.9)>-.98;});
     const low=roads.filter(r=>r.low);
     const routePoint=(r,t)=>{const p=roadPoint(r,t);return {...p,x:(p.u-.5)*4,z:(p.v-.5)*3,y:r.bridge?.065:.018};};
     for(let i=0;i<cars.count;i++){
-      const r=roads[i%roads.length],p=routePoint(r,(1-Math.cos(time*.32+i*2.3))/2);
+      const r=roads[Math.floor(i/2)],p=routePoint(r,(1-Math.cos(time*.32+i*2.3))/2);
+      const side=i%2?1:-1;
+      p.x+=side*Math.sin(p.yaw)*.008;p.z+=side*Math.cos(p.yaw)*.008;
       put(cars,i,p.x,p.y+.016,p.z,.022,.008,.009,hues[i%4],p.yaw);
     }
     for(let i=0;i<people.count;i++){
@@ -146,7 +188,8 @@ export function createCyberCity(root){
       const phase=(time+i*9)%32,t=Math.max(0,Math.min(1,(phase-8)/16)),e=t*t*(3-2*t);
       const reverse=Math.floor((time+i*9)/32)%2,from=reverse?b:a,to=reverse?a:b;
       h.g.position.set(from.x+(to.x-from.x)*e,from.y+(to.y-from.y)*e+.06+Math.sin(Math.PI*t)*.42,from.z+(to.z-from.z)*e);
-      h.g.rotation.y=Math.atan2(to.x-from.x,to.z-from.z);
+      // The cockpit faces local -Z; +Z is the tail boom.
+      h.g.rotation.y=helicopterHeading(from,to);
       h.rotor.rotation.y=time*(phase<6?6:45);h.rotor2.rotation.y=h.rotor.rotation.y;
     });
     const arr=rain.geometry.attributes.position.array;
@@ -161,6 +204,7 @@ export function createCyberCity(root){
     rain.geometry.attributes.position.needsUpdate=true;[cars,people,heads,riders].forEach(flush);
   }
   return {rebuild,update,stats:()=>({cityBlocks:blocks.length,roadSegments:roads.length,towers:blocks.filter(b=>b.tower).length,
+    bridges:roads.filter(r=>r.bridge).length,
     helipads:pads.length,helicopters:helis.length,zipLines:links.length,cars:cars?.count||0,pedestrians:people?.count||0,rainPatches:rainSites.length}),
-    dispose(){clear();root.remove(group);[box,sphere,dark,glow,lines,rainMat].forEach(r=>r.dispose());}};
+    dispose(){clear();root.remove(group);signMaterials.forEach(m=>{m.map.dispose();m.dispose();});[box,sphere,cylinder,signGeometry,dark,glow,lines,rainMat].forEach(r=>r.dispose());}};
 }
