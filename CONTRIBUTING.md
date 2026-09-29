@@ -2,6 +2,8 @@
 
 Thanks for helping make Terrain Lab more alive. [The public contribution page](https://msriram.github.io/terrain-lab/contribute/) is the quick path; this file is the working checklist.
 
+Original code contributions are accepted under the project's [MIT License](LICENSE). Keep separate asset licenses and attribution intact; see [license scope](LICENSES.md).
+
 ## Choose and discuss work
 
 Search [issues](https://github.com/msriram/terrain-lab/issues) and [pull requests](https://github.com/msriram/terrain-lab/pulls) first. File a bug with the world, browser or rig, steps to reproduce, expected and actual behavior, and a screenshot when useful. Propose larger worlds, species, architecture changes, or new dependencies in an issue before implementation. Small fixes can go straight to a pull request.

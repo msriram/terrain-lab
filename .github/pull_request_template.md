@@ -13,3 +13,5 @@ Describe the trigger and the new behavior. Link the related issue (`Closes #...`
 ## Visuals and assets
 
 Add before/after screenshots or a short recording for visual changes. List new models, textures, sounds, or other third-party assets with source and license, and update attribution files. Write “none” if not applicable.
+
+By submitting, I confirm I can contribute this code under the project's MIT License and have documented any assets under their applicable terms.

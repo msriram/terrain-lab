@@ -147,8 +147,10 @@ upstream-magic-sand/   unmodified upstream reference checkout
 ## GitHub readiness
 
 The local `upstream-magic-sand` reference checkout is excluded from publishing.
-Magic-Sand is GPL-2.0 licensed and remains an upstream design reference. A final
-license should be chosen for the original Terrain Lab code before release.
+Original Terrain Lab code and documentation are [MIT licensed](LICENSE). See
+[license scope](LICENSES.md) for separate animal-asset, Three.js, and upstream
+reference terms. Magic-Sand is a GPL-2.0 upstream design reference, excluded
+from this repository's published site.
 
 ## Wildlife, rescue, and website development
 

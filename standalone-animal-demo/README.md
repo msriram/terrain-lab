@@ -172,6 +172,8 @@ A large shark can legitimately have no safe footprint at the lowest river tide.
 
 ## Asset licenses
 
+Original application code uses the repository [MIT License](../LICENSE). Asset terms below remain separate; see [license scope](../LICENSES.md).
+
 The fox model is CC0 with CC-BY 4.0 rigging/animation/conversion credits. The
 other original procedural assets use CC0. Full provenance and source links are
 in [`public/assets/animals/ATTRIBUTION.md`](public/assets/animals/ATTRIBUTION.md).
