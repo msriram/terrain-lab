@@ -182,7 +182,7 @@ export const LANDSCAPES = {
     props: ["hologram", "antenna", "circuit"],
     colors: ["#ff6cc9", "#60f2df", "#8d83fb"],
     weather: "neon-rain",
-    clouds: true,
+    clouds: false,
     allLand: true,
     caption: "Raise neon districts, carve waterways. Curving roads and bridges adapt to your city.",
   },

@@ -21,7 +21,7 @@ export function planCyberCity(sample, water, seed=31, density=1) {
   for(const b of nodes){
     const neighbors=nodes.filter(n=>n!==b).sort((a,c)=>Math.hypot(a.streetU-b.streetU,a.streetV-b.streetV)-Math.hypot(c.streetU-b.streetU,c.streetV-b.streetV));
     const opposite=neighbors.find(n=>sample((n.streetU+b.streetU)/2,(n.streetV+b.streetV)/2)<water);
-    for(const next of [...neighbors.slice(0,3),...(opposite?[opposite]:[])]){
+    for(const next of [...neighbors.slice(0,2),...(opposite?[opposite]:[])]){
       const id=[b.row*columns+b.column,next.row*columns+next.column].sort((a,c)=>a-c).join(":");
       if(pairs.has(id))continue;
       pairs.add(id);
