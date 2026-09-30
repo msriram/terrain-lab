@@ -78,14 +78,29 @@ test("missing habitat hides residents and restoring terrain recovers them", () =
   });
   assert.equal(sim.creatures.filter((c) => c.active).length, 5);
   sim.setTerrain(() => 1);
+  assert.equal(sim.creatures.filter((c) => c.active).length, 8);
+  for (let i = 0; i < 10; i++) sim.update(0.05);
+  assert.equal(sim.creatures.filter((c) => c.active).length, 8);
+  for (let i = 0; i < 6; i++) sim.update(0.05);
   assert.equal(sim.creatures.filter((c) => c.active).length, 3);
   sim.setTerrain(createTerrain());
-  for (let i = 0; i < 99; i++) sim.update(0.05);
+  for (let i = 0; i < 90; i++) sim.update(0.05);
   assert.ok(sim.creatures.filter((c) => c.active).length < 8);
-  for (let i = 0; i < 3; i++) sim.update(0.05);
+  for (let i = 0; i < 30; i++) sim.update(0.05);
   assert.equal(sim.creatures.filter((c) => c.active).length, 8);
   sim.setTerrain(() => NaN);
+  for (let i = 0; i < 16; i++) sim.update(0.05);
   assert.equal(sim.creatures.filter((c) => c.active).length, 0);
+});
+test("a brief invalid depth frame does not make wildlife disappear", () => {
+  const sim = new AnimalSimulation({ sampleTerrain: () => 0, seed: 7, roster: DEFAULT_ROSTER });
+  const residents = sim.creatures.filter(c => c.active).map(c => c.id);
+  sim.setTerrain(() => NaN);
+  for (let i = 0; i < 10; i++) sim.update(0.05);
+  sim.setTerrain(() => 0);
+  sim.update(0.05);
+  assert.deepEqual(sim.creatures.filter(c => c.active).map(c => c.id), residents);
+  assert.equal(sim.creatures.filter(c => c.respawnAt !== null).length, 0);
 });
 test("sculptable terrain carves and fills only the touched area", () => {
   const terrain = createSculptableTerrain();

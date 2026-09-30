@@ -174,6 +174,17 @@ try {
   await page.evaluate(() => TerrainLab.setSample((u,v) =>
     Math.hypot(u - .73, v - .48) < .14 ? .8 : .24));
   await page.waitForFunction(() => TerrainWildlife.layer.getStats().landscape.reefColonies >= 20);
+  for (const world of ['atlantis', 'deepsea']) {
+    await page.evaluate(() => TerrainLab.setSample(() => .2));
+    await page.locator('#theme').selectOption(world);
+    await page.waitForFunction(w => TerrainWildlife.layer.getStats().landscape.theme === w, world);
+    await page.waitForFunction(() => !TerrainWildlife.layer.getStats().landscape.propKinds.some(
+      kind => ['castle', 'drownedtower', 'talokan-temple', 'talokan-district'].includes(kind)));
+    await page.evaluate(() => TerrainLab.setSample((u, v) =>
+      .2 + .58 * Math.exp(-(((u - .7) / .12) ** 2 + ((v - .45) / .12) ** 2))));
+    await page.waitForFunction(w => TerrainWildlife.layer.getStats().landscape.propKinds.includes(
+      w === 'atlantis' ? 'castle' : 'talokan-temple'), world);
+  }
   await page.evaluate(() => TerrainLab.setSample(() => .72));
   await page.locator('#theme').selectOption('copper');
   await page.waitForFunction(() => TerrainWildlife.layer.getStats().landscape.copperStations >= 10);
@@ -375,6 +386,7 @@ try {
       "drag rescue in both demos",
       "3-second protection",
       "terrain editing",
+      "underwater structures grow on raised seabed and leave trenches open",
       "calibration pointer ownership",
       "rotation alignment",
       "rain, clouds, and flock retain screen direction after 180° projector rotation",

@@ -9,6 +9,7 @@ import { findReefSites } from "./reef-layout.js";
 import { createCyberCity } from "./cyber-city.js";
 import { createWorldArchitecture } from "./world-architecture.js";
 import { createStableCityTerrain } from "./stable-city-terrain.js";
+import { findUnderwaterStructureSites } from "./underwater-structures.js";
 
 const PROP_SCALE = 0.5;
 const LANDSCAPE_REBUILD_DELAY_SECONDS = 2.4;
@@ -25,6 +26,7 @@ export function createLandscapeLayer(
   const city = createCyberCity(root);
   const architecture = createWorldArchitecture(root);
   const stableCityTerrain = createStableCityTerrain();
+  const stableSceneryTerrain = createStableCityTerrain();
   // undefined means the hidden city renderers have not been initialized yet.
   let cityTheme;
   let cityRebuilds = 0;
@@ -45,9 +47,12 @@ export function createLandscapeLayer(
     layout = { shore: [], volcanoes: [] },
     props = [],
     layoutSeed = 31;
+  let propTheme = null;
+  let retiringProps = [];
   const resources = [];
   let density = 1;
   let addedElements = [], removedElements = [];
+  let sceneryEditsRevision = 0;
   const own = (value) => (resources.push(value), value);
   function texture(kind) {
     const canvas = document.createElement("canvas");
@@ -367,12 +372,20 @@ export function createLandscapeLayer(
     links = links.slice(0, 48);
   }
   function rebuild() {
-    layout = analyzeLandscape(sampleTerrain, waterLevel, {
+    if (!stableSceneryTerrain.update(sampleTerrain, { theme, waterLevel, layoutSeed, density, sceneryEditsRevision })) {
+      dirty = false;
+      lastBuild = time;
+      return;
+    }
+    const sceneryTerrain = stableSceneryTerrain.sample;
+    layout = analyzeLandscape(sceneryTerrain, waterLevel, {
       underwater: recipe.underwater,
       seed: layoutSeed,
       capacity: 90,
     });
-    propsRoot.clear();
+    const availableProps = propTheme === theme ? [...props] : [];
+    if (propTheme !== theme) { propsRoot.clear(); retiringProps = []; }
+    propTheme = theme;
     ventsRoot.clear();
     props = [];
     if (recipe.weather === "galaxy") galaxyLayout();
@@ -383,14 +396,37 @@ export function createLandscapeLayer(
     }
     const candidates = recipe.underwater ? layout.sea : layout.land;
     const baseCount = theme === "forest" ? 24 : theme === "tundra" ? 30 : theme === "coral" ? 10 : theme === "deepsea" ? 32 : ["cyberpunk","copper","emerald"].includes(theme) ? 0 : recipe.underwater ? 24 : 20;
-    const placements = candidates.slice(0, Math.round(baseCount * density))
+    const structureWorld = theme === "atlantis" || theme === "deepsea";
+    const structureCount = Math.round(baseCount * density * 0.65);
+    const structures = structureWorld
+      ? findUnderwaterStructureSites(sceneryTerrain, waterLevel, layoutSeed, structureCount)
+      : [];
+    const structureKinds = theme === "atlantis"
+      ? ["castle", "drownedtower", "brokenarch", "ruin"]
+      : ["talokan-temple", "talokan-district", "talokan-district", "talokan-beacon"];
+    const secondaryKinds = theme === "atlantis"
+      ? ["seaweed", "seaweed", "chest", "trident", "coral"]
+      : ["seaweed", "vent", "seaweed"];
+    const secondary = structureWorld
+      ? candidates.filter(p => p.h < water - 0.025)
+          .slice(0, Math.max(0, Math.round(baseCount * density) - structures.length))
+      : candidates.slice(0, Math.round(baseCount * density));
+    const placements = [...structures.map((p, i) => ({ ...p, kind: structureKinds[i % structureKinds.length] })),
+      ...secondary.map((p, i) => structureWorld ? { ...p, kind: secondaryKinds[i % secondaryKinds.length] } : p)]
       .filter(p => !removedElements.some(q => Math.hypot(p.u-q.u, p.v-q.v) < .05))
       .concat(addedElements);
     placements.forEach((p, i) => {
       const kind = p.kind || (theme === "tundra"
         ? p.h > 0.76 ? "rockpeak" : p.h > 0.57 && i % 3 !== 0 ? "coniferstand" : "meadow"
-        : recipe.props[i % recipe.props.length]),
-        object = factory.build(kind, recipe.colors, Math.floor(p.phase * 1000));
+        : recipe.props[i % recipe.props.length]);
+      let closest = -1, distance = 0.105;
+      for (let j = 0; j < availableProps.length; j++) {
+        const old = availableProps[j];
+        const d = old.kind === kind ? Math.hypot(old.p.u - p.u, old.p.v - p.v) : Infinity;
+        if (d < distance) { closest = j; distance = d; }
+      }
+      const reused = closest >= 0 ? availableProps.splice(closest, 1)[0] : null;
+      const object = reused?.object || factory.build(kind, recipe.colors, Math.floor(p.phase * 1000));
       const scale =
         (["chest", "trident", "ruin"].includes(kind)
           ? 0.29
@@ -408,14 +444,18 @@ export function createLandscapeLayer(
             : 0.23) *
         p.size *
         PROP_SCALE;
-      object.scale.setScalar(scale);
-      object.position.set((p.u - 0.5) * 4, 0.004, (p.v - 0.5) * 3);
+      if (!reused) {
+        object.scale.setScalar(0.001);
+        object.position.set((p.u - 0.5) * 4, 0.004, (p.v - 0.5) * 3);
+        propsRoot.add(object);
+      }
       object.rotation.y = kind === "crater" ? 0 : p.phase;
-      propsRoot.add(object);
-      props.push({ object, kind, p, scale });
+      props.push({ object, kind, p, scale, fade: reused?.fade ?? 0,
+        targetX: (p.u - 0.5) * 4, targetZ: (p.v - 0.5) * 3 });
     });
+    retiringProps.push(...availableProps);
     if (theme === "coral") {
-      const sites = findReefSites(sampleTerrain, layoutSeed, Math.round(25 * density));
+      const sites = findReefSites(sceneryTerrain, layoutSeed, Math.round(25 * density));
       const palettes = [
         ["#b85b62", "#d39958", "#845d9d"],
         ["#ba6b91", "#bca769", "#4f9b8e"],
@@ -479,7 +519,7 @@ export function createLandscapeLayer(
     // the world rather than popping in almost immediately after a change.
     if (
       dirty &&
-      (time - lastBuild > (["cyberpunk", "coral", "copper", "emerald"].includes(theme) ? .4 : LANDSCAPE_REBUILD_DELAY_SECONDS) || !motion)
+      (time - lastBuild > (["cyberpunk", "coral", "copper", "emerald", "atlantis", "deepsea"].includes(theme) ? .4 : LANDSCAPE_REBUILD_DELAY_SECONDS) || !motion)
     )
       rebuild();
     living.update(dt, theme, recipe, motion, projectionFlipped);
@@ -494,7 +534,13 @@ export function createLandscapeLayer(
       reef.object.scale.setScalar((0.055 + reef.growth * 0.16) * (1 + Math.sin(time * 0.7 + reef.phase) * 0.012));
       reef.object.rotation.z = Math.sin(time * 0.85 + reef.phase) * 0.012;
     }
-    for (const { object, kind, p, scale } of props) {
+    const ease = motion ? 1 - Math.exp(-Math.min(dt, 0.05) * 3.5) : 1;
+    for (const item of props) {
+      const { object, kind, p, scale } = item;
+      item.fade += (1 - item.fade) * ease;
+      object.position.x += (item.targetX - object.position.x) * ease;
+      object.position.z += (item.targetZ - object.position.z) * ease;
+      object.scale.setScalar(scale);
       if (
         ["flowers", "seaweed", "coral"].includes(
           kind,
@@ -527,7 +573,15 @@ export function createLandscapeLayer(
       if (kind === "eye")
         object.position.y = 0.05 + Math.sin(time + p.phase) * 0.03;
       if (kind === "gear") object.rotation.y = p.phase + time * 0.15;
+      object.scale.multiplyScalar(item.fade);
     }
+    retiringProps = retiringProps.filter(item => {
+      item.fade *= 1 - ease;
+      item.object.scale.setScalar(item.scale * item.fade);
+      if (item.fade > 0.025) return true;
+      propsRoot.remove(item.object);
+      return false;
+    });
     networkLines.visible = signals.visible = [
       "neuron",
       "universe",
@@ -784,6 +838,7 @@ export function createLandscapeLayer(
       layoutSeed = state.seed;
       addedElements = state.addedElements.slice(0, 90);
       removedElements = state.removedElements.slice(0, 90);
+      sceneryEditsRevision++;
       dirty = true;
       lastBuild = -Infinity;
     },
@@ -791,6 +846,7 @@ export function createLandscapeLayer(
       addedElements = []; removedElements = [];
       reefRoot.clear(); reefs = [];
       layoutSeed = Math.floor(Math.random() * 2147483647);
+      sceneryEditsRevision++;
       dirty = true;
       lastBuild = -Infinity;
     },
@@ -807,6 +863,7 @@ export function createLandscapeLayer(
         addedElements.push({u,v,phase:Math.random()*6.28,size:.8+Math.random()*.4,
           kind:recipe.props[Math.floor(Math.random()*recipe.props.length)]});
       }
+      sceneryEditsRevision++;
       dirty = true; lastBuild = -Infinity;
     },
     getStats() {

@@ -148,8 +148,10 @@ export function paintTerrain(canvas, sample, water, pack, showContours = true) {
         c = mix(colors[0], colors[1], (e - water) / 0.55);
       if (pack === "forest" && !wet)
         c = mix([19, 58, 42], [61, 105, 63], (e - water) / 0.5);
-      if (night) c = mix([5, 25, 53], [36, 120, 128], e * 0.85 + 0.1);
-      if (pack === "deepsea") c = mix([1, 9, 15], [11, 45, 51], e * 0.85 + 0.1);
+      const depthShade = (e - water + 0.23) / 0.5;
+      if (night) c = pack === "deepsea"
+        ? mix([1, 8, 14], [23, 78, 82], depthShade)
+        : mix([3, 13, 32], [38, 133, 143], depthShade);
       if (pack === "universe") c = mix([5, 10, 30], [36, 25, 78], e);
       if (pack === "cyberpunk") c = wet ? mix([11,73,119],[33,142,182],1-(water-e)/.24) : mix([48,79,96],[104,80,118],e);
       const slope = (sample(u + 0.002, v + 0.002) - e) * 100;

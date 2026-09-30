@@ -49,6 +49,7 @@ export class AnimalSimulation {
       held: false,
       protection: 1.5,
       respawnAt: null,
+      invalidFor: 0,
     }));
     this.events = [];
     this.reconcile();
@@ -113,14 +114,13 @@ export class AnimalSimulation {
     for (const c of this.creatures) {
       if (c.respawnAt !== null) continue;
       if (c.active && this.valid(c, c.u, c.v)) {
+        c.invalidFor = 0;
         this.updateSurface(c);
         continue;
       }
-      if (c.active) {
-        c.active = false;
-        c.respawnAt = this.time + 5;
-        continue;
-      }
+      // A live depth frame can briefly misclassify a valid position. The
+      // update loop waits for sustained loss before moving the resident.
+      if (c.active) continue;
       let found = false;
       for (let j = 0; j < 400; j++) {
         const u = 0.07 + this.random() * 0.86;
@@ -183,10 +183,14 @@ export class AnimalSimulation {
       }
       if (!c.active || c.held) continue;
       if (!this.valid(c, c.u, c.v)) {
-        c.active = false;
-        c.respawnAt = this.time + 5;
+        c.invalidFor += dt;
+        if (c.invalidFor < 0.7) continue;
+        c.invalidFor = 0;
+        this.relocate(c);
+        if (!c.active) c.respawnAt = this.time + 5;
         continue;
       }
+      c.invalidFor = 0;
       c.timer -= dt;
       if (c.timer <= 0) {
         c.turn = (this.random() - 0.5) * 1.2;
