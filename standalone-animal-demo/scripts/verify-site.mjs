@@ -225,6 +225,22 @@ try {
   await page
     .locator(".stage-card")
     .screenshot({ path: "../website/images/sandbox.png" });
+  // Atmosphere keeps its apparent direction when the projector canvas turns.
+  await page.locator("#rotateProjector").check();
+  await page.waitForFunction(() => {
+    const a=TerrainWildlife.layer.getStats().landscape;
+    return a.projectionFlipped && Math.abs(a.cloudRotation-Math.PI)<.001 && Math.abs(a.flockRotation-Math.PI)<.001;
+  });
+  await page.locator("#theme").selectOption("cyberpunk");
+  await page.waitForFunction(() => {
+    const a=TerrainWildlife.layer.getStats().landscape;
+    return a.rainStreaks===900 && Math.abs(a.rainRotation-Math.PI)<.001;
+  });
+  await page.locator("#rotateProjector").uncheck();
+  await page.waitForFunction(() => {
+    const a=TerrainWildlife.layer.getStats().landscape;
+    return !a.projectionFlipped && Math.abs(a.rainRotation)<.001;
+  });
   // Public wildlife demo uses the same drag implementation.
   await page.goto(base + "wildlife/");
   await page.waitForFunction(() => window.animalDemo);
@@ -351,6 +367,7 @@ try {
       "terrain editing",
       "calibration pointer ownership",
       "rotation alignment",
+      "rain, clouds, and flock retain screen direction after 180° projector rotation",
       "projector state and terrain synchronization",
       "random population",
       "Copper and Emerald City respond to live terrain changes",

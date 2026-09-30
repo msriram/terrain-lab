@@ -1,7 +1,7 @@
 import * as T from "three";
 import {planCyberCity,roofPosition,cityLinks,cablePoint,roadPoint,helicopterHeading} from "./cyber-city-layout.js";
 
-const RAIN_STREAKS=900;
+import { RAIN_STREAKS, rainDrop } from "./cyber-rain.js";
 
 export function createCyberCity(root){
   const group=new T.Group();group.name="Layered cyberpunk metropolis";root.add(group);
@@ -207,7 +207,7 @@ export function createCyberCity(root){
     rain=new T.LineSegments(rg,rainMat);rain.frustumCulled=false;rain.renderOrder=30;group.add(rain);
     batches.forEach(flush);
   }
-  function update(time){
+  function update(time,projectionFlipped=false){
     if(!group.visible)return;
     signs.forEach((s,i)=>{s.visible=Math.sin(time*.7+i*1.9)>-.98;});
     const low=roads.filter(r=>r.low);
@@ -244,17 +244,16 @@ export function createCyberCity(root){
       h.g.rotation.y=helicopterHeading(from,to);
       h.rotor.rotation.y=time*(phase<6?6:45);h.rotor2.rotation.y=h.rotor.rotation.y;
     });
+    rain.rotation.y=projectionFlipped?Math.PI:0;
     const arr=rain.geometry.attributes.position.array;
     for(let i=0;i<RAIN_STREAKS;i++){
-      const x=(((i*.61803398875+time*.035)%1)*4)-2;
-      const z=(((i*.754877666+time*(.19+(i%5)*.014))%1)*3)-1.5;
-      const length=.027+(i%6)*.006;
-      arr.set([x,.9,z,x+.012,.9,z+length],i*6);
+      const drop=rainDrop(i,time);
+      arr.set([drop.x,drop.y,drop.z,drop.x+drop.dx,drop.y-.025,drop.z+drop.length],i*6);
     }
     rain.geometry.attributes.position.needsUpdate=true;[cars,carLights,carHalos,people,heads,riders].forEach(flush);
   }
   return {rebuild,update,stats:()=>({cityBlocks:blocks.length,roadSegments:roads.length,towers:blocks.filter(b=>b.tower).length,
     bridges:roads.filter(r=>r.bridge).length,
-    helipads:pads.length,helicopters:helis.length,zipLines:links.length,cars:cars?.count||0,pedestrians:people?.count||0,rainStreaks:group.visible?RAIN_STREAKS:0}),
+    helipads:pads.length,helicopters:helis.length,zipLines:links.length,cars:cars?.count||0,pedestrians:people?.count||0,rainStreaks:group.visible?RAIN_STREAKS:0,rainRotation:rain?.rotation.y||0}),
     dispose(){clear();root.remove(group);signMaterials.forEach(m=>{m.map.dispose();m.dispose();});[box,sphere,cylinder,signGeometry,lightPlane,lightTexture,lightMaterial,dark,glow,lines,rainMat].forEach(r=>r.dispose());}};
 }

@@ -35,6 +35,7 @@ export function createLandscapeLayer(
     lastBuild = -Infinity,
     enabled = true,
     motion = true,
+    projectionFlipped = false,
     time = 0,
     layout = { shore: [], volcanoes: [] },
     props = [],
@@ -466,8 +467,8 @@ export function createLandscapeLayer(
       (time - lastBuild > (["cyberpunk", "coral", "copper", "emerald"].includes(theme) ? .4 : LANDSCAPE_REBUILD_DELAY_SECONDS) || !motion)
     )
       rebuild();
-    living.update(dt, theme, recipe, motion);
-    city.update(time);
+    living.update(dt, theme, recipe, motion, projectionFlipped);
+    city.update(time, projectionFlipped);
     architecture.update(time);
     factory.setTime(time);
     reefRoot.visible = theme === "coral";
@@ -636,6 +637,9 @@ export function createLandscapeLayer(
       positions.set([(u - 0.5) * 4, y, (v - 0.5) * 3], i * 3);
     });
     particleGeometry.attributes.position.needsUpdate = true;
+    const atmosphereRotation=projectionFlipped?Math.PI:0;
+    points.rotation.y=atmosphereRotation;
+    rain.rotation.y=atmosphereRotation;
     rain.visible = weather === "rain" || weather === "meteors";
     if (rain.visible) {
       const array = rainGeometry.attributes.position.array;
@@ -754,6 +758,7 @@ export function createLandscapeLayer(
       }
       if (options.enabled !== undefined) enabled = options.enabled;
       if (options.motion !== undefined) motion = options.motion;
+      if (options.projectionFlipped !== undefined) projectionFlipped = !!options.projectionFlipped;
     },
     getState: () => ({ seed: layoutSeed, addedElements, removedElements }),
     applyState(state) {
@@ -792,6 +797,7 @@ export function createLandscapeLayer(
     getStats() {
       return {
         density,
+        projectionFlipped,
         ...living.stats(),
         ...city.stats(),
         ...architecture.stats(),

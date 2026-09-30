@@ -269,6 +269,7 @@ export async function createAnimalLayer({
     setOptions(options = {}) {
       if (options.scenery !== undefined) scenery = options.scenery;
       if (options.density !== undefined) landscape.setOptions({density: options.density});
+      if (options.projectionFlipped !== undefined) landscape.setOptions({projectionFlipped: options.projectionFlipped});
       if (options.atmosphere !== undefined) atmosphere = options.atmosphere;
       const nextTheme =
         options.theme ??

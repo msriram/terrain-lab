@@ -59,3 +59,34 @@ test("occupied buildings have dry access paths joining the road network",()=>{
     }
   }
 });
+
+test("Cyberpunk rain is irregular, repeatable, and falls at varied speeds", async () => {
+  const { RAIN_STREAKS, rainDrop } = await import(
+    "../src/environment/cyber-rain.js"
+  );
+  const drops = Array.from({ length: RAIN_STREAKS }, (_, i) => rainDrop(i, 0));
+  const a=rainDrop(0,0), b=rainDrop(0,.1), c=rainDrop(0,.2);
+  assert.ok(Math.abs((c.z-b.z)-(b.z-a.z))<1e-9);
+  assert.ok(
+    drops.every((d) => d.x >= -2 && d.x < 2 && d.z >= -1.5 && d.z < 1.5),
+  );
+  assert.ok(
+    new Set(
+      drops.map(
+        (d) => `${Math.floor((d.x + 2) * 5)}:${Math.floor((d.z + 1.5) * 5)}`,
+      ),
+    ).size > 270,
+  );
+  assert.ok(
+    Math.max(...drops.map((d) => d.speed)) -
+      Math.min(...drops.map((d) => d.speed)) >
+      0.6,
+  );
+  assert.ok(new Set(drops.map((d) => d.length.toFixed(3))).size > 35);
+  const moving = Array.from({ length: 200 }, (_, i) => [
+    rainDrop(i, 0),
+    rainDrop(i, 0.1),
+  ]).filter(([a, b]) => b.z > a.z);
+  assert.ok(moving.length > 190);
+  assert.ok(moving.every(([a, b]) => b.z - a.z > 0));
+});

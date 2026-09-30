@@ -157,7 +157,7 @@ export function createLivingEffects(root) {
       peaks = vents;
       flow.setTerrain(fn, vents);
     },
-    update(dt, world, recipe, motion) {
+    update(dt, world, recipe, motion, projectionFlipped = false) {
       if (theme !== world) {
         theme = world;
         flow.reset();
@@ -173,7 +173,9 @@ export function createLivingEffects(root) {
       lava.visible = !!recipe.eruption;
       clouds.visible =
         !!recipe.clouds || ["clouds", "rain", "fog"].includes(recipe.weather);
+      clouds.rotation.y = shadow.rotation.y = projectionFlipped ? Math.PI : 0;
       flock.visible = fish || birds;
+      flock.rotation.y = birds && projectionFlipped ? Math.PI : 0;
       if (motion) {
         clock += Math.min(dt, 0.1);
         acc += Math.min(dt, 0.1);
@@ -253,6 +255,8 @@ export function createLivingEffects(root) {
       flockCount: flock.visible ? (underwater ? 96 : 100) : 0,
       formationCount: flock.visible && !underwater ? 13 : 0,
       clouds: clouds.visible,
+      cloudRotation: clouds.rotation.y,
+      flockRotation: flock.rotation.y,
     }),
     dispose() {
       deposits.dispose();
