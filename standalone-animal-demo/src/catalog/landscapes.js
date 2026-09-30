@@ -350,14 +350,14 @@ export const WORLD_ROSTERS = {
     "clockbeetle", "clockbeetle", "clockbeetle", "clockbeetle",
   ],
   emerald: [
-    "voidray",
     "jadebird",
     "jadebird",
     "jadebird",
     "jadebird",
     "jadebird",
-    "starseed",
-    "starseed",
+    "jadebird",
+    "jadebird",
+    "jadebird",
   ],
   candy: [
     "voidray",

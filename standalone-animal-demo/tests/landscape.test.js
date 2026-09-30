@@ -136,3 +136,8 @@ test("coral colonies form twenty-five small irregular clusters on raised sand", 
     assert.ok(group.every((p) => Math.hypot(p.u - group[0].u, p.v - group[0].v) < .085));
   }
 });
+
+test("Emerald City keeps unrelated floating fauna out of its default population", async () => {
+  const { WORLD_ROSTERS } = await import("../src/catalog/landscapes.js");
+  assert.deepEqual([...new Set(WORLD_ROSTERS.emerald)], ["jadebird"]);
+});

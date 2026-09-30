@@ -77,34 +77,34 @@ export function createEmeraldCity(parent) {
   );
   surface.position.y = 0.006;
   root.add(surface);
-  const rainbowMats = [
-    0xf64776, 0xffa94d, 0xffdd56, 0x72d282, 0x5ec5f2, 0x9b76df,
-  ].map((c) =>
-    own(
-      new T.MeshBasicMaterial({
-        color: c,
-        transparent: true,
-        opacity: 0,
-        depthWrite: false,
-        side: T.DoubleSide,
-      }),
-    ),
+  // The same drifting fractal-noise language as Earth's clouds, tinted in broad rainbow bands.
+  const rainbowMaterial = own(
+    new T.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      depthTest: false,
+      uniforms: { time: { value: 0 }, fade: { value: 0 } },
+      vertexShader:
+        "varying vec2 p;void main(){p=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
+      fragmentShader: `varying vec2 p;uniform float time;uniform float fade;
+    float hash(vec2 q){return fract(sin(dot(q,vec2(127.1,311.7)))*43758.5453);}
+    float noise(vec2 q){vec2 i=floor(q),f=fract(q);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+1.),f.x),f.y);}
+    float fbm(vec2 q){float v=0.,a=.5;for(int i=0;i<5;i++){v+=a*noise(q);q=q*2.03+7.1;a*=.5;}return v;}
+    void main(){vec2 q=p*vec2(5.,3.)+vec2(-time*.035,time*.014);vec2 warp=vec2(fbm(q+time*.03),fbm(q+13.-time*.021));float n=fbm(q+warp*2.);
+    vec2 d=(p-.5)*vec2(1.05,2.25);float envelope=1.-smoothstep(.26,.82,length(d)+(n-.5)*.19);
+    float body=(.42+.58*smoothstep(.32,.64,n))*envelope;
+    float u=clamp((p.x-.08)/.84,0.,1.);
+    vec3 a=vec3(1.,.29,.42),b=vec3(1.,.60,.23),c=vec3(1.,.88,.36),e=vec3(.36,.85,.50),f=vec3(.29,.63,1.),g=vec3(.65,.42,.94);
+    vec3 spectrum=u<.2?mix(a,b,u*5.):u<.4?mix(b,c,(u-.2)*5.):u<.6?mix(c,e,(u-.4)*5.):u<.8?mix(e,f,(u-.6)*5.):mix(f,g,(u-.8)*5.);
+    vec3 col=mix(spectrum,vec3(1.),.18);gl_FragColor=vec4(col,body*fade*.82);}`,
+    }),
   );
-  const rainbow = new T.Group();
+  const rainbowGeometry = own(new T.PlaneGeometry(1.9, 0.95));
+  rainbowGeometry.rotateX(-Math.PI / 2);
+  const rainbow = new T.Mesh(rainbowGeometry, rainbowMaterial);
+  rainbow.position.y = 0.82;
+  rainbow.renderOrder = 20;
   dynamic.add(rainbow);
-  const rainbowGeo = [];
-  for (let i = 0; i < 6; i++) {
-    const curve = new T.CatmullRomCurve3([
-      new T.Vector3(-0.35, 0.1, 0),
-      new T.Vector3(-0.22, 0.1, 0.2 + i * 0.011),
-      new T.Vector3(0, 0.1, 0.27 + i * 0.011),
-      new T.Vector3(0.22, 0.1, 0.2 + i * 0.011),
-      new T.Vector3(0.35, 0.1, 0),
-    ]);
-    const g = new T.TubeGeometry(curve, 32, 0.008, 5, false);
-    rainbowGeo.push(g);
-    rainbow.add(new T.Mesh(g, rainbowMats[i]));
-  }
   const lights = [],
     citizens = [],
     witches = [],
@@ -397,30 +397,72 @@ export function createEmeraldCity(parent) {
   function makeWitch(road, i) {
     const g = new T.Group();
     dynamic.add(g);
-    const broom = piece(g, column, gold, 0, 0.005, 0, 0.004, 0.12, 0.004);
-    broom.rotation.x = Math.PI / 2;
-    piece(
+    // Local +Z is the flight direction. The broad cloak and broom bristles trail behind.
+    const capeShape = new T.Shape();
+    capeShape.moveTo(-0.022, -0.025);
+    capeShape.lineTo(-0.055, 0.12);
+    capeShape.lineTo(0.055, 0.12);
+    capeShape.lineTo(0.022, -0.025);
+    capeShape.closePath();
+    const capeGeometry = new T.ShapeGeometry(capeShape);
+    capeGeometry.rotateX(-Math.PI / 2);
+    transient.push(capeGeometry);
+    const cape = new T.Mesh(capeGeometry, amethyst);
+    cape.position.y = 0.039;
+    g.add(cape);
+    for (const side of [-1, 1])
+      rod(
+        g,
+        new T.Vector3(side * 0.022, 0.045, 0.018),
+        new T.Vector3(side * 0.046, 0.035, -0.04),
+        0.006,
+        witchBlack,
+      );
+    rod(
+      g,
+      new T.Vector3(0.024, 0.018, -0.09),
+      new T.Vector3(0.024, 0.018, 0.13),
+      0.004,
+      gold,
+    );
+    for (let k = -3; k <= 3; k++)
+      rod(
+        g,
+        new T.Vector3(0.024, 0.022, -0.07),
+        new T.Vector3(
+          0.024 + k * 0.008,
+          0.022,
+          -0.15 - Math.abs(k % 2) * 0.008,
+        ),
+        0.0023,
+        gold,
+      );
+    piece(g, column, witchBlack, 0, 0.047, 0, 0.021, 0.035, 0.019);
+    piece(g, orb, skin, 0, 0.067, 0.026, 0.018, 0.016, 0.017);
+    for (const side of [-1, 1])
+      piece(g, orb, eye, side * 0.009, 0.069, 0.042, 0.004, 0.004, 0.003);
+    piece(g, column, witchBlack, 0, 0.079, 0.008, 0.047, 0.008, 0.047);
+    piece(g, column, amethyst, 0, 0.084, 0.008, 0.035, 0.006, 0.035);
+    const hat = piece(
       g,
       spire,
       witchBlack,
       0,
-      0.005,
-      -0.065,
-      0.018,
-      0.047,
-      0.018,
-    ).rotation.x = -Math.PI / 2;
-    piece(g, column, amethyst, 0, 0.023, 0, 0.021, 0.047, 0.018);
-    piece(g, orb, skin, 0, 0.055, 0, 0.013, 0.014, 0.013);
-    piece(g, spire, witchBlack, 0, 0.081, 0, 0.027, 0.048, 0.027);
-    piece(g, box, witchBlack, 0, 0.065, 0, 0.064, 0.006, 0.064);
-    piece(g, orb, eye, 0, 0.06, 0.012, 0.005, 0.005, 0.005);
-    g.scale.setScalar(1.8);
+      0.114,
+      0.012,
+      0.032,
+      0.068,
+      0.032,
+    );
+    hat.rotation.x = 0.28;
+    piece(g, orb, amethyst, 0, 0.15, 0.031, 0.008, 0.009, 0.008);
+    g.scale.setScalar(1.85);
     witches.push({
       g,
       road,
       phase: i * 0.47,
       target: i % Math.max(1, citizens.length),
+      heading: 0,
       id: i,
     });
   }
@@ -480,9 +522,7 @@ export function createEmeraldCity(parent) {
     transient.splice(0).forEach((x) => x.dispose());
     plan = null;
     deaths = 0;
-    rainbowMats.forEach((m) => {
-      m.opacity = 0;
-    });
+    rainbowMaterial.uniforms.fade.value = 0;
   }
   return {
     rebuild(next, sample, water) {
@@ -508,6 +548,8 @@ export function createEmeraldCity(parent) {
       witches.forEach((w, i) => {
         const p = routePoint(w.road, i / Math.max(1, witches.length));
         w.g.position.set(p.x, 0.14, p.z);
+        w.heading = p.heading;
+        w.g.rotation.y = p.heading;
       });
     },
     update(t) {
@@ -524,12 +566,13 @@ export function createEmeraldCity(parent) {
         fade = show
           ? Math.min(1, (rainbowCycle - 5) / 1.2, (13 - rainbowCycle) / 1.2)
           : 0;
-      rainbowMats.forEach((m) => (m.opacity = 0.75 * fade));
+      rainbowMaterial.uniforms.fade.value = fade;
+      rainbowMaterial.uniforms.time.value = t;
       if (plan.citadels.length) {
         const cycle = Math.floor(t / 19);
         rainbow.position.set(
           (hash(cycle * 17 + 9) - 0.5) * 0.55,
-          0.04,
+          0.82,
           (hash(cycle * 29 + 7) - 0.5) * 0.45,
         );
         rainbow.rotation.y = t * 0.11;
@@ -551,7 +594,13 @@ export function createEmeraldCity(parent) {
           p.z += (dz / len) * step;
           p.y = 0.12 + Math.sin(t * 4 + w.id) * 0.016;
           p.y = Math.max(p.y, 0.12);
-          w.g.rotation.y = Math.atan2(dx, dz);
+          const desired = Math.atan2(dx, dz);
+          w.heading +=
+            Math.atan2(
+              Math.sin(desired - w.heading),
+              Math.cos(desired - w.heading),
+            ) * Math.min(1, dt * 8);
+          w.g.rotation.y = w.heading;
           if (len < 0.052) {
             target.alive = false;
             target.g.visible = false;
@@ -615,12 +664,11 @@ export function createEmeraldCity(parent) {
       emeraldWitches: witches.length,
       emeraldGuardians: guardians.length,
       emeraldWitchKills: deaths,
-      emeraldRainbowOpacity: rainbowMats[0].opacity,
+      emeraldRainbowOpacity: rainbowMaterial.uniforms.fade.value,
       emeraldAnimationTime: time,
     }),
     dispose() {
       clear();
-      rainbowGeo.forEach((g) => g.dispose());
       owned.forEach((x) => x.dispose());
       parent.remove(root);
     },

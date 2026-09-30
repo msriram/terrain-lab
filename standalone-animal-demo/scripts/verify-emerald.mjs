@@ -67,7 +67,7 @@ try {
   assert.ok(metrics.landscape.emeraldWitchKills > 0);
   assert.equal(metrics.landscape.emeraldGuardians, 2);
   await page.waitForFunction(
-    () => animalDemo.getMetrics().landscape.emeraldRainbowOpacity > 0.3,
+    () => animalDemo.getMetrics().landscape.emeraldRainbowOpacity > 0.95,
     { timeout: 10000 },
   );
   await page
