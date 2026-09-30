@@ -1,6 +1,8 @@
 import * as T from "three";
 import {planCyberCity,roofPosition,cityLinks,cablePoint,roadPoint,helicopterHeading} from "./cyber-city-layout.js";
 
+const RAIN_STREAKS=900;
+
 export function createCyberCity(root){
   const group=new T.Group();group.name="Layered cyberpunk metropolis";root.add(group);
   const box=new T.BoxGeometry(1,1,1),sphere=new T.SphereGeometry(1,7,5);
@@ -8,7 +10,7 @@ export function createCyberCity(root){
   const dark=new T.MeshStandardMaterial({color:0x111827,roughness:.58,metalness:.55});
   const glow=new T.MeshBasicMaterial({color:0xffffff});
   const lines=new T.LineBasicMaterial({color:0x4a8195,transparent:true,opacity:.65});
-  const rainMat=new T.LineBasicMaterial({color:0xa6d3e8,transparent:true,opacity:.32});
+  const rainMat=new T.LineBasicMaterial({color:0xb9d9ee,transparent:true,opacity:.5,depthTest:false,depthWrite:false});
   const lightCanvas=document.createElement("canvas");lightCanvas.width=64;lightCanvas.height=64;
   const lightContext=lightCanvas.getContext("2d"),halo=lightContext.createRadialGradient(32,32,1,32,32,32);
   halo.addColorStop(0,"rgba(255,255,255,.95)");halo.addColorStop(.22,"rgba(255,255,255,.5)");halo.addColorStop(1,"rgba(255,255,255,0)");
@@ -27,7 +29,7 @@ export function createCyberCity(root){
     return new T.MeshBasicMaterial({map,transparent:true});
   });
   const matrix=new T.Matrix4(),scaleVector=new T.Vector3(),color=new T.Color(),hues=[0x40ddeb,0xf15cba,0xf6bc69,0x849bff];
-  let blocks=[],roads=[],links=[],pads=[],batches=[],cars,carLights,carHalos,people,riders,heads,helis=[],rain,rainSites=[],signs=[];
+  let blocks=[],roads=[],links=[],pads=[],batches=[],cars,carLights,carHalos,people,riders,heads,helis=[],rain,signs=[];
   function clear(){
     for(const m of batches)m.dispose();batches=[];
     for(const child of group.children)if(child.isLineSegments)child.geometry.dispose();
@@ -59,7 +61,6 @@ export function createCyberCity(root){
   function rebuild(sample,water,seed,density){
     clear();
     ({blocks,roads}=planCyberCity(sample,water,seed,density));
-    rainSites=blocks.filter((b,i)=>(i+seed)%3===0);
     group.visible=blocks.length>0;
     if(!group.visible){links=[];pads=[];cars=carLights=carHalos=people=riders=heads=null;return;}
     links=cityLinks(blocks);
@@ -202,8 +203,8 @@ export function createCyberCity(root){
     people=batch(box,glow,Math.min(roads.filter(r=>r.low).length*3,160));
     heads=batch(sphere,glow,people.count);riders=batch(box,glow,links.length);
     for(let i=0;i<Math.min(3,pads.length);i++)helis.push(helicopter());
-    const rg=new T.BufferGeometry();rg.setAttribute("position",new T.BufferAttribute(new Float32Array(320*6),3));
-    rain=new T.LineSegments(rg,rainMat);rain.frustumCulled=false;group.add(rain);
+    const rg=new T.BufferGeometry();rg.setAttribute("position",new T.BufferAttribute(new Float32Array(RAIN_STREAKS*6),3));
+    rain=new T.LineSegments(rg,rainMat);rain.frustumCulled=false;rain.renderOrder=30;group.add(rain);
     batches.forEach(flush);
   }
   function update(time){
@@ -244,18 +245,16 @@ export function createCyberCity(root){
       h.rotor.rotation.y=time*(phase<6?6:45);h.rotor2.rotation.y=h.rotor.rotation.y;
     });
     const arr=rain.geometry.attributes.position.array;
-    for(let i=0;i<320;i++){
-      const site=rainSites[i%rainSites.length];
-      if(!site){arr.fill(-5,i*6,i*6+6);continue;}
-      const x=(site.u-.5)*4+((i*.618)%1-.5)*.32,
-        z=(site.v-.5)*3+((i*.419)%1-.5)*.32,
-        y=.1+(1-(time*1.1+i*.173)%1)*1.2;
-      arr.set([x,y,z,x+.014,y-.08,z+.025],i*6);
+    for(let i=0;i<RAIN_STREAKS;i++){
+      const x=(((i*.61803398875+time*.035)%1)*4)-2;
+      const z=(((i*.754877666+time*(.19+(i%5)*.014))%1)*3)-1.5;
+      const length=.027+(i%6)*.006;
+      arr.set([x,.9,z,x+.012,.9,z+length],i*6);
     }
     rain.geometry.attributes.position.needsUpdate=true;[cars,carLights,carHalos,people,heads,riders].forEach(flush);
   }
   return {rebuild,update,stats:()=>({cityBlocks:blocks.length,roadSegments:roads.length,towers:blocks.filter(b=>b.tower).length,
     bridges:roads.filter(r=>r.bridge).length,
-    helipads:pads.length,helicopters:helis.length,zipLines:links.length,cars:cars?.count||0,pedestrians:people?.count||0,rainPatches:rainSites.length}),
+    helipads:pads.length,helicopters:helis.length,zipLines:links.length,cars:cars?.count||0,pedestrians:people?.count||0,rainStreaks:group.visible?RAIN_STREAKS:0}),
     dispose(){clear();root.remove(group);signMaterials.forEach(m=>{m.map.dispose();m.dispose();});[box,sphere,cylinder,signGeometry,lightPlane,lightTexture,lightMaterial,dark,glow,lines,rainMat].forEach(r=>r.dispose());}};
 }

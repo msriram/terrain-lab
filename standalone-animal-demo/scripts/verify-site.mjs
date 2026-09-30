@@ -250,6 +250,7 @@ try {
   await page.waitForTimeout(1500);
   const traffic=await page.evaluate(()=>animalDemo.getMetrics().landscape);
   assert.equal(traffic.cars,traffic.roadSegments*2);
+  assert.equal(traffic.rainStreaks,900);
   await page.locator("#stage").screenshot({path:"screenshots/cyber-city.png"});
   await page.evaluate(() => animalDemo.layer.setTerrain(()=>.15,.43));
   await page.waitForFunction(() => animalDemo.getMetrics().landscape.towers === 0 &&
