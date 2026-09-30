@@ -214,6 +214,16 @@ test("capture removes prey, terrain updates cannot revive it early, then repopul
     sim.valid(sim.creatures[1], sim.creatures[1].u, sim.creatures[1].v),
   );
 });
+test("a nearby predator catches fleeing prey without manual positioning during pursuit", () => {
+  for (let seed = 1; seed <= 10; seed++) {
+    const sim = new AnimalSimulation({ sampleTerrain: () => 1, roster: ["fox", "rabbit"], seed });
+    Object.assign(sim.creatures[0], { u: 0.4, v: 0.5, protection: 0 });
+    Object.assign(sim.creatures[1], { u: 0.5, v: 0.5, protection: 0 });
+    for (let frame = 0; frame < 300 && sim.captures === 0; frame++) sim.update(0.05);
+    assert.ok(sim.captures > 0, `seed ${seed} should produce a real catch`);
+    assert.equal(sim.events[0].type, "capture");
+  }
+});
 test("drag respects habitats, freezes held animals, and protects released prey", () => {
   const sim = new AnimalSimulation({
     sampleTerrain: (u) => (u < 0.5 ? 1 : 0),
@@ -261,6 +271,8 @@ test("random populations have six prey and two predators, varied species and pos
       sim.creatures.filter((c) => SPECIES[c.species].prey.length === 0).length,
       6,
     );
+    assert.ok(sim.creatures.some((hunter) =>
+      SPECIES[hunter.species].prey.some((prey) => sim.creatures.some((c) => c.species === prey))));
   }
   assert.ok(rosters.size > 2);
   assert.ok(positions.size > 20);

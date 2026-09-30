@@ -217,9 +217,10 @@ export function validateRoster(roster) {
 // positions are randomized separately; presets remain available for experiments.
 export function randomRoster(random = Math.random) {
   const pick = (items) => items[Math.floor(random() * items.length)];
+  const hunter = pick(["fox", "wolf"]);
   return [
-    pick(["fox", "wolf"]),
-    pick(["rabbit", "deer"]),
+    hunter,
+    hunter === "fox" ? "rabbit" : pick(["rabbit", "deer"]),
     pick(["rabbit", "deer"]),
     pick(["rabbit", "deer"]),
     "shark",

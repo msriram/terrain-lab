@@ -57,6 +57,11 @@ export function createAnimationController(model, animations, speciesId, phase) {
         root.rotation.y += Math.sin(t * 25) * 0.07;
       }
       if (mode === "sniff") root.rotation.x = 0.09 * Math.sin(t * 5);
+      if (mode === "feed") {
+        const bite = Math.max(0, Math.sin(t * 12));
+        root.rotation.x = 0.12 + bite * 0.16;
+        root.position.y -= bite * 0.012;
+      }
       if (mode === "breach") {
         const progress = Math.min(1, t / c.actionDuration),
           height = Math.sin(progress * Math.PI) * 0.22;

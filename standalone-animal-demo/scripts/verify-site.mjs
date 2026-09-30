@@ -165,7 +165,7 @@ try {
   );
   await page.locator("#pointer-mode").selectOption("rescue");
   await page.locator("#theme").selectOption("atlantis");
-  assert.equal(await page.locator('#browserModeLink').getAttribute('href'), '../wildlife/?theme=atlantis');
+  assert.equal(await page.locator('#browserModeLink').getAttribute('href'), '../wildlife/?theme=atlantis&population=8');
   await page.waitForFunction(
     () => TerrainWildlife.layer.getStats().pack === "atlantis",
   );
@@ -229,7 +229,7 @@ try {
   await page.goto(base + "wildlife/");
   await page.waitForFunction(() => window.animalDemo);
   assert.match(await page.title(), /Browser Mode/);
-  assert.equal(await page.locator('#live-mode-link').getAttribute('href'), '../sandbox/?theme=earth');
+  assert.match(await page.locator('#live-mode-link').getAttribute('href'), /^\.\.\/sandbox\/\?theme=earth&population=\d+$/);
   await page.locator('#fullscreen').click();
   await page.waitForFunction(() => document.fullscreenElement === document.documentElement);
   await page.evaluate(() => document.exitFullscreen());
@@ -248,7 +248,7 @@ try {
   await page.getByLabel("Landscape & weather").check();
   await page.waitForFunction((time) => animalDemo.getMetrics().landscape.time > time, stoppedTime);
   await page.locator("#landscape").selectOption("tundra");
-  assert.equal(await page.locator('#live-mode-link').getAttribute('href'), '../sandbox/?theme=tundra');
+  assert.match(await page.locator('#live-mode-link').getAttribute('href'), /^\.\.\/sandbox\/\?theme=tundra&population=\d+$/);
   await page.locator("#landscape").selectOption("cyberpunk");
   await page.waitForFunction(() => animalDemo.layer.simulation.creatures.every(c =>
     ["patrolDrone","thiefDrone","policeBoat","thiefBoat"].includes(c.species)));
@@ -295,9 +295,14 @@ try {
   const first = await page.evaluate(() =>
     animalDemo.layer.simulation.creatures.map((c) => [c.species, c.u, c.v]),
   );
-  await page.locator("#animal-count").fill("16");
-  await page.locator("#animal-count").dispatchEvent("change");
+  await page.locator("#animal-count").evaluate(el => {
+    el.value = "16";
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+    el.dispatchEvent(new Event("change", { bubbles: true }));
+  });
   assert.equal(await page.evaluate(() => animalDemo.layer.simulation.creatures.length), 16);
+  assert.equal(await page.locator("#animal-count-value").inputValue(), "16");
+  assert.match(await page.locator('#live-mode-link').getAttribute('href'), /population=16$/);
   assert.equal(await page.locator("#shuffle, #stir").count(), 0);
   await page.locator("#landscape").selectOption("atlantis");
   assert.equal(await page.locator('#preset option[value="rabbit"]').count(), 0);
@@ -313,6 +318,21 @@ try {
     ),
     first,
   );
+  await page.goto(new URL(await page.locator('#live-mode-link').getAttribute('href'), page.url()).href);
+  await page.waitForFunction(() => window.TerrainWildlife?.layer);
+  assert.equal(await page.locator('#animal-count').inputValue(), '16');
+  assert.equal(await page.locator('#animal-count-value').inputValue(), '16');
+  assert.equal(await page.evaluate(() => TerrainWildlife.layer.simulation.creatures.length), 16);
+  await page.locator('#animal-count').evaluate(el => {
+    el.value = '12';
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+  assert.equal(await page.evaluate(() => TerrainWildlife.layer.simulation.creatures.length), 12);
+  await page.goto(new URL(await page.locator('#browserModeLink').getAttribute('href'), page.url()).href);
+  await page.waitForFunction(() => window.animalDemo);
+  assert.equal(await page.locator('#animal-count').inputValue(), '12');
+  assert.equal(await page.evaluate(() => animalDemo.layer.simulation.creatures.length), 12);
   assert.deepEqual(errors, []);
   assert.deepEqual(missing, []);
   assert.deepEqual(external, []);
@@ -323,6 +343,7 @@ try {
       "all internal links return 200",
       "desktop and mobile layouts",
       "mode switching preserves the selected world",
+      "population slider remains in sync across modes",
       "browser fullscreen enters and exits cleanly",
       "integrated wildlife loading",
       "drag rescue in both demos",

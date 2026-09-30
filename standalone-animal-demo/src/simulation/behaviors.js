@@ -66,8 +66,9 @@ export function updateBehavior(sim, c, dt) {
       c.mode = "chase";
       c.target = prey[0].id;
       desired = direction(c, prey[0]);
-      c.speedMultiplier = 1.6;
-      if (c.actionAge > 8) {
+      // A hunter must be able to close the gap on prey fleeing at 2× speed.
+      c.speedMultiplier = 3;
+      if (c.actionAge > 14) {
         c.cooldown = 4 + sim.random() * 3;
         c.mode = "look";
         c.actionAge = 0;

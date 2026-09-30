@@ -1,9 +1,14 @@
 // Terrain Lab adapter: same wildlife module as the public Field Notes demo.
-import { createAnimalLayer, bindAnimalInteraction, randomRoster, SPECIES, LANDSCAPES, WORLD_SIGNATURES, rosterForWorld, FIXTURES, createTerrain } from './assets/wildlife/animal-layer.js?v=cyber-rain-20260929';
+import { createAnimalLayer, bindAnimalInteraction, randomRoster, SPECIES, LANDSCAPES, WORLD_SIGNATURES, rosterForWorld, FIXTURES, createTerrain } from './assets/wildlife/animal-layer.js?v=predator-catches-20260929';
 
 const host=window.TerrainLab,stage=document.querySelector('.stage-card');
 const $=id=>document.getElementById(id);
 if(host&&stage){
+ const populationKey='terrain-lab-population-size';
+ const populationSize=value=>{const number=Number(value);return value===null||value===''||!Number.isFinite(number)?null:Math.max(0,Math.min(64,Math.round(number)));};
+ let savedPopulation=null;try{savedPopulation=localStorage.getItem(populationKey);}catch{}
+ $('animal-count').value=populationSize(new URLSearchParams(location.search).get('population'))??populationSize(savedPopulation)??8;
+ $('animal-count-value').value=$('animal-count').value;
  const canvas=document.createElement('canvas');canvas.className='wildlife-layer';canvas.setAttribute('aria-label','Drag wildlife to safe habitat');stage.append(canvas);
  const projection=host.getState().projection;
  const labels=document.createElement("div");labels.className="behavior-labels";stage.append(labels);
@@ -15,7 +20,7 @@ if(host&&stage){
   function updateDensity(){$('density-value').value=$('landscape-density').value+'%';layer.setOptions({density:Number($('landscape-density').value)/100});}
   $('landscape-density').addEventListener('input',updateDensity);
   function rosterControls(){
-   $('animal-count').value=roster.length;labels.replaceChildren();
+   $('animal-count').value=roster.length;$('animal-count-value').value=roster.length;labels.replaceChildren();
    $('animalRoster').replaceChildren();
    roster.forEach((id,index)=>{
     const row=document.createElement('label');row.className='animal-row';const number=document.createElement('span');number.textContent=String(index+1).padStart(2,'0');
@@ -29,14 +34,27 @@ if(host&&stage){
    for(const id of [...new Set(rosterForWorld(theme,randomRoster()))])select.add(new Option(SPECIES[id].label+' group',id));
    select.add(new Option('Custom roster','custom'));
   }
+  function updateBrowserLinks(){
+   const href=`../wildlife/?theme=${encodeURIComponent(host.getState().theme)}&population=${$('animal-count').value}`;
+   for(const id of ['browserModeLink','browserIntroLink'])$(id).href=href;
+  }
   function setPopulation(kind){
    const count=Math.max(0,Math.min(64,Math.round(Number($('animal-count').value)||0)));
    const base=SPECIES[kind]?[kind]:kind==='custom'&&roster.length?roster:rosterForWorld(host.getState().theme,randomRoster());
    roster=Array.from({length:count},(_,i)=>base[i%base.length]);layer.setRoster(roster);rosterControls();
+   if(!projection)try{localStorage.setItem(populationKey,String(count));}catch{}
+   updateBrowserLinks();
   }
   updatePopulationChoices(host.getState().theme);setPopulation('world');
   $('animalPreset').addEventListener('change',event=>setPopulation(event.target.value));
+  $('animal-count').addEventListener('input',()=>{$('animal-count-value').value=$('animal-count').value;updateBrowserLinks();});
   $('animal-count').addEventListener('change',()=>setPopulation($('animalPreset').value));
+  window.addEventListener('storage',event=>{
+   if(projection||event.key!==populationKey)return;
+   const count=populationSize(event.newValue);
+   if(count===null||count===Number($('animal-count').value))return;
+   $('animal-count').value=count;setPopulation($('animalPreset').value);
+  });
   $('shuffleAnimals').addEventListener('click',()=>setPopulation($('animalPreset').value));
   $('pauseAnimals').addEventListener('click',()=>{paused=!paused;$('pauseAnimals').textContent=paused?'Resume motion':'Pause motion';});
   FIXTURES.forEach((name,i)=>$('fixture').add(new Option(name,i)));

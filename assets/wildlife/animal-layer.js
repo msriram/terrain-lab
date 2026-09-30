@@ -29758,10 +29758,10 @@ function Fa(s) {
     throw new Error("Roster must contain up to 64 known species IDs.");
 }
 function bg(s = Math.random) {
-  const e = (t) => t[Math.floor(s() * t.length)];
+  const e = (n) => n[Math.floor(s() * n.length)], t = e(["fox", "wolf"]);
   return [
-    e(["fox", "wolf"]),
-    e(["rabbit", "deer"]),
+    t,
+    t === "fox" ? "rabbit" : e(["rabbit", "deer"]),
     e(["rabbit", "deer"]),
     e(["rabbit", "deer"]),
     "shark",
@@ -29798,7 +29798,7 @@ function Eg(s, e, t) {
         time: s.time,
         predator: e.species,
         prey: o[0].species
-      }), s.events.length = Math.min(s.events.length, 5)), e.mode = "chase", e.target = o[0].id, i = Al(e, o[0]), e.speedMultiplier = 1.6, e.actionAge > 8 && (e.cooldown = 4 + s.random() * 3, e.mode = "look", e.actionAge = 0, e.actionDuration = 1.4, e.target = null, r = !0);
+      }), s.events.length = Math.min(s.events.length, 5)), e.mode = "chase", e.target = o[0].id, i = Al(e, o[0]), e.speedMultiplier = 3, e.actionAge > 14 && (e.cooldown = 4 + s.random() * 3, e.mode = "look", e.actionAge = 0, e.actionDuration = 1.4, e.target = null, r = !0);
     else {
       e.target = null, (["chase", "flee"].includes(e.mode) || e.actionAge >= e.actionDuration) && (e.mode = "roam", e.actionAge = 0, e.actionDuration = 1 / 0), e.nextAction <= 0 && e.mode === "roam" && bc(s, e);
       const l = ["roam", "dart", "cruise", "dive", "breach"].includes(
@@ -33406,7 +33406,11 @@ function s_(s, e, t, n) {
         const b = Math.sin(Math.min(1, S / l.actionDuration) * Math.PI);
         h.position.y -= b * 0.08, h.scale.setScalar(1 - b * 0.12), h.rotation.x = b * 0.24;
       }
-      if (g === "shake" && (h.rotation.z = Math.sin(S * 30) * 0.12 * Math.sin(Math.min(1, S / l.actionDuration) * Math.PI), h.rotation.y += Math.sin(S * 25) * 0.07), g === "sniff" && (h.rotation.x = 0.09 * Math.sin(S * 5)), g === "breach") {
+      if (g === "shake" && (h.rotation.z = Math.sin(S * 30) * 0.12 * Math.sin(Math.min(1, S / l.actionDuration) * Math.PI), h.rotation.y += Math.sin(S * 25) * 0.07), g === "sniff" && (h.rotation.x = 0.09 * Math.sin(S * 5)), g === "feed") {
+        const b = Math.max(0, Math.sin(S * 12));
+        h.rotation.x = 0.12 + b * 0.16, h.position.y -= b * 0.012;
+      }
+      if (g === "breach") {
         const b = Math.min(1, S / l.actionDuration), v = Math.sin(b * Math.PI) * 0.22;
         h.position.y += v, h.rotation.x = -Math.sin(b * Math.PI * 2) * 0.65, d.scale.setScalar(1 + v * 1.8), d.material.opacity = 0.32 - v * 0.7, u.visible = l.active;
         const T = 0.08 + 0.32 * b;

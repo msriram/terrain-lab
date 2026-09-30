@@ -13,12 +13,25 @@ import {
   FIXTURES,
 } from "./terrain/fixtures.js";
 const $ = (id) => document.getElementById(id);
+const populationKey = "terrain-lab-population-size";
+const populationSize = (value) => {
+  const number = Number(value);
+  return value === null || value === "" || !Number.isFinite(number)
+    ? null : Math.max(0, Math.min(64, Math.round(number)));
+};
+let savedPopulation = null;
+try { savedPopulation = localStorage.getItem(populationKey); } catch {}
+const initialPopulation = populationSize(new URLSearchParams(location.search).get("population"))
+  ?? populationSize(savedPopulation) ?? 8;
+const initialRoster = rosterForWorld("earth", randomRoster());
+$("animal-count").value = initialPopulation;
+$("animal-count-value").value = initialPopulation;
 const state = {
   fixture: 0,
   water: 0.43,
   pack: "earth",
   paused: false,
-  roster: rosterForWorld("earth", randomRoster()),
+  roster: Array.from({length: initialPopulation}, (_, i) => initialRoster[i % initialRoster.length]),
 };
 let terrainModel = createSculptableTerrain(),
   sample = terrainModel.sample;
@@ -62,16 +75,33 @@ try {
     $("preset").add(new Option("Custom roster", "custom"));
     return ids;
   }
+  function updateLiveLink() {
+    $("live-mode-link").href = `../sandbox/?theme=${encodeURIComponent(state.pack)}&population=${$("animal-count").value}`;
+  }
   function applyPopulation() {
     const count = Math.max(0, Math.min(64, Math.round(Number($("animal-count").value) || 0)));
     $("animal-count").value = count;
+    $("animal-count-value").value = count;
+    try { localStorage.setItem(populationKey, String(count)); } catch {}
+    updateLiveLink();
     const choice = $("preset").value;
     const base = choice === "custom" && state.roster.length ? state.roster : choice === "random" || choice === "custom" ? rosterForWorld(state.pack, randomRoster()) : [choice];
     state.roster = Array.from({length: count}, (_, i) => base[i % base.length]);
     layer.setRoster(state.roster);
     rebuildRoster();
   }
+  $("animal-count").addEventListener("input", () => {
+    $("animal-count-value").value = $("animal-count").value;
+    updateLiveLink();
+  });
   $("animal-count").addEventListener("change", applyPopulation);
+  window.addEventListener("storage", (event) => {
+    if (event.key !== populationKey) return;
+    const count = populationSize(event.newValue);
+    if (count === null || count === Number($("animal-count").value)) return;
+    $("animal-count").value = count;
+    applyPopulation();
+  });
   const labels = $("behavior-labels");
   function setLandscape(theme) {
     const was = state.pack;
@@ -84,7 +114,7 @@ try {
     layer.setOptions({ theme, pack: wet ? "atlantis" : "earth" });
     paint();
     $("landscape").value = theme;
-    $("live-mode-link").href = `../sandbox/?theme=${encodeURIComponent(theme)}`;
+    updateLiveLink();
     $("pack-note").textContent =
       LANDSCAPES[theme].caption +
       (WORLD_SIGNATURES[theme]
@@ -95,7 +125,7 @@ try {
     $("landscape").add(new Option(recipe.label, id)),
   );
   themeOptions();
-  $("live-mode-link").href = "../sandbox/?theme=earth";
+  updateLiveLink();
   const requestedWorld = new URLSearchParams(location.search).get("theme");
   if (requestedWorld && LANDSCAPES[requestedWorld])
     setLandscape(requestedWorld);

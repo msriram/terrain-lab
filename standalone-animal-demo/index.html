@@ -28,7 +28,7 @@
         <div class="intro-note">
           <span>01 — 26 LIVING WORLDS</span>
           <p>
-            Forty-eight species.<br />Eight creatures.<br />Endless worlds.
+            Forty-eight species.<br />Choose your population.<br />Endless worlds.
           </p>
         </div>
       </section>
@@ -89,8 +89,9 @@
               <summary>Choose each animal</summary>
               <div id="roster"></div>
             </details>
-            <label for="animal-count">Population size · 0–64</label>
-            <input id="animal-count" type="number" min="0" max="64" value="8">
+            <label class="range-label" for="animal-count">Population size <output id="animal-count-value" for="animal-count">8</output></label>
+            <input id="animal-count" type="range" min="0" max="64" step="1" value="8">
+            <div class="range-ends"><span>0 · EMPTY</span><span>64 · FULL</span></div>
             <button class="capture" id="refresh-population">Refresh population <span>↻</span></button>
             <p id="rescue-message" class="help" role="status">
               Drag to carve a hollow. Right-drag to add sand.
