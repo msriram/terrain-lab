@@ -127,7 +127,7 @@ export const LANDSCAPES = {
     props: ["tower", "crystal", "arch"],
     colors: ["#58b88d", "#b0df95", "#dfc68b"],
     weather: "fireflies",
-    caption: "Garden citadels rise with the hills, joined by luminous skyways and orbiting lights.",
+    caption: "Emerald palaces rise beside yellow brick roads while witches pursue the city’s citizens.",
   },
   candy: {
     label: "Candy land",
