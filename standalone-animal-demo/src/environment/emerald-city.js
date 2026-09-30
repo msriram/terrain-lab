@@ -456,7 +456,7 @@ export function createEmeraldCity(parent) {
     );
     hat.rotation.x = 0.28;
     piece(g, orb, amethyst, 0, 0.15, 0.031, 0.008, 0.009, 0.008);
-    g.scale.setScalar(1.85);
+    g.scale.setScalar(0.58);
     witches.push({
       g,
       road,

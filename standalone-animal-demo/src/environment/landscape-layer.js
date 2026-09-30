@@ -8,6 +8,7 @@ import { reefGrowth } from "./reef-growth.js";
 import { findReefSites } from "./reef-layout.js";
 import { createCyberCity } from "./cyber-city.js";
 import { createWorldArchitecture } from "./world-architecture.js";
+import { createStableCityTerrain } from "./stable-city-terrain.js";
 
 const PROP_SCALE = 0.5;
 const LANDSCAPE_REBUILD_DELAY_SECONDS = 2.4;
@@ -23,6 +24,10 @@ export function createLandscapeLayer(
   const living = createLivingEffects(root);
   const city = createCyberCity(root);
   const architecture = createWorldArchitecture(root);
+  const stableCityTerrain = createStableCityTerrain();
+  // undefined means the hidden city renderers have not been initialized yet.
+  let cityTheme;
+  let cityRebuilds = 0;
   const propsRoot = new T.Group();
   root.add(propsRoot);
   const reefRoot = new T.Group();
@@ -435,8 +440,18 @@ export function createLandscapeLayer(
       while (reefs.length > sites.length) reefRoot.remove(reefs.pop().object);
     }
     rebuildNetwork();
-    city.rebuild(sampleTerrain, waterLevel, layoutSeed, theme === "cyberpunk" ? density : 0);
-    architecture.rebuild(theme, sampleTerrain, waterLevel, layoutSeed, density);
+    if (["cyberpunk", "copper", "emerald"].includes(theme)) {
+      if (stableCityTerrain.update(sampleTerrain, { theme, waterLevel, layoutSeed, density })) {
+        city.rebuild(stableCityTerrain.sample, waterLevel, layoutSeed, theme === "cyberpunk" ? density : 0);
+        architecture.rebuild(theme, stableCityTerrain.sample, waterLevel, layoutSeed, density);
+        cityRebuilds++;
+      }
+      cityTheme = theme;
+    } else if (cityTheme !== null) {
+      city.rebuild(sampleTerrain, waterLevel, layoutSeed, 0);
+      architecture.rebuild(theme, sampleTerrain, waterLevel, layoutSeed, density);
+      cityTheme = null;
+    }
     for (const wave of waves)
       wave.geometry.setAttribute(
         "position",
@@ -801,6 +816,7 @@ export function createLandscapeLayer(
         ...living.stats(),
         ...city.stats(),
         ...architecture.stats(),
+        cityRebuilds,
         theme,
         galaxies: galaxies.length,
         signalLinks: links.length,

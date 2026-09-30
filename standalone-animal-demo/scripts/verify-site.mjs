@@ -177,8 +177,18 @@ try {
   await page.evaluate(() => TerrainLab.setSample(() => .72));
   await page.locator('#theme').selectOption('copper');
   await page.waitForFunction(() => TerrainWildlife.layer.getStats().landscape.copperStations >= 10);
-  await page.locator('#theme').selectOption('emerald');
-  await page.waitForFunction(() => TerrainWildlife.layer.getStats().landscape.emeraldCitadels >= 5);
+  for (const world of ['copper', 'cyberpunk', 'emerald']) {
+    if (world !== 'copper') await page.locator('#theme').selectOption(world);
+    if (world === 'cyberpunk')
+      await page.waitForFunction(() => TerrainWildlife.layer.getStats().landscape.roadSegments > 0);
+    if (world === 'emerald')
+      await page.waitForFunction(() => TerrainWildlife.layer.getStats().landscape.emeraldCitadels >= 5);
+    const builds = await page.evaluate(() => TerrainWildlife.layer.getStats().landscape.cityRebuilds);
+    await page.evaluate(() => TerrainLab.setSample((u, v) => .72 + .012 * Math.sin(u * 371 + v * 257)));
+    await page.waitForTimeout(950);
+    assert.equal(await page.evaluate(() => TerrainWildlife.layer.getStats().landscape.cityRebuilds), builds,
+      `${world} roads should not rebuild from small depth noise`);
+  }
   await page.evaluate(() => TerrainLab.setSample(() => .2));
   await page.waitForFunction(() => TerrainWildlife.layer.getStats().landscape.emeraldCitadels === 0);
   await page.evaluate(() => TerrainLab.setSample((u,v) => Math.hypot(u - .73, v - .48) < .14 ? .8 : .24));
@@ -370,7 +380,7 @@ try {
       "rain, clouds, and flock retain screen direction after 180° projector rotation",
       "projector state and terrain synchronization",
       "random population",
-      "Copper and Emerald City respond to live terrain changes",
+      "city roads resist depth noise and respond to live terrain changes",
     ],
     errors,
     missing,
