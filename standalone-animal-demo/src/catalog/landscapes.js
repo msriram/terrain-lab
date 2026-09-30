@@ -120,14 +120,14 @@ export const LANDSCAPES = {
     props: ["gear", "spire", "pipe"],
     colors: ["#ba8968", "#7bb5a5", "#e0bb82"],
     weather: "steam",
-    caption: "Copper mechanisms and patina-tinted steam.",
+    caption: "Clockwork foundries spin on high ground; brass aqueducts and pumps join the hills.",
   },
   emerald: {
     label: "Emerald city",
     props: ["tower", "crystal", "arch"],
     colors: ["#58b88d", "#b0df95", "#dfc68b"],
     weather: "fireflies",
-    caption: "Jade towers glow beneath a cloud of fireflies.",
+    caption: "Garden citadels rise with the hills, joined by luminous skyways and orbiting lights.",
   },
   candy: {
     label: "Candy land",

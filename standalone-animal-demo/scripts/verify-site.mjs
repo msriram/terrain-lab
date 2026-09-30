@@ -174,6 +174,14 @@ try {
   await page.evaluate(() => TerrainLab.setSample((u,v) =>
     Math.hypot(u - .73, v - .48) < .14 ? .8 : .24));
   await page.waitForFunction(() => TerrainWildlife.layer.getStats().landscape.reefColonies >= 20);
+  await page.evaluate(() => TerrainLab.setSample(() => .72));
+  await page.locator('#theme').selectOption('copper');
+  await page.waitForFunction(() => TerrainWildlife.layer.getStats().landscape.copperStations >= 10);
+  await page.locator('#theme').selectOption('emerald');
+  await page.waitForFunction(() => TerrainWildlife.layer.getStats().landscape.emeraldCitadels >= 5);
+  await page.evaluate(() => TerrainLab.setSample(() => .2));
+  await page.waitForFunction(() => TerrainWildlife.layer.getStats().landscape.emeraldCitadels === 0);
+  await page.evaluate(() => TerrainLab.setSample((u,v) => Math.hypot(u - .73, v - .48) < .14 ? .8 : .24));
   await page.locator("#theme").selectOption("earth");
   // Projector consumes controller state, including edited terrain, instead of spawning its own world.
   const popupPromise = page.waitForEvent("popup");
@@ -324,6 +332,7 @@ try {
       "rotation alignment",
       "projector state and terrain synchronization",
       "random population",
+      "Copper and Emerald City respond to live terrain changes",
     ],
     errors,
     missing,

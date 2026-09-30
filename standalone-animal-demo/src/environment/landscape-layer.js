@@ -7,6 +7,7 @@ import { createLivingEffects } from "./living-effects.js";
 import { reefGrowth } from "./reef-growth.js";
 import { findReefSites } from "./reef-layout.js";
 import { createCyberCity } from "./cyber-city.js";
+import { createWorldArchitecture } from "./world-architecture.js";
 
 const PROP_SCALE = 0.5;
 const LANDSCAPE_REBUILD_DELAY_SECONDS = 2.4;
@@ -21,6 +22,7 @@ export function createLandscapeLayer(
   scene.add(root);
   const living = createLivingEffects(root);
   const city = createCyberCity(root);
+  const architecture = createWorldArchitecture(root);
   const propsRoot = new T.Group();
   root.add(propsRoot);
   const reefRoot = new T.Group();
@@ -374,7 +376,7 @@ export function createLandscapeLayer(
       scatteredStars = 0;
     }
     const candidates = recipe.underwater ? layout.sea : layout.land;
-    const baseCount = theme === "forest" ? 24 : theme === "tundra" ? 30 : theme === "coral" ? 10 : theme === "deepsea" ? 32 : theme === "cyberpunk" ? 0 : recipe.underwater ? 24 : 20;
+    const baseCount = theme === "forest" ? 24 : theme === "tundra" ? 30 : theme === "coral" ? 10 : theme === "deepsea" ? 32 : ["cyberpunk","copper","emerald"].includes(theme) ? 0 : recipe.underwater ? 24 : 20;
     const placements = candidates.slice(0, Math.round(baseCount * density))
       .filter(p => !removedElements.some(q => Math.hypot(p.u-q.u, p.v-q.v) < .05))
       .concat(addedElements);
@@ -433,6 +435,7 @@ export function createLandscapeLayer(
     }
     rebuildNetwork();
     city.rebuild(sampleTerrain, waterLevel, layoutSeed, theme === "cyberpunk" ? density : 0);
+    architecture.rebuild(theme, sampleTerrain, waterLevel, layoutSeed, density);
     for (const wave of waves)
       wave.geometry.setAttribute(
         "position",
@@ -460,11 +463,12 @@ export function createLandscapeLayer(
     // the world rather than popping in almost immediately after a change.
     if (
       dirty &&
-      (time - lastBuild > (["cyberpunk", "coral"].includes(theme) ? .4 : LANDSCAPE_REBUILD_DELAY_SECONDS) || !motion)
+      (time - lastBuild > (["cyberpunk", "coral", "copper", "emerald"].includes(theme) ? .4 : LANDSCAPE_REBUILD_DELAY_SECONDS) || !motion)
     )
       rebuild();
     living.update(dt, theme, recipe, motion);
     city.update(time);
+    architecture.update(time);
     factory.setTime(time);
     reefRoot.visible = theme === "coral";
     if (reefRoot.visible) for (const reef of reefs) {
@@ -610,8 +614,10 @@ export function createLandscapeLayer(
         u = (p.x + time * 0.12 * p.speed) % 1;
         v = p.z + Math.sin(time + p.phase) * 0.015;
       }
-      if (weather === "steam" && props.length) {
-        const source = props[i % props.length].p,
+      if (weather === "steam" && (props.length || architecture.steamSources().length)) {
+        const source = architecture.steamSources().length
+          ? architecture.steamSources()[i % architecture.steamSources().length]
+          : props[i % props.length].p,
           age = (time * 0.15 + p.phase) % 1;
         u = source.u + age * 0.04 + Math.sin(time + p.phase) * age * 0.02;
         v = source.v - age * 0.12;
@@ -788,6 +794,7 @@ export function createLandscapeLayer(
         density,
         ...living.stats(),
         ...city.stats(),
+        ...architecture.stats(),
         theme,
         galaxies: galaxies.length,
         signalLinks: links.length,
@@ -808,6 +815,7 @@ export function createLandscapeLayer(
     dispose() {
       living.dispose();
       city.dispose();
+      architecture.dispose();
       scene.remove(root);
       factory.dispose();
       resources.forEach((r) => r.dispose());
