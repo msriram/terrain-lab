@@ -590,7 +590,7 @@ export function createLandscapeLayer(
           ? 6
           : 5;
     points.visible =
-      weather !== "clouds" && weather !== "rain" && weather !== "fog" && weather !== "neon-rain";
+      theme !== "copper" && weather !== "clouds" && weather !== "rain" && weather !== "fog" && weather !== "neon-rain";
     particleGeometry.setDrawRange(0, weather === "snow" ? 340 : 170);
     const positions = particleGeometry.attributes.position.array;
     particles.forEach((p, i) => {

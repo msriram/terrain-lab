@@ -176,7 +176,7 @@ export const WORLD_FAUNA = {
     world: "copper",
     form: "clockbeetle",
     colors: ["#af7859", "#74b3a5", "#e4bb80"],
-    length: 0.29,
+    length: 0.17,
   },
   jadebird: {
     label: "Jade bird",

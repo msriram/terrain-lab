@@ -97,6 +97,11 @@ export async function createAnimalLayer({
           material.color.lerp(new THREE.Color(roleSpecies.tint),.9);
           material.emissive.set(roleSpecies.tint).multiplyScalar(.42);
         }
+        if (simulation.creatures[i].species === "clockbeetle") {
+          const tone = color.getHSL({});
+          if (tone.l > .07) material.color.set(tone.h > .23 && tone.h < .65 ? 0x596052 : tone.l > .6 ? 0xc5a569 : 0x9c784b);
+          material.emissive.set(0x000000);
+        }
         if (
           pack === "atlantis" &&
           simulation.creatures[i].habitat === "water" &&

@@ -40,34 +40,7 @@ function connect(sites, maxDistance, maxDegree = 2) {
   }
   return links;
 }
-export function planCopperWorks(sample, water, seed = 31, density = 1) {
-  const stations = select(candidates(sample, water, seed, .055), Math.round(14 * density), .32)
-    .map((point, i) => ({...point, radius: .095 + Math.max(0, point.h - water) * .10,
-      height: .08 + Math.max(0, point.h - water) * .32, id: i}));
-  const pipes = connect(stations, .83, 3).map(link=>({...link,bridge:false}));
-  const crossings = [];
-  for(let i=0;i<stations.length;i++)for(let j=i+1;j<stations.length;j++){
-    const d=distance(stations[i],stations[j]);
-    if(d<.65||d>2.1)continue;
-    const mid=sample((stations[i].u+stations[j].u)/2,(stations[i].v+stations[j].v)/2);
-    if(finite(mid)&&mid<water-.02)crossings.push({i,j,d,bridge:true});
-  }
-  crossings.sort((a,b)=>a.d-b.d);
-  for(const link of crossings){
-    if(pipes.filter(p=>p.bridge).length>=2)break;
-    if(pipes.some(p=>p.bridge&&[p.i,p.j].some(id=>id===link.i||id===link.j)))continue;
-    pipes.push(link);
-  }
-  const wheels = [];
-  for (const station of stations) {
-    const nearWater = [[.045,0],[-.045,0],[0,.06],[0,-.06]].some(([du,dv]) => {
-      const h = sample(station.u + du, station.v + dv);
-      return finite(h) && h < water;
-    });
-    if (nearWater) wheels.push(station.id);
-  }
-  return {stations, pipes, wheels};
-}
+export { planCopperCitadel as planCopperWorks } from "./copper-layout.js";
 export function planEmeraldCity(sample, water, seed = 31, density = 1) {
   const citadels = select(candidates(sample, water, seed + 103, .07), Math.round(8 * density), .53)
     .map((point, i) => ({...point, radius: .19 + Math.max(0, point.h - water) * .11,

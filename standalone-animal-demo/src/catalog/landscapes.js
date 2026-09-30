@@ -120,7 +120,7 @@ export const LANDSCAPES = {
     props: ["gear", "spire", "pipe"],
     colors: ["#ba8968", "#7bb5a5", "#e0bb82"],
     weather: "steam",
-    caption: "Clockwork foundries spin on high ground; brass aqueducts and pumps join the hills.",
+    caption: "A lost dwarven city: bronze domes, broken gates, steam forges, and patrolling automatons.",
   },
   emerald: {
     label: "Emerald city",
@@ -346,14 +346,8 @@ export const WORLD_ROSTERS = {
     "starseed",
   ],
   copper: [
-    "voidray",
-    "clockbeetle",
-    "clockbeetle",
-    "clockbeetle",
-    "clockbeetle",
-    "clockbeetle",
-    "drone",
-    "drone",
+    "clockbeetle", "clockbeetle", "clockbeetle", "clockbeetle",
+    "clockbeetle", "clockbeetle", "clockbeetle", "clockbeetle",
   ],
   emerald: [
     "voidray",
