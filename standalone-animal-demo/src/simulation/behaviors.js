@@ -18,6 +18,7 @@ export function chooseAction(sim, c) {
 }
 export function updateBehavior(sim, c, dt) {
   const species = SPECIES[c.species];
+  const movement = species.movement || {};
   c.actionAge += dt;
   c.nextAction -= dt;
   c.cooldown = Math.max(0, c.cooldown - dt);
@@ -36,11 +37,11 @@ export function updateBehavior(sim, c, dt) {
     c.mode = "flee";
     c.target = threats[0].id;
     desired = direction(threats[0], c);
-    c.speedMultiplier = 2;
+    c.speedMultiplier = movement.fleeMultiplier ?? 2;
     c.nextAction = 2;
     // Threats interrupt ALL idle/gesture states; the escape response is immediate.
   } else if (c.mode === "breach" && c.actionAge < c.actionDuration) {
-    c.speedMultiplier = 1.2;
+    c.speedMultiplier = movement.breachMultiplier ?? 1.2;
   } else {
     const prey = sim.creatures
       .filter(
@@ -67,7 +68,7 @@ export function updateBehavior(sim, c, dt) {
       c.target = prey[0].id;
       desired = direction(c, prey[0]);
       // A hunter must be able to close the gap on prey fleeing at 2× speed.
-      c.speedMultiplier = 3;
+      c.speedMultiplier = movement.chaseMultiplier ?? 3;
       if (c.actionAge > 14) {
         c.cooldown = 4 + sim.random() * 3;
         c.mode = "look";
@@ -95,10 +96,10 @@ export function updateBehavior(sim, c, dt) {
           ? 0
           : moving
             ? c.mode === "dart"
-              ? 2
+              ? (movement.dartMultiplier ?? 2)
               : 1
             : c.habitat === "water"
-              ? 0.65
+              ? (movement.waterIdleMultiplier ?? 0.65)
               : 0;
     }
   }
@@ -106,6 +107,9 @@ export function updateBehavior(sim, c, dt) {
   // Steer smoothly towards a target, then let the habitat controller constrain motion.
   desired =
     c.heading +
-    Math.max(-dt * 3.2, Math.min(dt * 3.2, wrap(desired - c.heading)));
+    Math.max(
+      -dt * (movement.turnRate ?? 3.2),
+      Math.min(dt * (movement.turnRate ?? 3.2), wrap(desired - c.heading)),
+    );
   return desired;
 }

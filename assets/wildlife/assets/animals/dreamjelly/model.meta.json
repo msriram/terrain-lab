@@ -1,0 +1,17 @@
+{
+  "name": "Dream jelly",
+  "habitat": "water",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 54464,
+  "sha256": "6dec13c3982ee76a73c7d24646508a5c9a254491ed37f1a8d3e9c421ba69fac4",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

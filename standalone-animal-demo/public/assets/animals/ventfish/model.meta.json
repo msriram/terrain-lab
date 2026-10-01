@@ -1,0 +1,17 @@
+{
+  "name": "Vent fish",
+  "habitat": "water",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 142844,
+  "sha256": "9c35fe88614a35339de60190ec5647ad9e16bd524bff63dd142711a70666caee",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

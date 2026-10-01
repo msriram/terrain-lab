@@ -1,0 +1,17 @@
+{
+  "name": "Neon ray",
+  "habitat": "water",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 54452,
+  "sha256": "bf6bb39b17b5840413d88a2f856ca7f8d3cd5f567543c82826f05b237bcc655e",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

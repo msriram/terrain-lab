@@ -1,0 +1,17 @@
+{
+  "name": "Heat fin",
+  "habitat": "water",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 59808,
+  "sha256": "d3eeb16924cbbb77809cc75262cf2a04fa7473311d1df03983c4638932922eb7",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

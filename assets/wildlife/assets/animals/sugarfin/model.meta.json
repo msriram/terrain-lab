@@ -1,0 +1,17 @@
+{
+  "name": "Sugar fin",
+  "habitat": "water",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 59832,
+  "sha256": "643492fc6c56c726526ec5c2eb5ce2bcd06ef451c9d6a0a43b0bc6734de05698",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

@@ -7,6 +7,7 @@ export function createAnimationController(model, animations, speciesId, phase) {
       animations.map((clip) => [clip.name, mixer.clipAction(clip)]),
     );
   const species = SPECIES[speciesId];
+  const movement = species.movement || {};
   let current = null;
   return {
     update(c, dt, root, shadow, ripple, time) {
@@ -36,7 +37,11 @@ export function createAnimationController(model, animations, speciesId, phase) {
       }
       if (current)
         current.setEffectiveTimeScale(
-          mode === "flee" ? 1.7 : mode === "chase" ? 1.25 : 1,
+          mode === "flee"
+            ? (movement.fleeClipSpeed ?? 1.7)
+            : mode === "chase"
+              ? (movement.chaseClipSpeed ?? 1.25)
+              : 1,
         );
       mixer.update(c.held ? 0 : dt);
       root.scale.setScalar(1);
@@ -45,7 +50,7 @@ export function createAnimationController(model, animations, speciesId, phase) {
       const t = c.actionAge;
       if (mode === "dive" && c.surface === "water") {
         const depth = Math.sin(Math.min(1, t / c.actionDuration) * Math.PI);
-        root.position.y -= depth * 0.08;
+        root.position.y -= depth * (movement.diveDepth ?? 0.08);
         root.scale.setScalar(1 - depth * 0.12);
         root.rotation.x = depth * 0.24;
       }
@@ -64,7 +69,8 @@ export function createAnimationController(model, animations, speciesId, phase) {
       }
       if (mode === "breach") {
         const progress = Math.min(1, t / c.actionDuration),
-          height = Math.sin(progress * Math.PI) * 0.22;
+          height =
+            Math.sin(progress * Math.PI) * (movement.breachHeight ?? 0.22);
         root.position.y += height;
         root.rotation.x = -Math.sin(progress * Math.PI * 2) * 0.65;
         shadow.scale.setScalar(1 + height * 1.8);
@@ -82,12 +88,22 @@ export function createAnimationController(model, animations, speciesId, phase) {
         ripple.scale.set(r, 1, r);
         ripple.material.opacity = 0.24;
         if (c.surface === "water")
-          root.position.y += 0.008 * Math.sin(time * 3 + phase);
+          root.position.y +=
+            (movement.bobAmplitude ?? 0.008) *
+            Math.sin(time * (movement.bobFrequency ?? 3) + phase);
       }
       if (species.locomotion === "bounce" && !c.held && c.active) {
-        const rhythm = speciesId === "neonbehemoth" ? 4.8 : 7.2;
-        const lift = Math.pow(Math.max(0, Math.sin(time * rhythm + phase * 3)), 1.4);
-        const height = lift * (speciesId === "neonbehemoth" ? 0.19 : 0.14);
+        const rhythm =
+          movement.bounceFrequency ??
+          (speciesId === "neonbehemoth" ? 4.8 : 7.2);
+        const lift = Math.pow(
+          Math.max(0, Math.sin(time * rhythm + phase * 3)),
+          1.4,
+        );
+        const height =
+          lift *
+          (movement.bounceHeight ??
+            (speciesId === "neonbehemoth" ? 0.19 : 0.14));
         root.position.y += height;
         root.rotation.x = -lift * 0.11;
         shadow.scale.setScalar(1 + lift * 0.55);

@@ -313,6 +313,29 @@ export function makeWorldFauna(id) {
         e("Beard", accent, [0, 0.01, 0.59], [0.09, 0.13, 0.12]);
     }
     e("TailTuft", accent, [0, 0.08, -0.35], [0.1, 0.12, 0.2], 1, tail);
+  } else if (form === "fish") {
+    e("FishBody", base, [0, 0.07, 0], [0.22, 0.15, 0.54], 2);
+    e("Belly", accent, [0, -0.005, 0.13], [0.17, 0.045, 0.36]);
+    e("Muzzle", base, [0, 0.07, 0.48], [0.12, 0.09, 0.16]);
+    eyes(0.41, 0.16, 0.16);
+    for (const sign of [-1, 1]) {
+      const wing = sign < 0 ? left : right;
+      fin(wing, `PectoralFin${sign}`, accent, [
+        [0, 0.02, 0.17],
+        [sign * 0.38, 0.02, -0.12],
+        [0, 0.02, -0.17],
+      ]);
+      fin(tail, `TailFluke${sign}`, light, [
+        [0, 0, -0.12],
+        [sign * 0.28, 0, -0.48],
+        [0, 0, -0.37],
+      ]);
+    }
+    fin(body, "DorsalFin", accent, [
+      [0, 0.18, 0.14],
+      [0, 0.4, -0.2],
+      [0, 0.18, -0.33],
+    ]);
   } else if (form === "manta") {
     e("Disc", base, [0, 0.04, 0], [0.28, 0.1, 0.43], 2);
     eyes(0.27, 0.15, 0.13);

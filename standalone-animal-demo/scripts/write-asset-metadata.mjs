@@ -2,7 +2,11 @@ import { WORLD_FAUNA } from "../src/catalog/world-fauna.js";
 import { readFile, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { SPECIES } from "../src/catalog/species.js";
+const documentedModels = new Set();
 for (const [id, species] of Object.entries(SPECIES)) {
+  // Several visual roles share the drone GLB; preserve the source asset's metadata.
+  if (documentedModels.has(species.model)) continue;
+  documentedModels.add(species.model);
   const url = new URL(
     "../public/assets/animals/" + species.model,
     import.meta.url,

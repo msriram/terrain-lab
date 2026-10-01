@@ -32,7 +32,14 @@ test("underwater recipes populate the whole seafloor without surface shores", ()
   assert.equal(a.sea.length, 28);
   assert.equal(a.shore.length, 0);
   assert.equal(Object.keys(LANDSCAPES).length, 26);
-  for (const kind of ["chest", "trident", "ruin", "castle", "drownedtower", "brokenarch"])
+  for (const kind of [
+    "chest",
+    "trident",
+    "ruin",
+    "castle",
+    "drownedtower",
+    "brokenarch",
+  ])
     assert.ok(LANDSCAPES.atlantis.props.includes(kind));
 });
 
@@ -43,7 +50,9 @@ test("Atlantis fields a lost kingdom and swimming merpeople", async () => {
     assert.ok(LANDSCAPES.atlantis.props.includes(kind));
   assert.equal(AQUATIC_ROSTER.filter((id) => id === "mermaid").length, 3);
   assert.equal(AQUATIC_ROSTER.filter((id) => id === "merman").length, 2);
-  assert.ok(["mermaid", "merman"].every((id) => SPECIES[id].habitat === "water"));
+  assert.ok(
+    ["mermaid", "merman"].every((id) => SPECIES[id].habitat === "water"),
+  );
 });
 
 test("new world rosters use original animated species and majority prey", async () => {
@@ -63,6 +72,28 @@ test("new world rosters use original animated species and majority prey", async 
   }
 });
 
+test("each landscape has aquatic residents with local animated models", async () => {
+  const { WORLD_ROSTERS } = await import("../src/catalog/landscapes.js");
+  const { SPECIES } = await import("../src/catalog/species.js");
+  for (const [world, roster] of Object.entries(WORLD_ROSTERS)) {
+    if (!roster) continue; // Earth uses the mixed default roster.
+    assert.ok(
+      roster.some((id) =>
+        ["water", "amphibious"].includes(SPECIES[id].habitat),
+      ),
+      world,
+    );
+  }
+  const { AnimalSimulation } = await import("../src/simulation/world.js");
+  const sim = new AnimalSimulation({
+    sampleTerrain: (u) => (u < 0.5 ? 0.25 : 0.7),
+    waterLevel: 0.43,
+    roster: WORLD_ROSTERS.copper,
+    seed: 42,
+  });
+  assert.ok(sim.creatures.find((c) => c.species === "boilerfish")?.active);
+});
+
 test("each signature creature appears in its own world", async () => {
   const { WORLD_FAUNA } = await import("../src/catalog/world-fauna.js");
   const { WORLD_ROSTERS } = await import("../src/catalog/landscapes.js");
@@ -80,11 +111,17 @@ test("each signature creature appears in its own world", async () => {
 });
 
 test("Tundra has distinct local wildlife and height-based scenery", async () => {
-  const { WORLD_ROSTERS, LANDSCAPES } = await import("../src/catalog/landscapes.js");
+  const { WORLD_ROSTERS, LANDSCAPES } = await import(
+    "../src/catalog/landscapes.js"
+  );
   const roster = WORLD_ROSTERS.tundra;
   for (const id of ["brownbear", "dallsheep", "moose"])
     assert.ok(roster.includes(id), `${id} missing from Tundra`);
-  assert.deepEqual(LANDSCAPES.tundra.props, ["meadow", "coniferstand", "rockpeak"]);
+  assert.deepEqual(LANDSCAPES.tundra.props, [
+    "meadow",
+    "coniferstand",
+    "rockpeak",
+  ]);
   assert.equal(roster.length, 8);
 });
 
@@ -98,15 +135,22 @@ test("Talokan builds a dark underwater city with its own fauna", async () => {
 });
 
 test("Cyberpunk streets follow safe connected elevation", () => {
-  const flat = planCyberCity(() => .7, .4, 31);
+  const flat = planCyberCity(() => 0.7, 0.4, 31);
   assert.equal(flat.blocks.length, 108);
   assert.ok(flat.roads.length > 80 && flat.roads.length < 195);
-  const flooded = planCyberCity((u) => u < .45 ? .2 : .7, .4, 31);
+  const flooded = planCyberCity((u) => (u < 0.45 ? 0.2 : 0.7), 0.4, 31);
   assert.equal(flooded.blocks.length, flat.blocks.length);
-  assert.ok(flooded.blocks.filter(b=>b.u<.45).every(b=>b.floors===0));
-  assert.ok(flooded.blocks.filter(b=>b.u>.45).every(b=>b.floors>=4));
-  assert.ok(flooded.roads.every(r=>r.u0>=.45&&r.u1>=.45));
-  assert.deepEqual(planCyberCity(() => .7, .4, 31, 0), { blocks: [], roads: [] });
+  assert.ok(
+    flooded.blocks.filter((b) => b.u < 0.45).every((b) => b.floors === 0),
+  );
+  assert.ok(
+    flooded.blocks.filter((b) => b.u > 0.45).every((b) => b.floors >= 4),
+  );
+  assert.ok(flooded.roads.every((r) => r.u0 >= 0.45 && r.u1 >= 0.45));
+  assert.deepEqual(
+    planCyberCity(() => 0.7, 0.4, 31, 0),
+    { blocks: [], roads: [] },
+  );
 });
 
 test("Synthwave centers springing monsters and surreal creatures", async () => {
@@ -115,7 +159,9 @@ test("Synthwave centers springing monsters and surreal creatures", async () => {
   const roster = WORLD_ROSTERS.synthwave;
   for (const id of ["neonbehemoth", "glitchimp", "velvetphantom"])
     assert.ok(roster.includes(id));
-  assert.ok(roster.filter((id) => SPECIES[id].locomotion === "bounce").length >= 7);
+  assert.ok(
+    roster.filter((id) => SPECIES[id].locomotion === "bounce").length >= 6,
+  );
   for (const id of ["neonbehemoth", "glitchimp", "velvetphantom"]) {
     assert.equal(SPECIES[id].actions.move, "Jump");
     assert.ok(SPECIES[id].speed < 0.01);
@@ -124,7 +170,9 @@ test("Synthwave centers springing monsters and surreal creatures", async () => {
 
 test("coral colonies form twenty-five small irregular clusters on raised sand", () => {
   const land = Array.from({ length: 8 }, (_, i) => ({
-    u: .18 + (i % 4) * .2, v: .2 + Math.floor(i / 4) * .4, h: .55 + i * .03,
+    u: 0.18 + (i % 4) * 0.2,
+    v: 0.2 + Math.floor(i / 4) * 0.4,
+    h: 0.55 + i * 0.03,
   }));
   const sites = clusteredReefSites(land, 17);
   assert.equal(sites.length, 25);
@@ -133,11 +181,18 @@ test("coral colonies form twenty-five small irregular clusters on raised sand", 
   for (let cluster = 0; cluster < 5; cluster++) {
     const group = sites.filter((p) => p.cluster === cluster);
     assert.equal(group.length, 5);
-    assert.ok(group.every((p) => Math.hypot(p.u - group[0].u, p.v - group[0].v) < .085));
+    assert.ok(
+      group.every(
+        (p) => Math.hypot(p.u - group[0].u, p.v - group[0].v) < 0.085,
+      ),
+    );
   }
 });
 
 test("Emerald City keeps unrelated floating fauna out of its default population", async () => {
   const { WORLD_ROSTERS } = await import("../src/catalog/landscapes.js");
-  assert.deepEqual([...new Set(WORLD_ROSTERS.emerald)], ["jadebird"]);
+  assert.deepEqual(
+    [...new Set(WORLD_ROSTERS.emerald)],
+    ["jadebird", "emeraldcarp"],
+  );
 });

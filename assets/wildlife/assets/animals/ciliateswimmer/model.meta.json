@@ -1,0 +1,17 @@
+{
+  "name": "Ciliate swimmer",
+  "habitat": "water",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 59880,
+  "sha256": "858307a4bf9348d3b08ba3bd09feaa03c224ba6fd936fa4af73e6b493de02273",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

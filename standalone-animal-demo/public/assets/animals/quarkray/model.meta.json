@@ -1,0 +1,17 @@
+{
+  "name": "Quark ray",
+  "habitat": "water",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 54456,
+  "sha256": "c61a65fc29faf935087796db1a557a7881e667738dbfbd3280f1f82d0ed72286",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

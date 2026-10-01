@@ -1,5 +1,5 @@
 // Terrain Lab adapter: same wildlife module as the public Field Notes demo.
-import { createAnimalLayer, bindAnimalInteraction, randomRoster, SPECIES, LANDSCAPES, WORLD_SIGNATURES, rosterForWorld, FIXTURES, createTerrain } from './assets/wildlife/animal-layer.js?v=city-delay-20261001';
+import { createAnimalLayer, bindAnimalInteraction, randomRoster, SPECIES, LANDSCAPES, WORLD_SIGNATURES, rosterForWorld, FIXTURES, createTerrain } from './assets/wildlife/animal-layer.js?v=water-fauna-20261001';
 
 const host=window.TerrainLab,stage=document.querySelector('.stage-card');
 const $=id=>document.getElementById(id);

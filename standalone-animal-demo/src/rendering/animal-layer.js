@@ -53,7 +53,10 @@ export async function createAnimalLayer({
   try {
     await Promise.all(
       Object.entries(SPECIES).map(async ([id, s]) => {
-        models[id] = s.visual === "speedboat" ? createSpeedboat(s.role === "police") : await loader.loadAsync(assetBase + s.model);
+        models[id] =
+          s.visual === "speedboat"
+            ? createSpeedboat(s.role === "police")
+            : await loader.loadAsync(assetBase + s.model);
       }),
     );
   } catch (error) {
@@ -92,14 +95,25 @@ export async function createAnimalLayer({
         material.color.copy(color);
         material.emissive.copy(emissive);
         material.emissiveIntensity = 1;
-        const roleSpecies=SPECIES[simulation.creatures[i].species];
-        if(roleSpecies.tint && roleSpecies.visual!=="speedboat" && color.getHSL({}).l>.07){
-          material.color.lerp(new THREE.Color(roleSpecies.tint),.9);
-          material.emissive.set(roleSpecies.tint).multiplyScalar(.42);
+        const roleSpecies = SPECIES[simulation.creatures[i].species];
+        if (
+          roleSpecies.tint &&
+          roleSpecies.visual !== "speedboat" &&
+          color.getHSL({}).l > 0.07
+        ) {
+          material.color.lerp(new THREE.Color(roleSpecies.tint), 0.9);
+          material.emissive.set(roleSpecies.tint).multiplyScalar(0.42);
         }
         if (simulation.creatures[i].species === "clockbeetle") {
           const tone = color.getHSL({});
-          if (tone.l > .07) material.color.set(tone.h > .23 && tone.h < .65 ? 0x596052 : tone.l > .6 ? 0xc5a569 : 0x9c784b);
+          if (tone.l > 0.07)
+            material.color.set(
+              tone.h > 0.23 && tone.h < 0.65
+                ? 0x596052
+                : tone.l > 0.6
+                  ? 0xc5a569
+                  : 0x9c784b,
+            );
           material.emissive.set(0x000000);
         }
         if (
@@ -159,25 +173,41 @@ export async function createAnimalLayer({
           });
         }
       });
-      const roleLightMeshes=[];
-      const sirenRed=[],sirenBlue=[];
-      for(const [name,collection] of [["police-red",sirenRed],["police-blue",sirenBlue]]){
-        const light=model.getObjectByName(name);
-        if(light)collection.push(light);
+      const roleLightMeshes = [];
+      const sirenRed = [],
+        sirenBlue = [];
+      for (const [name, collection] of [
+        ["police-red", sirenRed],
+        ["police-blue", sirenBlue],
+      ]) {
+        const light = model.getObjectByName(name);
+        if (light) collection.push(light);
       }
-      if(species.role){
-        const addLight=(name,hex,x,z,radius=.009)=>{
-          const mesh=new THREE.Mesh(
-            new THREE.SphereGeometry(radius,10,8),
-            new THREE.MeshBasicMaterial({color:hex,transparent:true,opacity:1}),
+      if (species.role) {
+        const addLight = (name, hex, x, z, radius = 0.009) => {
+          const mesh = new THREE.Mesh(
+            new THREE.SphereGeometry(radius, 10, 8),
+            new THREE.MeshBasicMaterial({
+              color: hex,
+              transparent: true,
+              opacity: 1,
+            }),
           );
-          mesh.name=name;mesh.position.set(x,.05,z);
-          root.add(mesh);roleLightMeshes.push(mesh);return mesh;
+          mesh.name = name;
+          mesh.position.set(x, 0.05, z);
+          root.add(mesh);
+          roleLightMeshes.push(mesh);
+          return mesh;
         };
-        if(species.role==="police"){
-          sirenRed.push(addLight("police-red-glow",0xff304d,-.021,-.012,.012));
-          sirenBlue.push(addLight("police-blue-glow",0x2a9dff,.021,-.012,.012));
-        }else if(species.visual!=="speedboat")addLight("thief-amber",0xffbb46,0,-.022);
+        if (species.role === "police") {
+          sirenRed.push(
+            addLight("police-red-glow", 0xff304d, -0.021, -0.012, 0.012),
+          );
+          sirenBlue.push(
+            addLight("police-blue-glow", 0x2a9dff, 0.021, -0.012, 0.012),
+          );
+        } else if (species.visual !== "speedboat")
+          addLight("thief-amber", 0xffbb46, 0, -0.022);
       }
       const { shadow, ripple } = effects.create(species.length);
       scene.add(shadow, ripple);
@@ -210,7 +240,9 @@ export async function createAnimalLayer({
       lastSample = sample;
       requestedWater = level;
       const underwater = !!LANDSCAPES[landscapeTheme]?.underwater;
-      const allLand = !!LANDSCAPES[landscapeTheme]?.allLand;
+      const allLand =
+        !!LANDSCAPES[landscapeTheme]?.allLand &&
+        !simulation.creatures.some((c) => c.habitat === "water");
       const terrain = underwater
         ? (u, v) => {
             const h = sample(u, v);
@@ -265,11 +297,15 @@ export async function createAnimalLayer({
     randomizeLandscape() {
       landscape.randomize();
     },
-    editLandscape(u, v, remove) { landscape.edit(u, v, remove); },
+    editLandscape(u, v, remove) {
+      landscape.edit(u, v, remove);
+    },
     setOptions(options = {}) {
       if (options.scenery !== undefined) scenery = options.scenery;
-      if (options.density !== undefined) landscape.setOptions({density: options.density});
-      if (options.projectionFlipped !== undefined) landscape.setOptions({projectionFlipped: options.projectionFlipped});
+      if (options.density !== undefined)
+        landscape.setOptions({ density: options.density });
+      if (options.projectionFlipped !== undefined)
+        landscape.setOptions({ projectionFlipped: options.projectionFlipped });
       if (options.atmosphere !== undefined) atmosphere = options.atmosphere;
       const nextTheme =
         options.theme ??
@@ -298,12 +334,16 @@ export async function createAnimalLayer({
       if (step && !remote) simulation.update(step);
       simulation.creatures.forEach((c, i) => {
         const a = animals[i];
-        if(a.sirenRed.length&&a.sirenBlue.length){
-          const redOn=Math.floor(simulation.time*6)%2===0;
-          for(const [lights,on] of [[a.sirenRed,redOn],[a.sirenBlue,!redOn]]){
-            for(const mesh of lights){
-              if(mesh.material.isMeshBasicMaterial)mesh.material.opacity=on?1:.45;
-              else mesh.material.emissiveIntensity=on?3:.7;
+        if (a.sirenRed.length && a.sirenBlue.length) {
+          const redOn = Math.floor(simulation.time * 6) % 2 === 0;
+          for (const [lights, on] of [
+            [a.sirenRed, redOn],
+            [a.sirenBlue, !redOn],
+          ]) {
+            for (const mesh of lights) {
+              if (mesh.material.isMeshBasicMaterial)
+                mesh.material.opacity = on ? 1 : 0.45;
+              else mesh.material.emissiveIntensity = on ? 3 : 0.7;
             }
           }
         }
@@ -330,7 +370,11 @@ export async function createAnimalLayer({
           ) * blend;
         a.root.position.set(
           (u - 0.5) * 4,
-          SPECIES[c.species].airborne ? 1.05 : c.surface === "water" ? 0.012 : 0,
+          SPECIES[c.species].airborne
+            ? 1.05
+            : c.surface === "water"
+              ? 0.012
+              : 0,
           (v - 0.5) * 3,
         );
         a.root.rotation.y = a.displayHeading;

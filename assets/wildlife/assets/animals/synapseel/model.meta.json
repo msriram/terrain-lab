@@ -1,0 +1,17 @@
+{
+  "name": "Synapse eel",
+  "habitat": "water",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 106408,
+  "sha256": "68ee9229f2bc40138a890905b4571723a46b492c0c6f3ec494d7bd09f54f7671",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

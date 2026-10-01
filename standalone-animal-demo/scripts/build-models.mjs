@@ -23,7 +23,7 @@ for (const species of [
   "microbe",
   "phage",
   "drone",
-  ...Object.keys(WORLD_FAUNA),
+  ...Object.keys(WORLD_FAUNA).filter((id) => !WORLD_FAUNA[id].model),
 ]) {
   const { root, clips } =
     species === "shark"

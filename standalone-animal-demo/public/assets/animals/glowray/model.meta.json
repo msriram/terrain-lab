@@ -1,0 +1,17 @@
+{
+  "name": "Glow ray",
+  "habitat": "water",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 54464,
+  "sha256": "f0b3b201ab59b13a47e58739ce3efa70c9e457f1cda9af3355cf4871f749ea6b",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

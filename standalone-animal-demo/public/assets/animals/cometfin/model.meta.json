@@ -1,0 +1,17 @@
+{
+  "name": "Comet fin",
+  "habitat": "water",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 54452,
+  "sha256": "8b06b1465b7e2813c5768ef57e907ae6d936df2eb83559679f6df8c3e7679f6a",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}

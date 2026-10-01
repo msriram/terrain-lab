@@ -18,11 +18,23 @@ export const LANDSCAPES = {
   },
   atlantis: {
     label: "Atlantis",
-    props: ["castle", "drownedtower", "brokenarch", "ruin", "seaweed", "seaweed", "seaweed", "chest", "trident", "coral"],
+    props: [
+      "castle",
+      "drownedtower",
+      "brokenarch",
+      "ruin",
+      "seaweed",
+      "seaweed",
+      "seaweed",
+      "chest",
+      "trident",
+      "coral",
+    ],
     colors: ["#345b64", "#456f73", "#577972"],
     weather: "bubbles",
     underwater: true,
-    caption: "Broken castles and moss-covered towers fade into blue water; merpeople patrol the lost kingdom.",
+    caption:
+      "Broken castles and moss-covered towers fade into blue water; merpeople patrol the lost kingdom.",
   },
   alien: {
     label: "Alien world",
@@ -44,7 +56,8 @@ export const LANDSCAPES = {
     colors: ["#a0dceb", "#edf9ef", "#73aeca"],
     weather: "snow",
     waves: true,
-    caption: "Narwhals beneath the ice; bears, penguins, and walruses along the floes.",
+    caption:
+      "Narwhals beneath the ice; bears, penguins, and walruses along the floes.",
   },
   volcanic: {
     label: "Volcanic",
@@ -68,7 +81,8 @@ export const LANDSCAPES = {
     colors: ["#123d30", "#1f533c", "#345b38"],
     weather: "rain",
     waves: true,
-    caption: "Dark, layered rainforest canopy beneath rainclouds and circling black birds.",
+    caption:
+      "Dark, layered rainforest canopy beneath rainclouds and circling black birds.",
   },
   coral: {
     label: "Coral reef",
@@ -76,7 +90,8 @@ export const LANDSCAPES = {
     colors: ["#ee947d", "#6bcbb2", "#dac188"],
     weather: "bubbles",
     underwater: true,
-    caption: "Small translucent coral colonies gather in living clusters wherever sand rises.",
+    caption:
+      "Small translucent coral colonies gather in living clusters wherever sand rises.",
   },
   tundra: {
     label: "Tundra",
@@ -84,14 +99,16 @@ export const LANDSCAPES = {
     colors: ["#6d7541", "#a3a05a", "#d8d7c9"],
     weather: "snow",
     waves: true,
-    caption: "Gold-green tundra gives way to conifer stands, bare rock, and snow above the treeline.",
+    caption:
+      "Gold-green tundra gives way to conifer stands, bare rock, and snow above the treeline.",
   },
   synthwave: {
     label: "Synthwave",
     props: ["pyramid", "crystal", "arch"],
     colors: ["#e67dca", "#75ceda", "#9975d9"],
     weather: "neon",
-    caption: "Neon beasts and strange spirits spring beneath a synthetic sunset.",
+    caption:
+      "Neon beasts and strange spirits spring beneath a synthetic sunset.",
   },
   thermal: {
     label: "Thermal",
@@ -120,14 +137,16 @@ export const LANDSCAPES = {
     props: ["gear", "spire", "pipe"],
     colors: ["#ba8968", "#7bb5a5", "#e0bb82"],
     weather: "steam",
-    caption: "A lost dwarven city: bronze domes, broken gates, steam forges, and patrolling automatons.",
+    caption:
+      "A lost dwarven city: bronze domes, broken gates, steam forges, and patrolling automatons.",
   },
   emerald: {
     label: "Emerald city",
     props: ["tower", "crystal", "arch"],
     colors: ["#58b88d", "#b0df95", "#dfc68b"],
     weather: "fireflies",
-    caption: "Emerald palaces rise beside yellow brick roads while witches pursue the city’s citizens.",
+    caption:
+      "Emerald palaces rise beside yellow brick roads while witches pursue the city’s citizens.",
   },
   candy: {
     label: "Candy land",
@@ -139,7 +158,16 @@ export const LANDSCAPES = {
   },
   deepsea: {
     label: "Talokan",
-    props: ["talokan-temple", "talokan-district", "talokan-district", "talokan-district", "talokan-beacon", "talokan-beacon", "seaweed", "vent"],
+    props: [
+      "talokan-temple",
+      "talokan-district",
+      "talokan-district",
+      "talokan-district",
+      "talokan-beacon",
+      "talokan-beacon",
+      "seaweed",
+      "vent",
+    ],
     colors: ["#142b30", "#28505a", "#4b7775"],
     weather: "marine-snow",
     underwater: true,
@@ -184,7 +212,8 @@ export const LANDSCAPES = {
     weather: "neon-rain",
     clouds: false,
     allLand: true,
-    caption: "Raise neon districts, carve waterways. Curving roads and bridges adapt to your city.",
+    caption:
+      "Raise neon districts, carve waterways. Curving roads and bridges adapt to your city.",
   },
   surreal: {
     label: "Dreamscape",
@@ -222,7 +251,7 @@ export const WORLD_ROSTERS = {
     "dusthopper",
     "dusthopper",
     "starseed",
-    "starseed",
+    "dunefin",
   ],
   atlantis: AQUATIC_ROSTER,
   alien: [
@@ -233,7 +262,7 @@ export const WORLD_ROSTERS = {
     "glowbug",
     "glowbug",
     "starseed",
-    "starseed",
+    "glowray",
   ],
   moon: [
     "voidray",
@@ -243,7 +272,7 @@ export const WORLD_ROSTERS = {
     "lunamoth",
     "lunamoth",
     "drone",
-    "drone",
+    "selenafish",
   ],
   ice: [
     "polarbear",
@@ -273,7 +302,7 @@ export const WORLD_ROSTERS = {
     "dusthopper",
     "dusthopper",
     "dusthopper",
-    "dusthopper",
+    "oasisbarb",
   ],
   forest: [
     "wolf",
@@ -297,7 +326,7 @@ export const WORLD_ROSTERS = {
   ],
   tundra: [
     "brownbear",
-    "dallsheep",
+    "grayling",
     "dallsheep",
     "dallsheep",
     "dallsheep",
@@ -307,13 +336,13 @@ export const WORLD_ROSTERS = {
   ],
   synthwave: [
     "neonbehemoth",
-    "glitchimp",
-    "glitchimp",
-    "glitchimp",
-    "glitchimp",
-    "velvetphantom",
-    "velvetphantom",
     "prismwing",
+    "glitchimp",
+    "glitchimp",
+    "glitchimp",
+    "velvetphantom",
+    "velvetphantom",
+    "neonray",
   ],
   thermal: [
     "heatserpent",
@@ -323,7 +352,7 @@ export const WORLD_ROSTERS = {
     "ventcrab",
     "ventcrab",
     "ventcrab",
-    "ventcrab",
+    "ventfish",
   ],
   topographic: [
     "wolf",
@@ -343,11 +372,17 @@ export const WORLD_ROSTERS = {
     "lavafinch",
     "lavafinch",
     "starseed",
-    "starseed",
+    "heatfin",
   ],
   copper: [
-    "clockbeetle", "clockbeetle", "clockbeetle", "clockbeetle",
-    "clockbeetle", "clockbeetle", "clockbeetle", "clockbeetle",
+    "clockbeetle",
+    "clockbeetle",
+    "clockbeetle",
+    "clockbeetle",
+    "clockbeetle",
+    "clockbeetle",
+    "clockbeetle",
+    "boilerfish",
   ],
   emerald: [
     "jadebird",
@@ -357,7 +392,7 @@ export const WORLD_ROSTERS = {
     "jadebird",
     "jadebird",
     "jadebird",
-    "jadebird",
+    "emeraldcarp",
   ],
   candy: [
     "voidray",
@@ -367,7 +402,7 @@ export const WORLD_ROSTERS = {
     "sugarsnail",
     "sugarsnail",
     "starseed",
-    "starseed",
+    "sugarfin",
   ],
   deepsea: [
     "anglerfish",
@@ -387,7 +422,7 @@ export const WORLD_ROSTERS = {
     "starseed",
     "starseed",
     "drone",
-    "drone",
+    "cometfin",
   ],
   microscopic: [
     "phage",
@@ -397,7 +432,7 @@ export const WORLD_ROSTERS = {
     "microbe",
     "microbe",
     "microbe",
-    "microbe",
+    "ciliateswimmer",
   ],
   neuron: [
     "phage",
@@ -407,7 +442,7 @@ export const WORLD_ROSTERS = {
     "signalmoth",
     "microbe",
     "microbe",
-    "microbe",
+    "synapseel",
   ],
   atomic: [
     "phage",
@@ -417,7 +452,7 @@ export const WORLD_ROSTERS = {
     "electronbug",
     "electronbug",
     "microbe",
-    "microbe",
+    "quarkray",
   ],
   cyberpunk: [
     "patrolDrone",
@@ -437,7 +472,7 @@ export const WORLD_ROSTERS = {
     "dreamwhale",
     "dreamwhale",
     "starseed",
-    "starseed",
+    "dreamjelly",
   ],
   monochrome: [
     "voidray",
@@ -447,7 +482,7 @@ export const WORLD_ROSTERS = {
     "inkbird",
     "inkbird",
     "drone",
-    "drone",
+    "silverminnow",
   ],
 };
 export function rosterForWorld(theme, fallback) {
@@ -455,6 +490,8 @@ export function rosterForWorld(theme, fallback) {
 }
 
 export const WORLD_SIGNATURES = Object.fromEntries(
-  Object.entries(WORLD_FAUNA).map(([id, animal]) => [animal.world, id]),
+  Object.entries(WORLD_FAUNA)
+    .filter(([, animal]) => animal.signature !== false)
+    .map(([id, animal]) => [animal.world, id]),
 );
 WORLD_SIGNATURES.ice = "narwhal";

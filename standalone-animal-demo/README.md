@@ -227,13 +227,29 @@ contrast-marked caudal fin and the Atlantis trident faces screen-up.
 
 ### Signature fauna in every world
 
-Each of the 26 themes now starts with a curated eight-creature population.
-Twenty-two additional original GLB models introduce recognizably different
+Each of the 26 themes now starts with a curated eight-creature population,
+including water residents wherever the terrain can hold water.
+Additional original GLB models introduce recognizably different
 silhouettes and animations: manta, seahorse, anglerfish, several birds and
 moths, beetles, scorpion, crab, snail, ox, goat, serpent, and dream whale.
 Earth retains its fox/rabbit/deer ecology; deer and rabbits appear only in
 Earth and Ancient Forest starter populations. Every other world has its own
 signature creature, recorded in `src/catalog/world-fauna.js`. Add a creature
-there, draw its 3D parts and animation in `scripts/models/world-fauna.mjs`,
-run `npm run assets`, then add it to `src/catalog/landscapes.js` rosters.
+there with `world`, `form`, `habitat`, `colors`, and `length`. Reuse an existing
+procedural form (`fish`, `manta`, `seahorse`, `angler`, and others), or add a new
+silhouette and animation in `scripts/models/world-fauna.mjs`. Add the ID to
+the world's eight slots in `src/catalog/landscapes.js`, then run
+`npm run assets` and `node ../scripts/build-site.mjs` from this directory.
+The same roster drives both browser mode and the projector sandbox.
+
+Each entry may also set `model` for a custom GLB, `prey`, `sight`, `actions`,
+`idleBehaviors`, and `movement`. `movement.speed` is world-space travel per
+second; optional multipliers `fleeMultiplier`, `chaseMultiplier`,
+`dartMultiplier`, `breachMultiplier`, and `waterIdleMultiplier` set behavior.
+`turnRate`, `breachHeight`, `diveDepth`, `bobAmplitude`, `bobFrequency`,
+`bounceHeight`, `bounceFrequency`, `fleeClipSpeed`, and `chaseClipSpeed` tune
+animation. Missing values use the shared defaults, so a new creature needs
+only its distinguishing settings. Water animals spawn in low, flooded terrain
+and become active when a suitable basin is formed. Use `signature: false` for
+additional residents that should not replace the world's main catalog icon.
 Generated GLBs and SHA-256 metadata live under `public/assets/animals/`.

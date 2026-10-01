@@ -1,0 +1,17 @@
+{
+  "name": "Selene fish",
+  "habitat": "water",
+  "format": "glTF 2.0 binary",
+  "forward": "+Z",
+  "up": "+Y",
+  "animations": [
+    "Idle",
+    "Move",
+    "Dash"
+  ],
+  "bytes": 59844,
+  "sha256": "53e2bf903cc2df31fa1ea977937721b04246f34990cf440a90f47845f776fa43",
+  "license": "CC0-1.0",
+  "author": "Original procedural Terrain Lab artwork",
+  "source": "scripts/models/world-fauna.mjs"
+}
