@@ -28,8 +28,18 @@ test("dashboard charts are bundled without third-party scripts", () => {
   assert.match(dashboardHtml, /id="modes"/);
   assert.match(dashboardJs, /function dailyChart/);
   assert.match(dashboardJs, /function modeChart/);
+  assert.match(dashboardHtml, /id="fps"/);
+  assert.match(dashboardHtml, /id="sessions"/);
+  assert.doesNotMatch(dashboardHtml, /id="quality"/);
   assert.doesNotMatch(dashboardHtml, /https:\/\/[^" ]+\.js/);
   assert.doesNotThrow(() => new Function(dashboardJs));
+});
+
+test("finer quality buckets are accepted while old buckets remain readable", async () => {
+  for (const [event, detail] of [["fps", "50-59"], ["session_length", "10-20m"], ["fps", "30-44"], ["session_length", "1-5m"]]) {
+    const response = await call("/api/event", { method: "POST", headers: { Origin: origin }, body: JSON.stringify({ mode: "browser", event, theme: "earth", detail }) });
+    assert.equal(response.status, 204);
+  }
 });
 
 test("event intake accepts only fixed, non-identifying fields from the site", async () => {

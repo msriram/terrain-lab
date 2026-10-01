@@ -3,8 +3,8 @@ import { ANALYTICS_ENDPOINT } from "./config.js";
 const endpoint = ANALYTICS_ENDPOINT.replace(/\/$/, "");
 const disabled = !endpoint || navigator.doNotTrack === "1" || navigator.globalPrivacyControl === true;
 const bucketPopulation = (value) => value === 0 ? "0" : value <= 8 ? "1-8" : value <= 16 ? "9-16" : value <= 32 ? "17-32" : "33-64";
-const bucketFps = (value) => value < 15 ? "under_15" : value < 30 ? "15-29" : value < 45 ? "30-44" : "45_plus";
-const bucketDuration = (seconds) => seconds < 60 ? "under_1m" : seconds < 300 ? "1-5m" : seconds < 900 ? "5-15m" : "15m_plus";
+const bucketFps = (value) => value < 10 ? "under_10" : value < 20 ? "10-19" : value < 30 ? "20-29" : value < 40 ? "30-39" : value < 50 ? "40-49" : value < 60 ? "50-59" : "60_plus";
+const bucketDuration = (seconds) => seconds < 30 ? "under_30s" : seconds < 60 ? "30-59s" : seconds < 120 ? "1-2m" : seconds < 300 ? "2-5m" : seconds < 600 ? "5-10m" : seconds < 1200 ? "10-20m" : "20m_plus";
 
 export function initAnalytics(mode) {
   if (disabled) return { track() {} };

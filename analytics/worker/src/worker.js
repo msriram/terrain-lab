@@ -9,8 +9,8 @@ const EVENTS = new Set([
 ]);
 const DETAILS = {
   population_change: new Set(["0", "1-8", "9-16", "17-32", "33-64"]),
-  fps: new Set(["under_15", "15-29", "30-44", "45_plus"]),
-  session_length: new Set(["under_1m", "1-5m", "5-15m", "15m_plus"]),
+  fps: new Set(["under_10", "10-19", "20-29", "30-39", "40-49", "50-59", "60_plus", "under_15", "15-29", "30-44", "45_plus"]),
+  session_length: new Set(["under_30s", "30-59s", "1-2m", "2-5m", "5-10m", "10-20m", "20m_plus", "under_1m", "1-5m", "5-15m", "15m_plus"]),
   kinect_failed: new Set(["bridge_missing", "device_unavailable", "connection_lost"]),
 };
 const textEncoder = new TextEncoder();
