@@ -3,6 +3,7 @@ import { readFile, stat, writeFile } from "node:fs/promises";
 import { resolve, extname } from "node:path";
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
+import { ANALYTICS_ENDPOINT } from "../../analytics/config.js";
 const root = resolve("../_site");
 const server = createServer(async (req, res) => {
   try {
@@ -55,6 +56,8 @@ try {
     });
   });
   await context.route("**/*", (route) => {
+    if (ANALYTICS_ENDPOINT && route.request().url() === `${ANALYTICS_ENDPOINT}/api/event`)
+      return route.fulfill({ status: 204, body: "", headers: { "access-control-allow-origin": "*", "access-control-allow-methods": "POST, OPTIONS" } });
     if (!route.request().url().startsWith(base)) {
       external.push(route.request().url());
       return route.abort();
@@ -188,10 +191,15 @@ try {
       w === 'atlantis' ? 'castle' : 'talokan-temple'), world);
     if (world === 'deepsea') {
       const established = await page.evaluate(() => TerrainWildlife.layer.getStats().landscape.structureSites);
+      const rebuilds = await page.evaluate(() => TerrainWildlife.layer.getStats().landscape.sceneryRebuilds);
       await page.evaluate(() => TerrainLab.setSample((u, v) => .2 +
         .58 * Math.exp(-(((u - .7) / .12) ** 2 + ((v - .45) / .12) ** 2)) +
         .42 * Math.exp(-(((u - .24) / .11) ** 2 + ((v - .72) / .11) ** 2))));
       await page.waitForTimeout(950);
+      assert.equal(await page.evaluate(() => TerrainWildlife.layer.getStats().landscape.sceneryRebuilds), rebuilds,
+        'Talokan scenery should wait before reacting to another terrain edit');
+      await page.waitForFunction(n => TerrainWildlife.layer.getStats().landscape.sceneryRebuilds > n,
+        rebuilds, { timeout: 15000 });
       const after = await page.evaluate(() => TerrainWildlife.layer.getStats().landscape.structureSites);
       assert.ok(established.every(site => after.some(next => next.kind === site.kind &&
         Math.hypot(next.u - site.u, next.v - site.v) < .001)),

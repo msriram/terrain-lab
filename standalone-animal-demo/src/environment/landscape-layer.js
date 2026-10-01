@@ -13,6 +13,8 @@ import { findUnderwaterStructureSites } from "./underwater-structures.js";
 
 const PROP_SCALE = 0.5;
 const LANDSCAPE_REBUILD_DELAY_SECONDS = 2.4;
+const CITY_REBUILD_DELAY_SECONDS = 10;
+const CITY_THEMES = new Set(["cyberpunk", "copper", "emerald", "atlantis", "deepsea"]);
 
 /** Shared scene layer: terrain-aware props, weather, shores, and mountain events. */
 export function createLandscapeLayer(
@@ -30,6 +32,7 @@ export function createLandscapeLayer(
   // undefined means the hidden city renderers have not been initialized yet.
   let cityTheme;
   let cityRebuilds = 0;
+  let sceneryRebuilds = 0;
   const propsRoot = new T.Group();
   root.add(propsRoot);
   const reefRoot = new T.Group();
@@ -41,6 +44,7 @@ export function createLandscapeLayer(
   let recipe = LANDSCAPES[theme] || LANDSCAPES.earth,
     dirty = true,
     lastBuild = -Infinity,
+    lastBuildAt = -Infinity,
     enabled = true,
     motion = true,
     projectionFlipped = false,
@@ -376,6 +380,7 @@ export function createLandscapeLayer(
     if (!stableSceneryTerrain.update(sampleTerrain, { theme, waterLevel, layoutSeed, density, sceneryEditsRevision })) {
       dirty = false;
       lastBuild = time;
+      lastBuildAt = performance.now() / 1000;
       return;
     }
     const sceneryTerrain = stableSceneryTerrain.sample;
@@ -545,6 +550,8 @@ export function createLandscapeLayer(
     );
     dirty = false;
     lastBuild = time;
+    lastBuildAt = performance.now() / 1000;
+    sceneryRebuilds++;
   }
   function weatherIsNeon() {
     return recipe.weather === "neon-rain";
@@ -553,11 +560,14 @@ export function createLandscapeLayer(
     root.visible = enabled;
     if (!enabled) return;
     if (motion) time += Math.max(0, Math.min(dt, 0.05));
-    // Rebuilds are deliberately paced: a new set of scenery should ease into
-    // the world rather than popping in almost immediately after a change.
+    // A city keeps its established layout through several seconds of live
+    // depth updates. World switches and explicit scene edits still build now.
+    const isCity = CITY_THEMES.has(theme);
+    const delay = isCity ? CITY_REBUILD_DELAY_SECONDS
+      : theme === "coral" ? 0.4 : LANDSCAPE_REBUILD_DELAY_SECONDS;
     if (
       dirty &&
-      (time - lastBuild > (["cyberpunk", "coral", "copper", "emerald", "atlantis", "deepsea"].includes(theme) ? .4 : LANDSCAPE_REBUILD_DELAY_SECONDS) || !motion)
+      (lastBuild === -Infinity || performance.now() / 1000 - lastBuildAt >= delay || (!motion && !isCity))
     )
       rebuild();
     living.update(dt, theme, recipe, motion, projectionFlipped);
@@ -921,6 +931,7 @@ export function createLandscapeLayer(
         ...city.stats(),
         ...architecture.stats(),
         cityRebuilds,
+        sceneryRebuilds,
         theme,
         galaxies: galaxies.length,
         signalLinks: links.length,
