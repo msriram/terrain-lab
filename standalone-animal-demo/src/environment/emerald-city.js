@@ -7,6 +7,19 @@ const hash = (n) => {
   return x - Math.floor(x);
 };
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+export function rainbowAppearance(cycle) {
+  const width = 1.15 + hash(cycle * 17 + 3) * 1.45;
+  const depth = 0.72 + hash(cycle * 23 + 5) * 0.55;
+  return {
+    x: (hash(cycle * 31 + 9) - 0.5) * (4 - width) * 0.9,
+    z: (hash(cycle * 43 + 7) - 0.5) * (3 - depth) * 0.9,
+    width,
+    depth,
+    rotation: (hash(cycle * 47 + 11) - 0.5) * 0.75,
+    curve: 0.53 + hash(cycle * 59 + 13) * 0.32,
+    slant: (hash(cycle * 61 + 17) - 0.5) * 0.12,
+  };
+}
 function routePoint(route, t) {
   const points = route.points,
     n = points.length - 1,
@@ -83,23 +96,31 @@ export function createEmeraldCity(parent) {
       transparent: true,
       depthWrite: false,
       depthTest: false,
-      uniforms: { time: { value: 0 }, fade: { value: 0 } },
+      uniforms: {
+        time: { value: 0 },
+        fade: { value: 0 },
+        curve: { value: 0.68 },
+        slant: { value: 0 },
+      },
       vertexShader:
         "varying vec2 p;void main(){p=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
-      fragmentShader: `varying vec2 p;uniform float time;uniform float fade;
+      fragmentShader: `varying vec2 p;uniform float time;uniform float fade;uniform float curve;uniform float slant;
     float hash(vec2 q){return fract(sin(dot(q,vec2(127.1,311.7)))*43758.5453);}
     float noise(vec2 q){vec2 i=floor(q),f=fract(q);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+1.),f.x),f.y);}
     float fbm(vec2 q){float v=0.,a=.5;for(int i=0;i<5;i++){v+=a*noise(q);q=q*2.03+7.1;a*=.5;}return v;}
-    void main(){vec2 q=p*vec2(5.,3.)+vec2(-time*.035,time*.014);vec2 warp=vec2(fbm(q+time*.03),fbm(q+13.-time*.021));float n=fbm(q+warp*2.);
-    vec2 d=(p-.5)*vec2(1.05,2.25);float envelope=1.-smoothstep(.26,.82,length(d)+(n-.5)*.19);
-    float body=(.42+.58*smoothstep(.32,.64,n))*envelope;
-    float u=clamp((p.x-.08)/.84,0.,1.);
+    void main(){vec2 q=p*vec2(8.,5.)+vec2(-time*.025,time*.012);float n=fbm(q+vec2(fbm(q+11.),fbm(q+29.))*1.5);
+    float x=(p.x-.5)/.44;float span=1.-smoothstep(.91,1.04,abs(x));
+    float arch=.10+curve*sqrt(max(0.,1.-x*x))+slant*x;
+    float d=p.y-arch+(n-.5)*.035;
+    float band=1.-smoothstep(.060,.105,abs(d));
+    float body=band*span*(.58+.42*smoothstep(.25,.7,n));
+    float u=clamp((d+.09)/.18,0.,1.);
     vec3 a=vec3(1.,.29,.42),b=vec3(1.,.60,.23),c=vec3(1.,.88,.36),e=vec3(.36,.85,.50),f=vec3(.29,.63,1.),g=vec3(.65,.42,.94);
     vec3 spectrum=u<.2?mix(a,b,u*5.):u<.4?mix(b,c,(u-.2)*5.):u<.6?mix(c,e,(u-.4)*5.):u<.8?mix(e,f,(u-.6)*5.):mix(f,g,(u-.8)*5.);
     vec3 col=mix(spectrum,vec3(1.),.18);gl_FragColor=vec4(col,body*fade*.82);}`,
     }),
   );
-  const rainbowGeometry = own(new T.PlaneGeometry(1.9, 0.95));
+  const rainbowGeometry = own(new T.PlaneGeometry(1, 1));
   rainbowGeometry.rotateX(-Math.PI / 2);
   const rainbow = new T.Mesh(rainbowGeometry, rainbowMaterial);
   rainbow.position.y = 0.82;
@@ -460,8 +481,9 @@ export function createEmeraldCity(parent) {
     witches.push({
       g,
       road,
-      phase: i * 0.47,
-      target: i % Math.max(1, citizens.length),
+      phase: hash(i * 19 + 5) * TAU,
+      target: -1,
+      speed: 0.23 + hash(i * 23 + 7) * 0.13,
       heading: 0,
       id: i,
     });
@@ -539,14 +561,18 @@ export function createEmeraldCity(parent) {
       const walking = active.length ? active : roads;
       for (let i = 0; i < Math.min(36, walking.length * 5); i++)
         makeCitizen(walking[i % walking.length], i);
-      for (let i = 0; i < Math.min(3, Math.max(1, roads.length)); i++)
-        if (roads.length) makeWitch(roads[i % roads.length], i);
+      const witchCount = Math.min(3, roads.length);
+      for (let i = 0; i < witchCount; i++)
+        makeWitch(
+          roads[Math.floor(((i + 0.5) * roads.length) / witchCount)],
+          i,
+        );
       citizens.forEach((c) => {
         const p = routePoint(c.road, c.offset);
         c.g.position.set(p.x, p.y + 0.012, p.z);
       });
       witches.forEach((w, i) => {
-        const p = routePoint(w.road, i / Math.max(1, witches.length));
+        const p = routePoint(w.road, hash(i * 13 + 3) * 0.8 + 0.1);
         w.g.position.set(p.x, 0.14, p.z);
         w.heading = p.heading;
         w.g.rotation.y = p.heading;
@@ -569,30 +595,48 @@ export function createEmeraldCity(parent) {
       rainbowMaterial.uniforms.fade.value = fade;
       rainbowMaterial.uniforms.time.value = t;
       if (plan.citadels.length) {
-        const cycle = Math.floor(t / 19);
-        rainbow.position.set(
-          (hash(cycle * 17 + 9) - 0.5) * 0.55,
-          0.82,
-          (hash(cycle * 29 + 7) - 0.5) * 0.45,
-        );
-        rainbow.rotation.y = t * 0.11;
+        const cycle = Math.floor((t + 2) / 19);
+        const appearance = rainbowAppearance(cycle);
+        rainbow.position.set(appearance.x, 0.82, appearance.z);
+        rainbow.scale.set(appearance.width, 1, appearance.depth);
+        rainbow.rotation.y = appearance.rotation;
+        rainbowMaterial.uniforms.curve.value = appearance.curve;
+        rainbowMaterial.uniforms.slant.value = appearance.slant;
       }
       for (const w of witches) {
         const victim = citizens[w.target];
         if (!victim || !victim.alive) {
-          w.target = (w.target + 1) % citizens.length;
+          const territory = citizens.filter(
+            (c) => c.alive && c.id % witches.length === w.id,
+          );
+          territory.sort(
+            (a, b) =>
+              a.g.position.distanceToSquared(w.g.position) -
+              b.g.position.distanceToSquared(w.g.position),
+          );
+          w.target = territory[0]?.id ?? -1;
         }
         const target = citizens[w.target],
           p = w.g.position,
           goal = target?.g.position;
         if (goal && target.alive) {
-          const dx = goal.x - p.x,
-            dz = goal.z - p.z,
-            len = Math.hypot(dx, dz) || 1,
-            step = Math.min(len, 0.34 * dt);
+          let dx = goal.x - p.x,
+            dz = goal.z - p.z;
+          for (const other of witches) {
+            if (other === w) continue;
+            const apartX = p.x - other.g.position.x,
+              apartZ = p.z - other.g.position.z,
+              gap = Math.hypot(apartX, apartZ);
+            if (gap > 0.001 && gap < 0.34) {
+              dx += (apartX / gap) * (0.34 - gap) * 3;
+              dz += (apartZ / gap) * (0.34 - gap) * 3;
+            }
+          }
+          const len = Math.hypot(dx, dz) || 1,
+            step = Math.min(len, w.speed * dt);
           p.x += (dx / len) * step;
           p.z += (dz / len) * step;
-          p.y = 0.12 + Math.sin(t * 4 + w.id) * 0.016;
+          p.y = 0.12 + Math.sin(t * (3.2 + w.speed) + w.phase) * 0.016;
           p.y = Math.max(p.y, 0.12);
           const desired = Math.atan2(dx, dz);
           w.heading +=
@@ -601,13 +645,21 @@ export function createEmeraldCity(parent) {
               Math.cos(desired - w.heading),
             ) * Math.min(1, dt * 8);
           w.g.rotation.y = w.heading;
-          if (len < 0.052) {
+          if (Math.hypot(goal.x - p.x, goal.z - p.z) < 0.052) {
             target.alive = false;
             target.g.visible = false;
             target.respawn = t + 3;
             deaths++;
-            w.target = (w.target + 1) % citizens.length;
+            w.target = -1;
           }
+        } else {
+          const patrol = routePoint(
+            w.road,
+            (t * (0.06 + w.speed * 0.05) + w.phase / TAU) % 1,
+          );
+          p.x += (patrol.x - p.x) * Math.min(1, dt * 1.8);
+          p.z += (patrol.z - p.z) * Math.min(1, dt * 1.8);
+          p.y = 0.12 + Math.sin(t * 3.2 + w.phase) * 0.016;
         }
       }
       for (const c of citizens) {

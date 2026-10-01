@@ -4,6 +4,21 @@ import {
   planCopperWorks,
   planEmeraldCity,
 } from "../src/environment/world-architecture-layout.js";
+import { rainbowAppearance } from "../src/environment/emerald-city.js";
+
+test("Emerald rainbows appear as differently sized arches across the landscape", () => {
+  const appearances = Array.from({ length: 12 }, (_, i) =>
+    rainbowAppearance(i),
+  );
+  assert.ok(new Set(appearances.map((a) => a.width.toFixed(2))).size > 8);
+  assert.ok(new Set(appearances.map((a) => a.curve.toFixed(2))).size > 8);
+  assert.ok(appearances.some((a) => Math.abs(a.x) > 0.4));
+  assert.ok(appearances.some((a) => Math.abs(a.z) > 0.4));
+  for (const a of appearances) {
+    assert.ok(Math.abs(a.x) + a.width / 2 < 2);
+    assert.ok(Math.abs(a.z) + a.depth / 2 < 1.5);
+  }
+});
 
 test("Copper works and Emerald City grow only on dry terrain and recede below water", () => {
   const land = (u, v) => 0.69 + 0.08 * Math.sin(u * 8) * Math.cos(v * 7);
