@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import worker from "../src/worker.js";
+import { dashboardHtml, dashboardJs } from "../src/dashboard.js";
 
 const origin = "https://msriram.github.io";
 const workerUrl = "https://terrain-lab-analytics.example.workers.dev";
@@ -20,6 +21,15 @@ test("public dashboard and reports require an owner session", async () => {
   assert.equal((await call("/dashboard")).status, 302);
   assert.equal((await call("/api/report")).status, 401);
   assert.equal((await call("/dashboard.js")).status, 200);
+});
+
+test("dashboard charts are bundled without third-party scripts", () => {
+  assert.match(dashboardHtml, /id="daily"/);
+  assert.match(dashboardHtml, /id="modes"/);
+  assert.match(dashboardJs, /function dailyChart/);
+  assert.match(dashboardJs, /function modeChart/);
+  assert.doesNotMatch(dashboardHtml, /https:\/\/[^" ]+\.js/);
+  assert.doesNotThrow(() => new Function(dashboardJs));
 });
 
 test("event intake accepts only fixed, non-identifying fields from the site", async () => {
