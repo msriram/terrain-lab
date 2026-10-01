@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Terrain Lab · Owner analytics</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0b181b;color:#e0eade;font:14px system-ui}main{max-width:440px;padding:35px;border:1px solid #38514d;background:#112429}h1{font:normal 36px Georgia,serif}p{line-height:1.6;color:#a6bbb0}a{display:inline-block;margin-top:12px;padding:12px 18px;background:#cce6a9;color:#172d24;text-decoration:none;border-radius:3px}</style></head>
+<body><main><span>TERRAIN LAB / PRIVATE</span><h1>Owner analytics</h1><p id="status">Checking the analytics service…</p><a id="login" hidden>Sign in with GitHub ↗</a><p><small><a href="./privacy.html">Analytics privacy</a></small></p></main><script type="module">
+import { ANALYTICS_ENDPOINT } from './config.js';
+const status=document.getElementById('status'),link=document.getElementById('login');
+if(ANALYTICS_ENDPOINT){status.textContent='Only the Terrain Lab owner can open the private dashboard.';link.href=ANALYTICS_ENDPOINT.replace(/\/$/,'')+'/dashboard';link.hidden=false;}
+else status.textContent='The private analytics service has not been connected yet.';
+</script></body></html>

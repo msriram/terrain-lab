@@ -15,6 +15,8 @@ await rm(out,{recursive:true,force:true});await mkdir(out,{recursive:true});
 await mkdir(path.join(root,'assets/wildlife'),{recursive:true});
 await cp(path.join(demo,'dist-layer'),path.join(root,'assets/wildlife'),{recursive:true});
 for(const name of ['index.html','app.js','animals.js','styles.css','control-icon.css','sandbox','guide','contribute','website'])await cp(path.join(root,name),path.join(out,name),{recursive:true});
+await mkdir(path.join(out,'analytics'),{recursive:true});
+for(const name of ['index.html','privacy.html','boot.js','client.js','config.js'])await cp(path.join(root,'analytics',name),path.join(out,'analytics',name));
 await mkdir(path.join(out,'assets'),{recursive:true});
 await cp(path.join(root,'assets/wildlife'),path.join(out,'assets/wildlife'),{recursive:true});
 await cp(path.join(demo,'dist'),path.join(out,'wildlife'),{recursive:true});

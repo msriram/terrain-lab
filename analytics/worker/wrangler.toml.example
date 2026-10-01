@@ -1,0 +1,17 @@
+name = "terrain-lab-analytics"
+main = "src/worker.js"
+compatibility_date = "2026-09-01"
+preview_urls = false
+
+[triggers]
+crons = ["0 4 * * *"]
+
+[vars]
+SITE_ORIGIN = "https://msriram.github.io"
+SITE_URL = "https://msriram.github.io/terrain-lab/"
+OWNER_GITHUB_ID = "7992017"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "terrain-lab-analytics"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"

@@ -6,3 +6,6 @@ upstream-magic-sand/
 touchdesigner/*.1.toe
 
 _site/
+analytics/worker/wrangler.toml
+analytics/worker/.dev.vars
+analytics/worker/.wrangler/

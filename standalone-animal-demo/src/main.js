@@ -1,4 +1,5 @@
 import "./style.css";
+import { initAnalytics } from "../../analytics/client.js";
 import {
   LANDSCAPES,
   WORLD_SIGNATURES,
@@ -13,6 +14,7 @@ import {
   FIXTURES,
 } from "./terrain/fixtures.js";
 const $ = (id) => document.getElementById(id);
+initAnalytics("browser");
 const populationKey = "terrain-lab-population-size";
 const populationSize = (value) => {
   const number = Number(value);
