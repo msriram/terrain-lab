@@ -22,6 +22,7 @@ export class AnimalSimulation {
     this.events = [];
     this.captures = 0;
     this.rescues = 0;
+    this.externalThreats = [];
     this.setRoster(roster ?? randomRoster(this.random));
   }
   setRoster(roster) {
@@ -71,13 +72,15 @@ export class AnimalSimulation {
               );
       if (
         !Number.isFinite(e) ||
-        (SPECIES[c.species].airborne ? false : c.habitat === "water"
-          ? e >= this.waterLevel - 0.009
-          : c.habitat === "amphibious"
-            ? center > this.waterLevel &&
-              e > this.waterLevel &&
-              Math.abs(e - center) > 0.16
-            : e <= this.waterLevel + 0.017 || Math.abs(e - center) > 0.105)
+        (SPECIES[c.species].airborne
+          ? false
+          : c.habitat === "water"
+            ? e >= this.waterLevel - 0.009
+            : c.habitat === "amphibious"
+              ? center > this.waterLevel &&
+                e > this.waterLevel &&
+                Math.abs(e - center) > 0.16
+              : e <= this.waterLevel + 0.017 || Math.abs(e - center) > 0.105)
       )
         return false;
     }
@@ -288,6 +291,23 @@ export class AnimalSimulation {
       });
       this.events.length = Math.min(this.events.length, 5);
     }
+  }
+  captureByEnvironment(id, predator = "Witch") {
+    const prey = this.creatures.find((c) => c.id === id);
+    if (!prey || !prey.active || prey.held || prey.protection > 0) return false;
+    prey.active = false;
+    prey.mode = "eaten";
+    prey.target = null;
+    prey.respawnAt = this.time + 5;
+    this.captures++;
+    this.events.unshift({
+      type: "capture",
+      time: this.time,
+      predator,
+      prey: prey.species,
+    });
+    this.events.length = Math.min(this.events.length, 5);
+    return true;
   }
   grab(id) {
     const c = this.creatures.find((c) => c.id === id && c.active);

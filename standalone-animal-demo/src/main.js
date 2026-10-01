@@ -19,12 +19,17 @@ const populationKey = "terrain-lab-population-size";
 const populationSize = (value) => {
   const number = Number(value);
   return value === null || value === "" || !Number.isFinite(number)
-    ? null : Math.max(0, Math.min(64, Math.round(number)));
+    ? null
+    : Math.max(0, Math.min(64, Math.round(number)));
 };
 let savedPopulation = null;
-try { savedPopulation = localStorage.getItem(populationKey); } catch {}
-const initialPopulation = populationSize(new URLSearchParams(location.search).get("population"))
-  ?? populationSize(savedPopulation) ?? 8;
+try {
+  savedPopulation = localStorage.getItem(populationKey);
+} catch {}
+const initialPopulation =
+  populationSize(new URLSearchParams(location.search).get("population")) ??
+  populationSize(savedPopulation) ??
+  8;
 const initialRoster = rosterForWorld("earth", randomRoster());
 $("animal-count").value = initialPopulation;
 $("animal-count-value").value = initialPopulation;
@@ -33,13 +38,17 @@ const state = {
   water: 0.43,
   pack: "earth",
   paused: false,
-  roster: Array.from({length: initialPopulation}, (_, i) => initialRoster[i % initialRoster.length]),
+  roster: Array.from(
+    { length: initialPopulation },
+    (_, i) => initialRoster[i % initialRoster.length],
+  ),
 };
 let terrainModel = createSculptableTerrain(),
   sample = terrainModel.sample;
 const terrain = $("terrain"),
   stage = $("stage");
-const paint = () => paintTerrain(terrain, sample, state.water, state.pack, $("contours").checked);
+const paint = () =>
+  paintTerrain(terrain, sample, state.water, state.pack, $("contours").checked);
 paint();
 try {
   const layer = await createAnimalLayer({
@@ -63,8 +72,9 @@ try {
     $("rescue-message").textContent =
       mode === "move"
         ? "Drag an animal to safe land or water."
-        : mode === "elements" ? "Click to add a landscape element. Right-click near one to remove it."
-        : "Drag to carve a hollow. Right-drag to add sand.";
+        : mode === "elements"
+          ? "Click to add a landscape element. Right-click near one to remove it."
+          : "Drag to carve a hollow. Right-drag to add sand.";
   }
   setPointerMode($("pointer-mode").value);
   $("pointer-mode").addEventListener("change", (event) =>
@@ -72,23 +82,41 @@ try {
   );
   function themeOptions() {
     const ids = [...new Set(rosterForWorld(state.pack, randomRoster()))];
-    $("preset").replaceChildren(new Option("Balanced · " + LANDSCAPES[state.pack].label, "random"));
-    ids.forEach(id => $("preset").add(new Option(SPECIES[id].label + " group", id)));
+    $("preset").replaceChildren(
+      new Option("Balanced · " + LANDSCAPES[state.pack].label, "random"),
+    );
+    ids.forEach((id) =>
+      $("preset").add(new Option(SPECIES[id].label + " group", id)),
+    );
     $("preset").add(new Option("Custom roster", "custom"));
     return ids;
   }
   function updateLiveLink() {
-    $("live-mode-link").href = `../sandbox/?theme=${encodeURIComponent(state.pack)}&population=${$("animal-count").value}`;
+    $("live-mode-link").href =
+      `../sandbox/?theme=${encodeURIComponent(state.pack)}&population=${$("animal-count").value}`;
   }
   function applyPopulation() {
-    const count = Math.max(0, Math.min(64, Math.round(Number($("animal-count").value) || 0)));
+    const count = Math.max(
+      0,
+      Math.min(64, Math.round(Number($("animal-count").value) || 0)),
+    );
     $("animal-count").value = count;
     $("animal-count-value").value = count;
-    try { localStorage.setItem(populationKey, String(count)); } catch {}
+    try {
+      localStorage.setItem(populationKey, String(count));
+    } catch {}
     updateLiveLink();
     const choice = $("preset").value;
-    const base = choice === "custom" && state.roster.length ? state.roster : choice === "random" || choice === "custom" ? rosterForWorld(state.pack, randomRoster()) : [choice];
-    state.roster = Array.from({length: count}, (_, i) => base[i % base.length]);
+    const base =
+      choice === "custom" && state.roster.length
+        ? state.roster
+        : choice === "random" || choice === "custom"
+          ? rosterForWorld(state.pack, randomRoster())
+          : [choice];
+    state.roster = Array.from(
+      { length: count },
+      (_, i) => base[i % base.length],
+    );
     layer.setRoster(state.roster);
     rebuildRoster();
   }
@@ -135,11 +163,14 @@ try {
     setLandscape(e.target.value),
   );
   $("scenery").addEventListener("change", (e) =>
-    layer.setOptions({ scenery: e.target.checked, atmosphere: e.target.checked }),
+    layer.setOptions({
+      scenery: e.target.checked,
+      atmosphere: e.target.checked,
+    }),
   );
   $("landscape-density").addEventListener("input", (e) => {
     $("density-value").value = e.target.value + "%";
-    layer.setOptions({density: Number(e.target.value) / 100});
+    layer.setOptions({ density: Number(e.target.value) / 100 });
   });
   $("randomize-landscape").addEventListener("click", () => {
     layer.randomizeLandscape();
@@ -157,13 +188,15 @@ try {
       row.append(name);
       const select = document.createElement("select");
       select.setAttribute("aria-label", `Animal slot ${index + 1}`);
-      [...new Set(rosterForWorld(state.pack, randomRoster()))].forEach((key) => {
-        const species = SPECIES[key];
-        const option = document.createElement("option");
-        option.value = key;
-        option.textContent = `${species.label} · ${species.habitat}`;
-        select.append(option);
-      });
+      [...new Set(rosterForWorld(state.pack, randomRoster()))].forEach(
+        (key) => {
+          const species = SPECIES[key];
+          const option = document.createElement("option");
+          option.value = key;
+          option.textContent = `${species.label} · ${species.habitat}`;
+          select.append(option);
+        },
+      );
       select.value = id;
       select.addEventListener("change", () => {
         state.roster[index] = select.value;
@@ -188,10 +221,10 @@ try {
   rebuildRoster();
   $("preset").addEventListener("change", applyPopulation);
   $("refresh-population").addEventListener("click", applyPopulation);
-  $("labels").addEventListener(
-    "change",
-    (e) => (labels.hidden = !e.target.checked),
-  );
+  $("labels").addEventListener("change", (e) => {
+    labels.hidden = !e.target.checked;
+    layer.setOptions({ labels: e.target.checked });
+  });
   const resize = new ResizeObserver(() => {
     const r = stage.getBoundingClientRect();
     layer.resize(r.width, r.height);
@@ -222,10 +255,14 @@ try {
   stage.addEventListener(
     "pointerdown",
     (event) => {
-      if (pointerMode === "elements" && (event.button === 0 || event.button === 2)) {
-        const {u, v} = toUV(event);
+      if (
+        pointerMode === "elements" &&
+        (event.button === 0 || event.button === 2)
+      ) {
+        const { u, v } = toUV(event);
         layer.editLandscape(u, v, event.button === 2);
-        event.preventDefault(); event.stopPropagation();
+        event.preventDefault();
+        event.stopPropagation();
         return;
       }
       if (pointerMode !== "sculpt") return;
@@ -282,7 +319,11 @@ try {
       return;
     }
     projection(true);
-    try { await document.documentElement.requestFullscreen(); } catch { /* Projection remains available when fullscreen is blocked. */ }
+    try {
+      await document.documentElement.requestFullscreen();
+    } catch {
+      /* Projection remains available when fullscreen is blocked. */
+    }
   }
   $("fullscreen").addEventListener("click", fullscreen);
   $("exit-projection").addEventListener("click", async () => {
@@ -338,7 +379,17 @@ try {
       tag.style.left = `${c.u * 100}%`;
       tag.style.top = `${c.v * 100}%`;
       tag.hidden = !c.active || !$("enabled").checked;
-      const mode=state.pack==="cyberpunk"?({roam:"patrol",cruise:"patrol",chase:"pursuit",flee:"evading",processing:"arrest",look:"scanning"}[c.mode]||c.mode):c.mode;
+      const mode =
+        state.pack === "cyberpunk"
+          ? {
+              roam: "patrol",
+              cruise: "patrol",
+              chase: "pursuit",
+              flee: "evading",
+              processing: "arrest",
+              look: "scanning",
+            }[c.mode] || c.mode
+          : c.mode;
       tag.textContent = `${SPECIES[c.species].label} · ${mode}`;
       tag.dataset.mode = c.mode;
     });
@@ -363,7 +414,7 @@ try {
           : "HABITATS IN BALANCE";
       const event = layer.simulation.events[0];
       $("encounter").textContent = event
-        ? `${SPECIES[event.predator].label} → ${SPECIES[event.prey].label} · ${event.type === "arrest" ? "detained; returns in 5 seconds" : event.type === "capture" ? "eaten; repopulating soon" : "pursuit"}`
+        ? `${SPECIES[event.predator]?.label || event.predator} → ${SPECIES[event.prey].label} · ${event.type === "arrest" ? "detained; returns in 5 seconds" : event.type === "capture" ? "eaten; repopulating soon" : "pursuit"}`
         : "Watching for nearby encounters…";
       start = now;
     }

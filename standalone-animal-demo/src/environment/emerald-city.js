@@ -126,6 +126,32 @@ export function createEmeraldCity(parent) {
   rainbow.position.y = 0.82;
   rainbow.renderOrder = 20;
   dynamic.add(rainbow);
+  const labelCanvas = document.createElement("canvas");
+  labelCanvas.width = 256;
+  labelCanvas.height = 64;
+  const labelContext = labelCanvas.getContext("2d");
+  labelContext.fillStyle = "rgba(31, 13, 47, 0.9)";
+  labelContext.fillRect(0, 0, 256, 64);
+  labelContext.strokeStyle = "#d688ee";
+  labelContext.lineWidth = 3;
+  labelContext.strokeRect(2, 2, 252, 60);
+  labelContext.fillStyle = "#fff1fc";
+  labelContext.font = "bold 26px sans-serif";
+  labelContext.textAlign = "center";
+  labelContext.textBaseline = "middle";
+  labelContext.fillText("WITCH · HUNTING", 128, 32);
+  const labelTexture = own(new T.CanvasTexture(labelCanvas));
+  const labelGeometry = own(new T.PlaneGeometry(0.37, 0.092));
+  labelGeometry.rotateX(-Math.PI / 2);
+  const labelMaterial = own(
+    new T.MeshBasicMaterial({
+      map: labelTexture,
+      transparent: true,
+      depthWrite: false,
+      depthTest: false,
+      side: T.DoubleSide,
+    }),
+  );
   const lights = [],
     citizens = [],
     witches = [],
@@ -134,7 +160,10 @@ export function createEmeraldCity(parent) {
   let plan = null,
     time = 0,
     previousTime = 0,
-    deaths = 0;
+    deaths = 0,
+    wildlife = [],
+    catchBird = null,
+    labelsVisible = true;
   function piece(group, geo, material, x, y, z, sx, sy, sz) {
     const m = new T.Mesh(geo, material);
     m.position.set(x, y, z);
@@ -478,11 +507,17 @@ export function createEmeraldCity(parent) {
     hat.rotation.x = 0.28;
     piece(g, orb, amethyst, 0, 0.15, 0.031, 0.008, 0.009, 0.008);
     g.scale.setScalar(0.58);
+    const label = new T.Mesh(labelGeometry, labelMaterial);
+    label.renderOrder = 25;
+    label.visible = labelsVisible;
+    dynamic.add(label);
     witches.push({
       g,
+      label,
       road,
       phase: hash(i * 19 + 5) * TAU,
       target: -1,
+      targetBirdId: null,
       speed: 0.23 + hash(i * 23 + 7) * 0.13,
       heading: 0,
       id: i,
@@ -547,6 +582,23 @@ export function createEmeraldCity(parent) {
     rainbowMaterial.uniforms.fade.value = 0;
   }
   return {
+    setWildlife(creatures, onCatch) {
+      wildlife = creatures || [];
+      catchBird = onCatch;
+    },
+    setLabels(visible) {
+      labelsVisible = visible;
+      witches.forEach((w) => (w.label.visible = visible));
+    },
+    threats: () =>
+      plan
+        ? witches.map((w) => ({
+            id: `witch-${w.id}`,
+            prey: "jadebird",
+            u: w.g.position.x / 4 + 0.5,
+            v: w.g.position.z / 3 + 0.5,
+          }))
+        : [],
     rebuild(next, sample, water) {
       clear();
       root.visible = !!next;
@@ -604,8 +656,39 @@ export function createEmeraldCity(parent) {
         rainbowMaterial.uniforms.slant.value = appearance.slant;
       }
       for (const w of witches) {
+        const currentBird = wildlife.find((c) => c.id === w.targetBirdId);
+        if (
+          !currentBird ||
+          !currentBird.active ||
+          currentBird.held ||
+          currentBird.protection > 0
+        ) {
+          const reserved = new Set(
+            witches
+              .filter((other) => other !== w)
+              .map((other) => other.targetBirdId),
+          );
+          const available = wildlife.filter(
+            (c) =>
+              c.species === "jadebird" &&
+              c.active &&
+              !c.held &&
+              c.protection <= 0 &&
+              !reserved.has(c.id),
+          );
+          available.sort((a, b) => {
+            const distance = (c) =>
+              Math.hypot(
+                c.u * 4 - 2 - w.g.position.x,
+                c.v * 3 - 1.5 - w.g.position.z,
+              );
+            return distance(a) - distance(b);
+          });
+          w.targetBirdId = available[0]?.id ?? null;
+        }
+        const bird = wildlife.find((c) => c.id === w.targetBirdId && c.active);
         const victim = citizens[w.target];
-        if (!victim || !victim.alive) {
+        if (!bird && (!victim || !victim.alive)) {
           const territory = citizens.filter(
             (c) => c.alive && c.id % witches.length === w.id,
           );
@@ -618,8 +701,10 @@ export function createEmeraldCity(parent) {
         }
         const target = citizens[w.target],
           p = w.g.position,
-          goal = target?.g.position;
-        if (goal && target.alive) {
+          goal = bird
+            ? { x: (bird.u - 0.5) * 4, z: (bird.v - 0.5) * 3 }
+            : target?.g.position;
+        if (goal && (bird || target.alive)) {
           let dx = goal.x - p.x,
             dz = goal.z - p.z;
           for (const other of witches) {
@@ -646,11 +731,15 @@ export function createEmeraldCity(parent) {
             ) * Math.min(1, dt * 8);
           w.g.rotation.y = w.heading;
           if (Math.hypot(goal.x - p.x, goal.z - p.z) < 0.052) {
-            target.alive = false;
-            target.g.visible = false;
-            target.respawn = t + 3;
-            deaths++;
-            w.target = -1;
+            if (bird) {
+              if (catchBird?.(bird.id)) w.targetBirdId = null;
+            } else {
+              target.alive = false;
+              target.g.visible = false;
+              target.respawn = t + 3;
+              deaths++;
+              w.target = -1;
+            }
           }
         } else {
           const patrol = routePoint(
@@ -661,6 +750,7 @@ export function createEmeraldCity(parent) {
           p.z += (patrol.z - p.z) * Math.min(1, dt * 1.8);
           p.y = 0.12 + Math.sin(t * 3.2 + w.phase) * 0.016;
         }
+        w.label.position.set(p.x, p.y + 0.055, p.z - 0.14);
       }
       for (const c of citizens) {
         if (!c.alive) {

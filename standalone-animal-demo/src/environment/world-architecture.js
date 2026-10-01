@@ -11,6 +11,13 @@ export function createWorldArchitecture(root) {
     emerald = createEmeraldCity(root);
   let copperPlan = { stations: [], pipes: [] };
   return {
+    setWildlife(creatures, onCatch) {
+      emerald.setWildlife(creatures, onCatch);
+    },
+    setLabels(visible) {
+      emerald.setLabels(visible);
+    },
+    wildlifeThreats: () => emerald.threats(),
     rebuild(theme, sample, water, seed, density) {
       copperPlan =
         theme === "copper"

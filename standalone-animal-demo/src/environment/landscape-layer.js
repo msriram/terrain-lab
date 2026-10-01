@@ -865,6 +865,10 @@ export function createLandscapeLayer(
   }
   return {
     update,
+    setWildlife(creatures, onCatch) {
+      architecture.setWildlife(creatures, onCatch);
+    },
+    wildlifeThreats: () => architecture.wildlifeThreats(),
     setTerrain(sample, water) {
       sampleTerrain = sample;
       waterLevel = water;
@@ -885,6 +889,7 @@ export function createLandscapeLayer(
       if (options.enabled !== undefined) enabled = options.enabled;
       if (options.motion !== undefined) motion = options.motion;
       if (options.projectionFlipped !== undefined) projectionFlipped = !!options.projectionFlipped;
+      if (options.labels !== undefined) architecture.setLabels(!!options.labels);
     },
     getState: () => ({ seed: layoutSeed, addedElements, removedElements }),
     applyState(state) {

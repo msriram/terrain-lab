@@ -24,14 +24,21 @@ export function updateBehavior(sim, c, dt) {
   c.cooldown = Math.max(0, c.cooldown - dt);
   let desired = c.heading + c.turn * dt,
     caught = false;
-  const threats = sim.creatures.filter(
-    (other) =>
-      other.active &&
-      !other.held &&
-      other.protection <= 0 &&
-      SPECIES[other.species].prey.includes(c.species) &&
-      distance(c, other) < species.sight,
-  );
+  const threats = sim.creatures
+    .filter(
+      (other) =>
+        other.active &&
+        !other.held &&
+        other.protection <= 0 &&
+        SPECIES[other.species].prey.includes(c.species) &&
+        distance(c, other) < species.sight,
+    )
+    .concat(
+      (sim.externalThreats || []).filter(
+        (other) =>
+          other.prey === c.species && distance(c, other) < species.sight,
+      ),
+    );
   if (threats.length && c.protection <= 0) {
     threats.sort((a, b) => distance(a, c) - distance(b, c));
     c.mode = "flee";

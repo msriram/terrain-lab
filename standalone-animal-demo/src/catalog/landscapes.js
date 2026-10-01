@@ -146,7 +146,7 @@ export const LANDSCAPES = {
     colors: ["#58b88d", "#b0df95", "#dfc68b"],
     weather: "fireflies",
     caption:
-      "Emerald palaces rise beside yellow brick roads while witches pursue the city’s citizens.",
+      "Emerald palaces rise beside yellow brick roads while witches hunt Jade birds and terrify the city’s citizens.",
   },
   candy: {
     label: "Candy land",

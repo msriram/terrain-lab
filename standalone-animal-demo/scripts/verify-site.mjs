@@ -213,8 +213,13 @@ try {
     if (world !== 'copper') await page.locator('#theme').selectOption(world);
     if (world === 'cyberpunk')
       await page.waitForFunction(() => TerrainWildlife.layer.getStats().landscape.roadSegments > 0);
-    if (world === 'emerald')
+    if (world === 'emerald') {
       await page.waitForFunction(() => TerrainWildlife.layer.getStats().landscape.emeraldCitadels >= 5);
+      await page.getByRole('button', { name: 'Resume motion', exact: true }).click();
+      await page.waitForFunction(() => TerrainWildlife.layer.simulation.creatures.some(c => c.species === 'jadebird' && c.mode === 'flee') ||
+        TerrainWildlife.layer.simulation.events.some(e => e.predator === 'Witch'), null, { timeout: 15000 });
+      await page.getByRole('button', { name: 'Pause motion', exact: true }).click();
+    }
     const builds = await page.evaluate(() => TerrainWildlife.layer.getStats().landscape.cityRebuilds);
     await page.evaluate(() => TerrainLab.setSample((u, v) => .72 + .012 * Math.sin(u * 371 + v * 257)));
     await page.waitForTimeout(950);
@@ -414,6 +419,7 @@ try {
       "projector state and terrain synchronization",
       "random population",
       "city roads resist depth noise and respond to live terrain changes",
+      "Emerald witches chase Jade birds and trigger fleeing",
     ],
     errors,
     missing,

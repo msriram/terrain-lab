@@ -306,6 +306,8 @@ export async function createAnimalLayer({
         landscape.setOptions({ density: options.density });
       if (options.projectionFlipped !== undefined)
         landscape.setOptions({ projectionFlipped: options.projectionFlipped });
+      if (options.labels !== undefined)
+        landscape.setOptions({ labels: options.labels });
       if (options.atmosphere !== undefined) atmosphere = options.atmosphere;
       const nextTheme =
         options.theme ??
@@ -331,6 +333,8 @@ export async function createAnimalLayer({
     },
     update(dt) {
       const step = enabled && !paused ? Math.max(0, Math.min(dt, 0.05)) : 0;
+      simulation.externalThreats =
+        landscapeTheme === "emerald" ? landscape.wildlifeThreats() : [];
       if (step && !remote) simulation.update(step);
       simulation.creatures.forEach((c, i) => {
         const a = animals[i];
@@ -395,6 +399,12 @@ export async function createAnimalLayer({
         );
       });
       landscape.setOptions({ enabled: scenery, motion: atmosphere && !paused });
+      landscape.setWildlife(
+        simulation.creatures,
+        step && !remote && landscapeTheme === "emerald"
+          ? (id) => simulation.captureByEnvironment(id, "Witch")
+          : null,
+      );
       landscape.update(paused ? 0 : Math.max(0, Math.min(dt, 0.05)));
       renderer.render(scene, camera);
     },

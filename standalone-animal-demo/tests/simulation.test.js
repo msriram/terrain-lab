@@ -93,14 +93,21 @@ test("missing habitat hides residents and restoring terrain recovers them", () =
   assert.equal(sim.creatures.filter((c) => c.active).length, 0);
 });
 test("a brief invalid depth frame does not make wildlife disappear", () => {
-  const sim = new AnimalSimulation({ sampleTerrain: () => 0, seed: 7, roster: DEFAULT_ROSTER });
-  const residents = sim.creatures.filter(c => c.active).map(c => c.id);
+  const sim = new AnimalSimulation({
+    sampleTerrain: () => 0,
+    seed: 7,
+    roster: DEFAULT_ROSTER,
+  });
+  const residents = sim.creatures.filter((c) => c.active).map((c) => c.id);
   sim.setTerrain(() => NaN);
   for (let i = 0; i < 10; i++) sim.update(0.05);
   sim.setTerrain(() => 0);
   sim.update(0.05);
-  assert.deepEqual(sim.creatures.filter(c => c.active).map(c => c.id), residents);
-  assert.equal(sim.creatures.filter(c => c.respawnAt !== null).length, 0);
+  assert.deepEqual(
+    sim.creatures.filter((c) => c.active).map((c) => c.id),
+    residents,
+  );
+  assert.equal(sim.creatures.filter((c) => c.respawnAt !== null).length, 0);
 });
 test("sculptable terrain carves and fills only the touched area", () => {
   const terrain = createSculptableTerrain();
@@ -190,6 +197,30 @@ test("fish breaches are time-bounded, and stir creates an active gesture", () =>
     sim.valid(sim.creatures[0], sim.creatures[0].u, sim.creatures[0].v),
   );
 });
+test("Emerald witches make Jade birds flee and captured birds repopulate", () => {
+  const sim = new AnimalSimulation({
+    sampleTerrain: () => 0.7,
+    seed: 12,
+    roster: ["jadebird"],
+  });
+  const bird = sim.creatures[0];
+  bird.protection = 0;
+  sim.externalThreats = [
+    { id: "witch-0", prey: "jadebird", u: bird.u - 0.04, v: bird.v },
+  ];
+  sim.update(1 / 60);
+  assert.equal(bird.mode, "flee");
+  assert.equal(bird.speedMultiplier, 2);
+  assert.equal(bird.target, "witch-0");
+  assert.equal(sim.captureByEnvironment(bird.id), true);
+  assert.equal(bird.active, false);
+  assert.equal(sim.events[0].predator, "Witch");
+  assert.equal(sim.captureByEnvironment(bird.id), false);
+  sim.externalThreats = [];
+  for (let i = 0; i < 110; i++) sim.update(0.05);
+  assert.equal(bird.active, true);
+  assert.ok(bird.protection > 0);
+});
 test("roster supports eight of any species, safe empty state, and rejects unknown IDs", () => {
   const sim = new AnimalSimulation({ sampleTerrain: () => 1 });
   sim.setRoster(Array(8).fill("wolf"));
@@ -231,10 +262,15 @@ test("capture removes prey, terrain updates cannot revive it early, then repopul
 });
 test("a nearby predator catches fleeing prey without manual positioning during pursuit", () => {
   for (let seed = 1; seed <= 10; seed++) {
-    const sim = new AnimalSimulation({ sampleTerrain: () => 1, roster: ["fox", "rabbit"], seed });
+    const sim = new AnimalSimulation({
+      sampleTerrain: () => 1,
+      roster: ["fox", "rabbit"],
+      seed,
+    });
     Object.assign(sim.creatures[0], { u: 0.4, v: 0.5, protection: 0 });
     Object.assign(sim.creatures[1], { u: 0.5, v: 0.5, protection: 0 });
-    for (let frame = 0; frame < 300 && sim.captures === 0; frame++) sim.update(0.05);
+    for (let frame = 0; frame < 300 && sim.captures === 0; frame++)
+      sim.update(0.05);
     assert.ok(sim.captures > 0, `seed ${seed} should produce a real catch`);
     assert.equal(sim.events[0].type, "capture");
   }
@@ -286,8 +322,13 @@ test("random populations have six prey and two predators, varied species and pos
       sim.creatures.filter((c) => SPECIES[c.species].prey.length === 0).length,
       6,
     );
-    assert.ok(sim.creatures.some((hunter) =>
-      SPECIES[hunter.species].prey.some((prey) => sim.creatures.some((c) => c.species === prey))));
+    assert.ok(
+      sim.creatures.some((hunter) =>
+        SPECIES[hunter.species].prey.some((prey) =>
+          sim.creatures.some((c) => c.species === prey),
+        ),
+      ),
+    );
   }
   assert.ok(rosters.size > 2);
   assert.ok(positions.size > 20);

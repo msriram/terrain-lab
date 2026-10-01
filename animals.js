@@ -1,5 +1,5 @@
 // Terrain Lab adapter: same wildlife module as the public Field Notes demo.
-import { createAnimalLayer, bindAnimalInteraction, randomRoster, SPECIES, LANDSCAPES, WORLD_SIGNATURES, rosterForWorld, FIXTURES, createTerrain } from './assets/wildlife/animal-layer.js?v=emerald-arches-20261001';
+import { createAnimalLayer, bindAnimalInteraction, randomRoster, SPECIES, LANDSCAPES, WORLD_SIGNATURES, rosterForWorld, FIXTURES, createTerrain } from './assets/wildlife/animal-layer.js?v=witch-hunt-20261001';
 
 const host=window.TerrainLab,stage=document.querySelector('.stage-card');
 const $=id=>document.getElementById(id);
@@ -100,7 +100,7 @@ if(host&&stage){
    $('terrain').style.visibility=state.calibrating||$('terrain-visible').checked?'visible':'hidden';
    layer.setOptions({transparent:$('transparent').checked});
    canvas.style.pointerEvents=!projection&&!state.calibrating&&state.tool==='rescue'&&state.enabled?'auto':'none';
-   layer.setOptions({enabled:state.enabled&&!state.calibrating,paused,pack:LANDSCAPES[state.theme]?.underwater?'atlantis':'earth',theme:state.theme,scenery:$('scenery').checked&&!state.calibrating,atmosphere:$('scenery').checked,projectionFlipped:state.rotated});
+   layer.setOptions({enabled:state.enabled&&!state.calibrating,paused,pack:LANDSCAPES[state.theme]?.underwater?'atlantis':'earth',theme:state.theme,scenery:$('scenery').checked&&!state.calibrating,atmosphere:$('scenery').checked,projectionFlipped:state.rotated,labels:$('labels').checked&&!projection&&!state.calibrating});
    if(lastRevision!==state.revision){layer.setTerrain(host.sampleTerrain,state.waterLevel);lastRevision=state.revision;}
    layer.update(dt);
    layer.simulation.creatures.forEach((c,i)=>{const tag=labels.children[i];if(!tag)return;tag.hidden=!c.active;tag.style.left=c.u*100+'%';tag.style.top=c.v*100+'%';tag.textContent=SPECIES[c.species].label+' · '+c.mode;});
