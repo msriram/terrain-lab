@@ -36,6 +36,7 @@ export function createLandscapeLayer(
   reefRoot.name = "Growing coral reef";
   root.add(reefRoot);
   let reefs = [];
+  let retiringReefs = [];
   const factory = createPropFactory();
   let recipe = LANDSCAPES[theme] || LANDSCAPES.earth,
     dirty = true,
@@ -398,21 +399,47 @@ export function createLandscapeLayer(
     const baseCount = theme === "forest" ? 24 : theme === "tundra" ? 30 : theme === "coral" ? 10 : theme === "deepsea" ? 32 : ["cyberpunk","copper","emerald"].includes(theme) ? 0 : recipe.underwater ? 24 : 20;
     const structureWorld = theme === "atlantis" || theme === "deepsea";
     const structureCount = Math.round(baseCount * density * 0.65);
-    const structures = structureWorld
+    let structures = structureWorld
       ? findUnderwaterStructureSites(sceneryTerrain, waterLevel, layoutSeed, structureCount)
       : [];
     const structureKinds = theme === "atlantis"
       ? ["castle", "drownedtower", "brokenarch", "ruin"]
       : ["talokan-temple", "talokan-district", "talokan-district", "talokan-beacon"];
+    if (structureWorld) {
+      const retained = availableProps.filter(old => structureKinds.includes(old.kind))
+        .map(old => ({ ...old.p, h: sceneryTerrain(old.p.u, old.p.v), kind: old.kind }))
+        .filter(site => Number.isFinite(site.h) && site.h >= waterLevel - 0.035)
+        .slice(0, structureCount);
+      for (const site of structures) {
+        if (retained.some(old => Math.hypot(old.u - site.u, old.v - site.v) < 0.075)) continue;
+        if (retained.length < structureCount) { retained.push(site); continue; }
+        const weakest = retained.reduce((index, old, i) => old.h < retained[index].h ? i : index, 0);
+        if (site.h > retained[weakest].h + 0.12) retained[weakest] = site;
+      }
+      structures = retained;
+    }
     const secondaryKinds = theme === "atlantis"
       ? ["seaweed", "seaweed", "chest", "trident", "coral"]
       : ["seaweed", "vent", "seaweed"];
-    const secondary = structureWorld
+    const secondaryLimit = Math.max(0, Math.round(baseCount * density) - structures.length);
+    let secondary = structureWorld
       ? candidates.filter(p => p.h < water - 0.025)
-          .slice(0, Math.max(0, Math.round(baseCount * density) - structures.length))
+          .slice(0, secondaryLimit)
       : candidates.slice(0, Math.round(baseCount * density));
-    const placements = [...structures.map((p, i) => ({ ...p, kind: structureKinds[i % structureKinds.length] })),
-      ...secondary.map((p, i) => structureWorld ? { ...p, kind: secondaryKinds[i % secondaryKinds.length] } : p)]
+    if (structureWorld) {
+      const retained = availableProps.filter(old => secondaryKinds.includes(old.kind))
+        .map(old => ({ ...old.p, h: sceneryTerrain(old.p.u, old.p.v), kind: old.kind }))
+        .filter(site => Number.isFinite(site.h) && site.h < waterLevel - 0.025)
+        .slice(0, secondaryLimit);
+      for (const site of secondary) {
+        if (retained.length >= secondaryLimit) break;
+        if (retained.every(old => Math.hypot(old.u - site.u, old.v - site.v) > 0.065))
+          retained.push(site);
+      }
+      secondary = retained;
+    }
+    const placements = [...structures.map((p, i) => ({ ...p, kind: p.kind || structureKinds[i % structureKinds.length] })),
+      ...secondary.map((p, i) => structureWorld ? { ...p, kind: p.kind || secondaryKinds[i % secondaryKinds.length] } : p)]
       .filter(p => !removedElements.some(q => Math.hypot(p.u-q.u, p.v-q.v) < .05))
       .concat(addedElements);
     placements.forEach((p, i) => {
@@ -455,29 +482,40 @@ export function createLandscapeLayer(
     });
     retiringProps.push(...availableProps);
     if (theme === "coral") {
-      const sites = findReefSites(sceneryTerrain, layoutSeed, Math.round(25 * density));
+      const sites = findReefSites(sceneryTerrain, layoutSeed, Math.round(48 * density), waterLevel);
       const palettes = [
         ["#b85b62", "#d39958", "#845d9d"],
         ["#ba6b91", "#bca769", "#4f9b8e"],
         ["#c68b66", "#7667a4", "#b89851"],
       ];
+      const availableReefs = [...reefs];
+      reefs = [];
       sites.forEach((site, i) => {
-        let reef = reefs[i];
+        let closest = -1, distance = 0.055;
+        for (let j = 0; j < availableReefs.length; j++) {
+          const old = availableReefs[j];
+          const d = Math.hypot(old.u - site.u, old.v - site.v);
+          if (d < distance) { closest = j; distance = d; }
+        }
+        let reef = closest >= 0 ? availableReefs.splice(closest, 1)[0] : null;
         if (!reef) {
           const object = factory.build("reefcolony", palettes[(site.cluster + i) % palettes.length], Math.floor(site.phase * 1000));
           object.rotation.y = site.phase;
           object.scale.setScalar(0.001);
           reefRoot.add(object);
           reef = { ...site, object, growth: 0 };
-          reefs.push(reef);
+          object.position.set((site.u - 0.5) * 4, 0.004, (site.v - 0.5) * 3);
         }
         reef.u = site.u;
         reef.v = site.v;
         reef.centerU = site.centerU;
         reef.centerV = site.centerV;
-        reef.object.position.set((site.u - 0.5) * 4, 0.004, (site.v - 0.5) * 3);
+        reef.phase = site.phase;
+        reef.targetX = (site.u - 0.5) * 4;
+        reef.targetZ = (site.v - 0.5) * 3;
+        reefs.push(reef);
       });
-      while (reefs.length > sites.length) reefRoot.remove(reefs.pop().object);
+      retiringReefs.push(...availableReefs);
     }
     rebuildNetwork();
     if (["cyberpunk", "copper", "emerald"].includes(theme)) {
@@ -528,12 +566,21 @@ export function createLandscapeLayer(
     factory.setTime(time);
     reefRoot.visible = theme === "coral";
     if (reefRoot.visible) for (const reef of reefs) {
-      const target = reefGrowth(sampleTerrain, reef.centerU, reef.centerV);
+      const target = reefGrowth(sampleTerrain, reef.u, reef.v, waterLevel);
       reef.growth += (target - reef.growth) * (motion ? 1 - Math.exp(-Math.min(dt, 0.05) * 1.65) : 1);
       reef.object.visible = reef.growth > 0.04;
-      reef.object.scale.setScalar((0.055 + reef.growth * 0.16) * (1 + Math.sin(time * 0.7 + reef.phase) * 0.012));
+      reef.object.scale.setScalar((0.018 + reef.growth * 0.063) * (1 + Math.sin(time * 0.7 + reef.phase) * 0.012));
       reef.object.rotation.z = Math.sin(time * 0.85 + reef.phase) * 0.012;
+      reef.object.position.x += (reef.targetX - reef.object.position.x) * (motion ? 1 - Math.exp(-Math.min(dt, 0.05) * 4) : 1);
+      reef.object.position.z += (reef.targetZ - reef.object.position.z) * (motion ? 1 - Math.exp(-Math.min(dt, 0.05) * 4) : 1);
     }
+    retiringReefs = retiringReefs.filter(reef => {
+      reef.growth *= motion ? Math.exp(-Math.min(dt, 0.05) * 3) : 0;
+      reef.object.scale.setScalar((0.018 + reef.growth * 0.063) * reef.growth);
+      if (reef.growth > 0.025) return true;
+      reefRoot.remove(reef.object);
+      return false;
+    });
     const ease = motion ? 1 - Math.exp(-Math.min(dt, 0.05) * 3.5) : 1;
     for (const item of props) {
       const { object, kind, p, scale } = item;
@@ -844,7 +891,7 @@ export function createLandscapeLayer(
     },
     randomize() {
       addedElements = []; removedElements = [];
-      reefRoot.clear(); reefs = [];
+      reefRoot.clear(); reefs = []; retiringReefs = [];
       layoutSeed = Math.floor(Math.random() * 2147483647);
       sceneryEditsRevision++;
       dirty = true;
@@ -879,7 +926,10 @@ export function createLandscapeLayer(
         signalLinks: links.length,
         scatteredStars,
         props: props.length,
+        structureSites: props.filter(({ kind }) => ["castle", "drownedtower", "brokenarch", "ruin", "talokan-temple", "talokan-district", "talokan-beacon"].includes(kind))
+          .map(({ kind, p }) => ({ kind, u: p.u, v: p.v })),
         reefColonies: reefs.filter((reef) => reef.object.visible && reefRoot.visible).length,
+        reefSites: reefRoot.visible ? reefs.filter(reef => reef.object.visible).map(({ u, v }) => ({ u, v })) : [],
         reefGrowth: reefs.reduce((total, reef) => total + reef.growth, 0),
         propKinds: [...new Set(props.map((p) => p.kind))],
         shoreSegments: layout.shore.length,

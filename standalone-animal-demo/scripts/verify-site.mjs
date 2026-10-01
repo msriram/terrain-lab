@@ -173,7 +173,9 @@ try {
   await page.locator("#theme").selectOption("coral");
   await page.evaluate(() => TerrainLab.setSample((u,v) =>
     Math.hypot(u - .73, v - .48) < .14 ? .8 : .24));
-  await page.waitForFunction(() => TerrainWildlife.layer.getStats().landscape.reefColonies >= 20);
+  await page.waitForFunction(() => TerrainWildlife.layer.getStats().landscape.reefColonies >= 40);
+  assert.ok(await page.evaluate(() => TerrainWildlife.layer.getStats().landscape.reefSites.every(
+    site => TerrainLab.sampleTerrain(site.u, site.v) > .43)));
   for (const world of ['atlantis', 'deepsea']) {
     await page.evaluate(() => TerrainLab.setSample(() => .2));
     await page.locator('#theme').selectOption(world);
@@ -184,6 +186,17 @@ try {
       .2 + .58 * Math.exp(-(((u - .7) / .12) ** 2 + ((v - .45) / .12) ** 2))));
     await page.waitForFunction(w => TerrainWildlife.layer.getStats().landscape.propKinds.includes(
       w === 'atlantis' ? 'castle' : 'talokan-temple'), world);
+    if (world === 'deepsea') {
+      const established = await page.evaluate(() => TerrainWildlife.layer.getStats().landscape.structureSites);
+      await page.evaluate(() => TerrainLab.setSample((u, v) => .2 +
+        .58 * Math.exp(-(((u - .7) / .12) ** 2 + ((v - .45) / .12) ** 2)) +
+        .42 * Math.exp(-(((u - .24) / .11) ** 2 + ((v - .72) / .11) ** 2))));
+      await page.waitForTimeout(950);
+      const after = await page.evaluate(() => TerrainWildlife.layer.getStats().landscape.structureSites);
+      assert.ok(established.every(site => after.some(next => next.kind === site.kind &&
+        Math.hypot(next.u - site.u, next.v - site.v) < .001)),
+      'existing Talokan structures should remain anchored when another hill grows');
+    }
   }
   await page.evaluate(() => TerrainLab.setSample(() => .72));
   await page.locator('#theme').selectOption('copper');
@@ -386,7 +399,7 @@ try {
       "drag rescue in both demos",
       "3-second protection",
       "terrain editing",
-      "underwater structures grow on raised seabed and leave trenches open",
+      "raised sand grows small reefs; Talokan structures stay anchored through terrain edits",
       "calibration pointer ownership",
       "rotation alignment",
       "rain, clouds, and flock retain screen direction after 180° projector rotation",

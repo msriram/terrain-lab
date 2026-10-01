@@ -3,15 +3,52 @@ import { reefGrowth } from "./reef-growth.js";
 
 // Reefs need their own full-field scan: generic prop sites omit tall peaks
 // and can miss a newly sculpted mound between their randomly selected points.
-export function findReefSites(sample, seed = 31, count = 25) {
+export function findReefSites(sample, seed = 31, count = 48, water = 0.43) {
   const raised = [];
-  for (let y = 1; y < 40; y++) for (let x = 1; x < 52; x++) {
-    const u = x / 52, v = y / 40, growth = reefGrowth(sample, u, v);
-    if (growth > .025) raised.push({u, v, growth});
+  for (let y = 1; y < 54; y++) for (let x = 1; x < 72; x++) {
+    const u = x / 72, v = y / 54, growth = reefGrowth(sample, u, v, water);
+    if (growth > .035) raised.push({u, v, growth});
   }
-  return clusteredReefSites(raised, seed, Math.ceil(count / 5)).slice(0, count)
-    .map(site => reefGrowth(sample, site.u, site.v) > .025 ? site :
-      {...site, u: site.centerU, v: site.centerV});
+  if (!raised.length || count <= 0) return [];
+  const phase = p => {
+    const value = Math.sin(p.u * 179.3 + p.v * 451.7 + seed) * 43758.5453;
+    return value - Math.floor(value);
+  };
+  raised.sort((a, b) => b.growth - a.growth || phase(a) - phase(b));
+  const centers = [];
+  for (const site of raised) {
+    if (centers.every(other => Math.hypot(site.u - other.u, site.v - other.v) > .09))
+      centers.push(site);
+    if (centers.length >= Math.ceil(count / 6)) break;
+  }
+  const sites = [];
+  const add = (site, center, cluster) => {
+    if (sites.some(other => Math.hypot(site.u - other.u, site.v - other.v) < .014)) return;
+    sites.push({ ...site, centerU: center.u, centerV: center.v,
+      cluster, phase: phase(site) * Math.PI * 2 });
+  };
+  const quota = Math.ceil(count / centers.length);
+  centers.forEach((center, cluster) => {
+    const nearby = raised.filter(site => Math.hypot(site.u - center.u, site.v - center.v) < .085)
+      .sort((a, b) => Math.hypot(a.u - center.u, a.v - center.v) -
+        Math.hypot(b.u - center.u, b.v - center.v) + (phase(a) - phase(b)) * .035);
+    let placed = 0;
+    for (const site of nearby) {
+      const before = sites.length;
+      add(site, center, cluster);
+      if (sites.length > before) placed++;
+      if (placed >= quota || sites.length >= count) break;
+    }
+  });
+  for (const site of raised) {
+    if (sites.length >= count) break;
+    const closest = centers.reduce((best, center, i) =>
+      Math.hypot(site.u - center.u, site.v - center.v) < best.distance
+        ? { center, i, distance: Math.hypot(site.u - center.u, site.v - center.v) }
+        : best, { center: centers[0], i: 0, distance: Infinity });
+    add(site, closest.center, closest.i);
+  }
+  return sites.slice(0, count);
 }
 
 /** Twenty-five small colonies form five irregular groups on raised sand. */

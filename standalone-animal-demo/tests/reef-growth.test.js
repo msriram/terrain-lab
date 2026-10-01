@@ -18,9 +18,18 @@ test("reef colonies follow a newly piled mound even when generic prop sites miss
     Math.hypot(u - cx, v - 0.52) < 0.12 ? 0.78 : 0.25;
   const left = findReefSites(mound(0.23));
   const right = findReefSites(mound(0.77));
-  assert.equal(left.length, 25);
-  assert.equal(right.length, 25);
+  assert.equal(left.length, 48);
+  assert.equal(right.length, 48);
   assert.ok(left.every(site => site.u < 0.4));
   assert.ok(right.every(site => site.u > 0.6));
+  assert.ok(left.every(site => mound(0.23)(site.u, site.v) > 0.43));
+  assert.ok(right.every(site => mound(0.77)(site.u, site.v) > 0.43));
   assert.deepEqual(findReefSites(() => 0.25), []);
+});
+test("reefs never sprout beside a raised patch or below the selected water level", () => {
+  const mound = (u, v) => Math.hypot(u - 0.52, v - 0.48) < 0.13 ? 0.74 : 0.3;
+  const sites = findReefSites(mound, 31, 48, 0.5);
+  assert.ok(sites.length >= 40);
+  assert.ok(sites.every(site => mound(site.u, site.v) > 0.5));
+  assert.equal(reefGrowth(() => 0.48, 0.5, 0.5, 0.5), 0);
 });
